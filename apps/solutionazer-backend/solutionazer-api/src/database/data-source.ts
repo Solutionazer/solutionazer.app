@@ -20,7 +20,7 @@ import { DataSource } from 'typeorm';
 
 const AppDataSource: DataSource = new DataSource({
   type: 'postgres',
-  url: `prod_database_url`,
+  url: process.env.DATABASE_URL,
   synchronize: false,
   logging: true,
   entities: ['src/**/*.entity.ts'],
