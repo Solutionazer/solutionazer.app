@@ -1,0 +1,135 @@
+/**
+ * This file is part of solutionazer.app.
+ *
+ * solutionazer.app is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License only.
+ *
+ * solutionazer.app is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with solutionazer.app. If not, see <https://www.gnu.org/licenses/gpl-3.0.en.html>.
+ *
+ * Copyright (C) 2025 David Llamas Román
+ */
+
+/* variables */
+:root {
+  /* max-measures */
+  --max-dvw: 100dvw;
+  --max-dvh: 100dvh;
+  --max-percentage: 100%;
+
+  /* color scheme */
+  --black: #121212;
+  --white: #fff;
+  --orange: #ff1400;
+
+  --glass-black: rgba(18, 18, 18, 0.6);
+  --glass-white: rgba(255, 255, 255, 0.4);
+  --glass-orange: rgba(255, 61, 0, 0.35);
+
+  --glass-blur: blur(20px);
+
+  --glass-border-light: rgba(255, 255, 255, 0.2);
+  --glass-border-dark: rgba(0, 0, 0, 0.3);
+}
+
+/* color scheme */
+@property --background-color {
+  syntax: '<color>';
+  inherits: true;
+}
+
+@property --foreground-color {
+  syntax: '<color>';
+  inherits: true;
+}
+
+@property --title-color {
+  syntax: '<color>';
+  inherits: true;
+}
+
+@property --text-color {
+  syntax: '<color>';
+  inherits: true;
+}
+
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* COLOR SCHEME */
+/* dark */
+[data-theme='dark'] {
+  --background-color: var(--black, #121212);
+  --foreground-color: var(--white, #fff);
+  --title-color: var(--orange, #ff1400);
+  --text-color: var(--black, #121212);
+}
+
+/* light */
+[data-theme='light'] {
+  --background-color: var(--white, #fff);
+  --foreground-color: var(--black, #121212);
+  --title-color: var(--orange, #ff1400);
+  --text-color: var(--black, #121212);
+}
+
+/* BODY */
+.container {
+  display: grid;
+  grid-template-rows: 1fr auto;
+
+  width: var(--max-dvw);
+  height: var(--max-dvh);
+
+  padding: 1rem;
+
+  background-color: var(--background-color);
+  color: var(--text-color);
+
+  .main {
+    --max-width: 1200px;
+
+    max-width: var(--max-width);
+    width: var(--max-percentage);
+
+    margin: 0 auto;
+
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px;
+    -ms-border-radius: 4px;
+    -o-border-radius: 4px;
+  }
+
+  .footer {
+    color: var(--text-color);
+
+    text-align: center;
+
+    & a {
+      color: var(--text-color);
+
+      font-weight: 700;
+      font-style: italic;
+    }
+  }
+}
+
+/* UTILS */
+.title {
+  padding: 1rem;
+
+  text-align: center;
+
+  color: var(--title-color);
+}
