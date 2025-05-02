@@ -40,10 +40,10 @@ export class CompaniesService {
       relations: ['admins'],
     });
 
-    return companies.map(({ uuid, companyName, logInEmail, admins }) => ({
+    return companies.map(({ uuid, companyName, loginEmail, admins }) => ({
       uuid,
       companyName,
-      logInEmail,
+      loginEmail,
       admins,
     }));
   }
@@ -58,46 +58,50 @@ export class CompaniesService {
       throw new NotFoundException(`Company = { uuid: ${uuid} } not found`);
     }
 
-    const { uuid: companyUuid, companyName, logInEmail, admins } = company;
+    const { uuid: companyUuid, companyName, loginEmail, admins } = company;
 
     return {
       uuid: companyUuid,
       companyName,
-      logInEmail,
+      loginEmail,
       admins,
     } as Company;
   }
 
   async findOneByLoginEmail(email: string) {
     const company: Company | null = await this.companyRepository.findOne({
-      where: { logInEmail: email },
+      where: { loginEmail: email },
     });
 
     if (!company) {
       throw new NotFoundException(`Company = { email: ${email} } not found`);
     }
 
-    const { uuid: companyUuid, companyName, logInEmail, admins } = company;
+    return company;
+  }
 
-    return {
-      uuid: companyUuid,
-      companyName,
-      logInEmail,
-      admins,
-    };
+  async checkEmail(email: string) {
+    const company: Company = await this.findOneByLoginEmail(email);
+
+    return company || true;
   }
 
   async create(data: CreateCompanyDto) {
-    (
-      await Promise.all(
+    let users: User[] = [];
+
+    if (data.admins?.length) {
+      users = await Promise.all(
         data.admins.map(async (admin) => {
           const user: User = await this.usersService.findOne(admin.uuid);
-          return !!user;
+          return user;
         }),
-      )
-    ).every(Boolean);
+      );
+    }
 
     const newCompany: Company = this.companyRepository.create(data);
+
+    newCompany.admins = users;
+
     return this.companyRepository.save(newCompany);
   }
 

@@ -28,6 +28,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { Permissions } from 'src/auth/decorators/permissions.decorator';
 import {
   CreateQuestionDto,
   UpdateQuestionDto,
@@ -38,13 +39,15 @@ import { QuestionsService } from 'src/data-collectors/services/questions/questio
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 
-  @Get(':formUuid')
+  @Permissions('question:readAllByForm')
+  @Get('form/:formUuid')
   @HttpCode(HttpStatus.OK)
   findAllByFormUuid(@Param('formUuid', new ParseUUIDPipe()) formUuid: string) {
     return this.questionsService.findAllByFormUuid(formUuid);
   }
 
-  @Get(':surveyUuid')
+  @Permissions('question:readAllBySurvey')
+  @Get('survey/:surveyUuid')
   @HttpCode(HttpStatus.OK)
   findAllBySurveyUuid(
     @Param('surveyUuid', new ParseUUIDPipe()) surveyUuid: string,

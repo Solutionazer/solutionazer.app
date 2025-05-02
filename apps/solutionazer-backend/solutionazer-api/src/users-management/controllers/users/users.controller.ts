@@ -58,7 +58,7 @@ export class UsersController {
   @Public()
   @Get('email/:email')
   @HttpCode(HttpStatus.OK)
-  findOneByEmail(@Param('email') email: string) {
+  checkEmail(@Param('email') email: string) {
     return this.usersService.checkEmail(email);
   }
 

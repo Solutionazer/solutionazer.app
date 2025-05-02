@@ -41,7 +41,10 @@ export class AuthController {
       maxAge: 60 * 60 * 24 * 7 * 1000,
     });
 
-    res.status(200).json({ message: 'Login successful', user });
+    const { uuid, fullName, email } = user;
+    const safeUser = { uuid, fullName, email };
+
+    res.status(200).json({ message: 'Login successful', user: safeUser });
   }
 
   @Post('logout')

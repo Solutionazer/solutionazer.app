@@ -40,11 +40,7 @@ export class Company {
   companyName: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  logInEmail: string;
-
-  @Exclude()
-  @Column({ type: 'varchar', length: 255, nullable: false, select: false })
-  logInPassword: string;
+  loginEmail: string;
 
   // admins
   @ManyToMany(() => User)

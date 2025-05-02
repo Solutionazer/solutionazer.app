@@ -24,6 +24,7 @@ import {
 } from 'src/data-collectors/dtos/data-collectors.dtos';
 import { DataCollector } from 'src/data-collectors/entities/data-collector.entity';
 import DataCollectorType from 'src/data-collectors/enums/data-collector-type.enum';
+import { User } from 'src/users-management/entities/user.entity';
 import { UsersService } from 'src/users-management/services/users/users.service';
 import { Repository } from 'typeorm';
 
@@ -55,9 +56,8 @@ export class FormsService {
   }
 
   async create(data: CreateDataCollectorDto) {
-    await this.usersService.findOne(data.user.uuid);
-
-    const { title, description, user } = data;
+    const { title, description, userUuid } = data;
+    const user: User = await this.usersService.findOne(userUuid);
 
     const newForm: DataCollector = this.dataCollectorRepository.create({
       title,
