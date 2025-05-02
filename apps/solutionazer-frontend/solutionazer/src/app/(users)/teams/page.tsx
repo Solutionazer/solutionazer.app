@@ -18,29 +18,20 @@
 
 'use client'
 
-import Option from '../../../lib/options/option'
-import Footer from '../../shared/containers/Footer'
+import useAuthStore from '@/lib/auth/states/global/authStore'
+import styles from './page.module.css'
 
-import styles from './moduleFooter.module.css'
-import { useModuleStore } from '@/lib/module/states/global/moduleStore'
-import Navbar from '@/components/shared/navigation/Navbar'
-
-export default function ModuleFooter() {
-  // module global state
-  const { module } = useModuleStore()
-
-  // options
-  const options: Option[] = [
-    new Option(1, 'home'),
-    new Option(2, 'teams'),
-    new Option(3, 'account'),
-  ]
-
-  const routes: string[] = [`/${module}`, `/teams`, `/account`]
+export default function Route() {
+  // auth global state
+  const { user } = useAuthStore()
 
   return (
-    <Footer params={{ className: styles.secondary_footer }}>
-      <Navbar params={{ options, routes }} />
-    </Footer>
+    <div className={styles.content}>
+      <aside className={styles.aside}>
+        <nav>
+          <ul></ul>
+        </nav>
+      </aside>
+    </div>
   )
 }

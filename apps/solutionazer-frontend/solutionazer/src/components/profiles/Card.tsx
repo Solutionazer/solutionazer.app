@@ -16,24 +16,18 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { create, StoreApi, UseBoundStore } from 'zustand'
+import AuthUser from '@/lib/auth/authUser'
+import Article from '../shared/containers/Article'
 
-interface AuthUser {
-  uuid: string
-  fullName: string
-  email: string
+interface CardProps {
+  params: {
+    user?: AuthUser
+    company?: object
+  }
 }
 
-interface AuthState {
-  user: AuthUser | null
-  setUser: (user: AuthUser | null) => void
+export default function Card(props: Readonly<CardProps>) {
+  const { user, company } = props.params
+
+  return <Article params={{ className: '' }}></Article>
 }
-
-const useAuthStore: UseBoundStore<StoreApi<AuthState>> = create<AuthState>(
-  (set) => ({
-    user: null,
-    setUser: (user) => set({ user }),
-  }),
-)
-
-export default useAuthStore

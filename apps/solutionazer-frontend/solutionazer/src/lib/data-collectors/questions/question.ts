@@ -16,37 +16,39 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-.content {
-  --max-width: 768px;
-
-  max-width: var(--max-width);
-  width: var(--max-percentage);
-  height: 46dvh;
-
-  padding: 0.5rem 0;
-  margin: 0 auto;
-
-  overflow-y: scroll;
+interface QuestionProps {
+  uuid: string
+  text: string
+  required: boolean
+  order: number
 }
 
-.btn {
-  --max-width: 768px;
-  max-width: var(--max-width);
-  width: var(--max-percentage);
+export default class Question {
+  private readonly uuid: string
+  private readonly text: string
+  private readonly required: boolean
+  private readonly order: number
 
-  padding: 1rem;
-  margin: 1rem auto;
+  constructor(private readonly props: QuestionProps) {
+    this.uuid = props.uuid
+    this.text = props.text
+    this.required = props.required
+    this.order = props.order
+  }
 
-  background-color: var(--foreground-color);
-  color: var(--text-color);
+  public getUuid(): string {
+    return this.uuid
+  }
 
-  font-weight: 700;
-  text-decoration: none;
-  text-align: center;
+  public getText(): string {
+    return this.text
+  }
 
-  border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  -o-border-radius: 8px;
+  public getRequired(): boolean {
+    return this.required
+  }
+
+  public getOrder(): number {
+    return this.order
+  }
 }

@@ -8,12 +8,13 @@ interface InputProps {
     value: string | undefined
     onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
     required: boolean
+    disabled: boolean
   }
 }
 
 export default function Select(props: Readonly<InputProps>) {
   // props
-  const { id, options, value, onChange, required } = props.params
+  const { id, options, value, onChange, required, disabled } = props.params
 
   const name = id
 
@@ -24,6 +25,7 @@ export default function Select(props: Readonly<InputProps>) {
       value={value}
       onChange={onChange}
       required={required}
+      disabled={disabled}
     >
       {options.map((option) => (
         <option key={option.getId()} value={option.getText()}>

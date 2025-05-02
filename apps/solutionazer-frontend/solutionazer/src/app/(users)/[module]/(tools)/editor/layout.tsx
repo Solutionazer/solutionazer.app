@@ -16,10 +16,19 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-export const allowedRoutes: string[] = ['team', 'teams']
+import ToolsFooter from '@/components/module/tools/footer/ToolsFooter'
 
-export function generateStaticParams() {
-  return allowedRoutes.map((module) => ({
-    module,
-  }))
+import styles from './layout.module.css'
+
+export default function EditorLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <div className={styles.editor_layout}>
+      {children}
+      <ToolsFooter />
+    </div>
+  )
 }

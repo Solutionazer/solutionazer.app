@@ -16,31 +16,29 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-'use client'
+import Link from 'next/link'
 
-import Option from '../../../lib/options/option'
-import Footer from '../../shared/containers/Footer'
+import Option from '@/lib/options/option'
 
-import styles from './moduleFooter.module.css'
-import { useModuleStore } from '@/lib/module/states/global/moduleStore'
-import Navbar from '@/components/shared/navigation/Navbar'
+interface NavbarProps {
+  params: {
+    options: Array<Option>
+    routes: Array<string>
+  }
+}
 
-export default function ModuleFooter() {
-  // module global state
-  const { module } = useModuleStore()
-
-  // options
-  const options: Option[] = [
-    new Option(1, 'home'),
-    new Option(2, 'teams'),
-    new Option(3, 'account'),
-  ]
-
-  const routes: string[] = [`/${module}`, `/teams`, `/account`]
+export default function Navbar(props: Readonly<NavbarProps>) {
+  const { options, routes } = props.params
 
   return (
-    <Footer params={{ className: styles.secondary_footer }}>
-      <Navbar params={{ options, routes }} />
-    </Footer>
+    <nav>
+      <ul>
+        {options.map((option) => (
+          <li key={option.getId()}>
+            <Link href={routes[option.getId() - 1]}>{option.getText()}</Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   )
 }

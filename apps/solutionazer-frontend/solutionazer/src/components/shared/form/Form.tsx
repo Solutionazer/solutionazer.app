@@ -16,11 +16,13 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+import { FormEventHandler } from 'react'
 import styles from './form.module.css'
 
 interface FormProps {
   params: {
     onSubmit: (event: React.FormEvent<HTMLFormElement>) => void
+    onReset?: FormEventHandler<HTMLFormElement>
     method: string
   }
   children: React.ReactNode
@@ -28,10 +30,15 @@ interface FormProps {
 
 export default function Form({ children, params }: Readonly<FormProps>) {
   // props
-  const { onSubmit, method } = params
+  const { onSubmit, onReset, method } = params
 
   return (
-    <form onSubmit={onSubmit} method={method} className={styles.form}>
+    <form
+      onSubmit={onSubmit}
+      onReset={onReset}
+      method={method}
+      className={styles.form}
+    >
       {children}
     </form>
   )

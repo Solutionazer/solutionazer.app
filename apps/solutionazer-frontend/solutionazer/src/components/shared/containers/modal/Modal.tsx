@@ -16,27 +16,32 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { allowedRoutes } from '@/lib/module/team/teamData'
-import { notFound } from 'next/navigation'
+import React, { Dispatch, SetStateAction } from 'react'
+import styles from './modal.module.css'
 
-interface RouteLayoutProps {
-  params: {
-    route: string
+interface ModalProps {
+  params?: {
+    setShowModal: Dispatch<SetStateAction<boolean>>
   }
   children: React.ReactNode
 }
 
-export default function RouteLayout({
-  children,
-  params,
-}: Readonly<RouteLayoutProps>) {
-  const { route } = params
+export default function Modal({ children, params }: Readonly<ModalProps>) {
+  // params
+  const setShowModal = params?.setShowModal
 
-  const isValidRoute: boolean = allowedRoutes.includes(route)
-
-  if (!isValidRoute) {
-    notFound()
+  // handle click in the modal's background
+  const handleClickOutside = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (e.target === e.currentTarget && typeof setShowModal === 'function') {
+      setShowModal(false)
+    }
   }
 
-  return <>{children}</>
+  return (
+    <div className={styles.modal_container} onClick={handleClickOutside}>
+      <dialog className={styles.modal} open>
+        {children}
+      </dialog>
+    </div>
+  )
 }

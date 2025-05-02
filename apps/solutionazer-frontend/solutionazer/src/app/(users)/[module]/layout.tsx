@@ -16,26 +16,28 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { notFound } from 'next/navigation'
-import ModuleFooter from '../../components/module/footer/ModuleFooter'
-import { allowedModules } from '../../lib/module/moduleData'
+'use client'
+
+import { notFound, useParams, usePathname } from 'next/navigation'
+import { allowedModules } from '../../../lib/module/moduleData'
 
 import styles from './layout.module.css'
-import ModuleHeader from '../../components/module/header/ModuleHeader'
-
-interface ModuleLayoutProps {
-  params: {
-    module: string
-  }
-  children: React.ReactNode
-}
+import ModuleHeader from '../../../components/module/header/ModuleHeader'
+import { useModuleStore } from '@/lib/module/states/global/moduleStore'
+import { useEffect } from 'react'
 
 export default function ModuleLayout({
   children,
-  params,
-}: Readonly<ModuleLayoutProps>) {
+}: {
+  children: React.ReactNode
+}) {
   // props
-  const { module } = params
+  const { module } = useParams()
+
+  if (typeof module !== 'string') {
+    notFound()
+  }
+
   // check if the route is allowed
   const isValidModule: boolean = allowedModules.includes(module)
 
@@ -43,11 +45,27 @@ export default function ModuleLayout({
     notFound()
   }
 
+  // module global state
+  const { setModule } = useModuleStore()
+
+  useEffect(() => {
+    setModule(module)
+  }, [module, setModule])
+
+  // path
+  const path: string = usePathname()
+  const isEditorPath: boolean = path.endsWith('/editor')
+
   return (
-    <div className={styles.module_layout}>
-      <ModuleHeader params={{ module }} />
-      {children}
-      <ModuleFooter params={{ module }} />
-    </div>
+    <>
+      {!isEditorPath ? (
+        <div className={styles.module_layout}>
+          <ModuleHeader params={{ module }} />
+          {children}
+        </div>
+      ) : (
+        <div>{children}</div>
+      )}
+    </>
   )
 }

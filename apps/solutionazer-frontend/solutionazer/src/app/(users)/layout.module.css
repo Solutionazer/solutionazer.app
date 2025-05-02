@@ -16,29 +16,20 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-'use client'
+.module_layout {
+  display: grid;
+  grid-template-rows: 1fr auto;
 
-import useAuthStore from '@/lib/auth/states/global/authStore'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+  height: var(--max-percentage);
 
-export default function Home() {
-  const { user } = useAuthStore()
+  padding-bottom: 1.5rem;
+}
 
-  const router: AppRouterInstance = useRouter()
+.users_layout {
+  display: grid;
+  grid-template-rows: auto 1fr;
 
-  useEffect(() => {
-    if (user) {
-      const path: string = '/forms'
+  height: var(--max-percentage);
 
-      router.prefetch(path)
-      router.push(path)
-    } else {
-      const path: string = '/login'
-
-      router.prefetch(path)
-      router.push(path)
-    }
-  }, [user, router])
+  padding-bottom: 1.5rem;
 }

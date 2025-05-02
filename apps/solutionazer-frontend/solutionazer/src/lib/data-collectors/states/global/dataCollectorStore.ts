@@ -16,29 +16,18 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import Link from 'next/link'
+import { create, StoreApi, UseBoundStore } from 'zustand'
+import DataCollector from '../../dataCollector'
 
-import Option from '@/lib/options/option'
-
-interface ModuleNavbarProps {
-  params: {
-    options: Array<Option>
-    routes: Array<string>
-  }
+interface DataCollectorState {
+  dataCollector: DataCollector | null
+  setDataCollector: (dataCollector: DataCollector) => void
 }
 
-export default function ModuleNavbar(props: Readonly<ModuleNavbarProps>) {
-  const { options, routes } = props.params
+const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> =
+  create<DataCollectorState>((set) => ({
+    dataCollector: null,
+    setDataCollector: (dataCollector) => set({ dataCollector }),
+  }))
 
-  return (
-    <nav>
-      <ul>
-        {options.map((option) => (
-          <li key={option.getId()}>
-            <Link href={routes[option.getId() - 1]}>{option.getText()}</Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  )
-}
+export default useDataCollector

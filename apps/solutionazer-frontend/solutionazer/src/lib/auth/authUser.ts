@@ -16,29 +16,32 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-'use client'
+interface AuthUserProps {
+  uuid: string
+  fullName?: string
+  email?: string
+}
 
-import useAuthStore from '@/lib/auth/states/global/authStore'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+export default class AuthUser {
+  private readonly uuid: string
+  private readonly fullName: string | undefined
+  private readonly email: string | undefined
 
-export default function Home() {
-  const { user } = useAuthStore()
+  constructor(private readonly props: AuthUserProps) {
+    this.uuid = props.uuid
+    this.fullName = props.fullName
+    this.email = props.email
+  }
 
-  const router: AppRouterInstance = useRouter()
+  public getUuid(): string {
+    return this.uuid
+  }
 
-  useEffect(() => {
-    if (user) {
-      const path: string = '/forms'
+  public getFullName(): string | undefined {
+    return this.fullName
+  }
 
-      router.prefetch(path)
-      router.push(path)
-    } else {
-      const path: string = '/login'
-
-      router.prefetch(path)
-      router.push(path)
-    }
-  }, [user, router])
+  public getEmail(): string | undefined {
+    return this.email
+  }
 }

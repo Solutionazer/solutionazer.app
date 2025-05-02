@@ -16,11 +16,19 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-.module_layout {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+import { create, StoreApi, UseBoundStore } from 'zustand'
+import AuthUser from '../../authUser'
 
-  height: var(--max-percentage);
-
-  padding-bottom: 1.5rem;
+interface AuthState {
+  user: AuthUser | null
+  setUser: (user: AuthUser | null) => void
 }
+
+const useAuthStore: UseBoundStore<StoreApi<AuthState>> = create<AuthState>(
+  (set) => ({
+    user: null,
+    setUser: (user) => set({ user }),
+  }),
+)
+
+export default useAuthStore

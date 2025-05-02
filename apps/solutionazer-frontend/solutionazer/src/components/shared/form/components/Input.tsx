@@ -4,6 +4,7 @@ interface InputProps {
     id: string
     value: string | undefined
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+    onBlur?: () => void
     placeholder: string
     required: boolean
     disabled: boolean
@@ -11,7 +12,7 @@ interface InputProps {
 }
 
 export default function Input(props: Readonly<InputProps>) {
-  const { type, id, value, onChange, placeholder, required, disabled } =
+  const { type, id, value, onChange, onBlur, placeholder, required, disabled } =
     props.params
 
   const name = id
@@ -23,6 +24,7 @@ export default function Input(props: Readonly<InputProps>) {
       id={id}
       value={value}
       onChange={onChange}
+      onBlur={onBlur}
       placeholder={placeholder}
       required={required}
       disabled={disabled}

@@ -20,13 +20,13 @@
 
 import Option from '@/lib/options/option'
 import Input from '../../shared/form/components/Input'
-import ModuleNavbar from '../navigation/ModuleNavbar'
 import { capitalize } from '@/lib/utils/textHandler'
 
 import styles from './moduleHeader.module.css'
 import Fieldset from '../../shared/form/components/containers/fieldset/Fieldset'
 import Label from '../../shared/form/components/Label'
 import ModuleOptions from '@/lib/module/record/moduleOptions'
+import Navbar from '@/components/shared/navigation/Navbar'
 
 interface ModuleHeaderProps {
   params: {
@@ -72,7 +72,7 @@ export default function ModuleHeader(props: Readonly<ModuleHeaderProps>) {
         />
         <Label params={{ htmlFor: typeSearch, text: capitalize(typeSearch) }} />
       </Fieldset>
-      <ModuleNavbar params={{ options, routes }} />
+      <Navbar params={{ options, routes }} />
     </header>
   )
 }

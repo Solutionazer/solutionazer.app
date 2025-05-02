@@ -37,16 +37,18 @@ import {
   userExists,
 } from '@/lib/utils/users-management/usersHandler'
 import { login } from '@/lib/utils/auth/authHandler'
-import useAuthStore from '@/lib/forms/states/global/authStore'
+import useAuthStore from '@/lib/auth/states/global/authStore'
 import { useEffect, useState } from 'react'
 import Message from '@/components/shared/messages/Message'
+import { registerCompany } from '@/lib/utils/users-management/companyHandler'
+import AuthUser from '@/lib/auth/authUser'
 
 export default function RegisterForm() {
   // auth global state
   const { setUser } = useAuthStore()
 
   // formData global state
-  const { formData, setFormData } = useFormStore()
+  const { formData, setFormData, resetFormData } = useFormStore()
 
   // configure router
   const router: AppRouterInstance = useRouter()
@@ -64,8 +66,8 @@ export default function RegisterForm() {
   const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
 
   // messages
-  const ifUserNotExists: string = `Change the account type from 'Enterprise' to 'Individual'. Before create an 'Enterprise' account, you have to have an 'Individual' account.`
-  const ifUserExits: string = `Now, you can create your 'Enterprise' account. If you don't want to do this now, you can press the 'skip' button.`
+  const ifUserNotExists: string = `To create an 'Enterprise' account, you must first switch your account type to 'Individual'. Only after that can you create an 'Enterprise' account.`
+  const ifUserExists: string = `You can now create your 'Enterprise' account. If you'd prefer to skip this step, simply press the 'Skip' button.`
 
   // check individual user existence
   useEffect(() => {
@@ -74,7 +76,7 @@ export default function RegisterForm() {
         try {
           await userExists(formData.getEmail())
 
-          setInfoMessage(ifUserExits)
+          setInfoMessage(ifUserExists)
         } catch {
           setInfoMessage(ifUserNotExists)
         }
@@ -84,7 +86,7 @@ export default function RegisterForm() {
     }
 
     checkUserExistence()
-  }, [userType, formData.getEmail()])
+  }, [userType, formData, ifUserExists, ifUserNotExists, isIndividual])
 
   // 'onSubmit'
   const handleRegister: React.FormEventHandler<HTMLFormElement> = async (
@@ -108,7 +110,13 @@ export default function RegisterForm() {
         )
 
         // update auth global state
-        setUser(res.user)
+        setUser(
+          new AuthUser({
+            uuid: res.user.uuid,
+            fullName: res.user.fullName,
+            email: res.user.email,
+          }),
+        )
 
         if (wasTryingToCreateEnterprise) {
           const updatedData: FormData = new FormData({
@@ -121,15 +129,29 @@ export default function RegisterForm() {
           })
 
           setFormData(updatedData)
-          setInfoMessage(ifUserExits)
+          setInfoMessage(ifUserExists)
           setShowSkip(true)
         } else {
+          resetFormData()
+
           const path: string = '/forms'
 
           router.prefetch(path)
           router.push(path)
         }
       } catch {}
+    } else {
+      await registerCompany(
+        formData.getCompanyName() ?? '',
+        formData.getEmail(),
+      )
+
+      resetFormData()
+
+      const path: string = '/profiles'
+
+      router.prefetch(path)
+      router.push(path)
     }
   }
 
@@ -251,6 +273,7 @@ export default function RegisterForm() {
                 value: userType,
                 onChange: handleInputValuesChange,
                 required: true,
+                disabled: false,
               }}
             />
           </Fieldset>

@@ -22,12 +22,24 @@ import FormData from '../../formData'
 interface FormState {
   formData: FormData
   setFormData: (data: FormData) => void
+  resetFormData: () => void
 }
 
 const useFormStore: UseBoundStore<StoreApi<FormState>> = create<FormState>(
   (set) => ({
     formData: new FormData({ email: '', userType: '' }),
     setFormData: (data: FormData) => set({ formData: data }),
+    resetFormData: () =>
+      set({
+        formData: new FormData({
+          email: '',
+          userType: '',
+          password: undefined,
+          passwordToConfirm: undefined,
+          fullName: undefined,
+          companyName: undefined,
+        }),
+      }),
   }),
 )
 

@@ -18,7 +18,8 @@
 
 interface ArticleProps {
   params?: {
-    className: string
+    className?: string
+    onClick?: () => void
   }
   children: React.ReactNode
 }
@@ -26,6 +27,11 @@ interface ArticleProps {
 export default function Article({ children, params }: Readonly<ArticleProps>) {
   // props
   const className = params?.className
+  const onClick = params?.onClick
 
-  return <article className={className}>{children}</article>
+  return (
+    <article className={className} onClick={onClick}>
+      {children}
+    </article>
+  )
 }

@@ -16,29 +16,18 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-'use client'
+const baseUrl: string =
+  process.env.NODE_ENV === 'development' ? 'http:localhost:3001' : ''
 
-import useAuthStore from '@/lib/auth/states/global/authStore'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+export const getTeamsByUser = async (userUuid: string) => {
+  const res = await fetch(`${baseUrl}/teams/${userUuid}`, {
+    method: 'GET',
+    credentials: 'include',
+  })
 
-export default function Home() {
-  const { user } = useAuthStore()
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
 
-  const router: AppRouterInstance = useRouter()
-
-  useEffect(() => {
-    if (user) {
-      const path: string = '/forms'
-
-      router.prefetch(path)
-      router.push(path)
-    } else {
-      const path: string = '/login'
-
-      router.prefetch(path)
-      router.push(path)
-    }
-  }, [user, router])
+  return await res.json()
 }

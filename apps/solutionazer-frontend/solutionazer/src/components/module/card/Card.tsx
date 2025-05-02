@@ -21,30 +21,63 @@ import Article from '../../shared/containers/Article'
 import MediumTitle from '../../shared/titles/MediumTitle'
 
 import styles from './card.module.css'
+import Button from '@/components/shared/form/components/Button'
+import ButtonType from '@/lib/forms/enums/buttonType'
+import useDataCollector from '@/lib/data-collectors/states/global/dataCollectorStore'
+import DataCollector from '@/lib/data-collectors/dataCollector'
 
 interface CardProps {
   params: {
-    form?: object
-    survey?: object
+    form?: DataCollector
+    survey?: DataCollector
+    onDelete: () => void
   }
 }
 
 export default function Card(props: Readonly<CardProps>) {
-  const { form, survey } = props.params
+  // props
+  const { form, survey, onDelete } = props.params
+
+  // form or survey?
+  const isForm: boolean = !!form
+
+  // dataCollector global style
+  const { setDataCollector } = useDataCollector()
+
+  // 'onClick'
+  const handleClick = () => {
+    if (form) {
+      setDataCollector(form)
+    } else if (survey) {
+      setDataCollector(survey)
+    }
+  }
 
   return (
     <Article params={{ className: styles.card_container }}>
       <div>
-        <a href="#" className={styles.delete_btn}>
-          X
-        </a>
+        <Button
+          params={{
+            type: ButtonType.Button,
+            text: 'X',
+            onClick: onDelete,
+            className: styles.delete_btn,
+          }}
+        />
       </div>
-      <Link href={''} className={styles.card}>
+      <Link
+        href={`${isForm ? 'forms' : 'surveys'}/editor`}
+        className={styles.card}
+        onClick={handleClick}
+      >
         <Article params={{ className: styles.info }}>
           <MediumTitle
-            params={{ text: form?.title ?? survey?.title, classNames: [] }}
+            params={{
+              text: form?.getTitle() ?? survey?.getTitle() ?? '',
+              classNames: [],
+            }}
           />
-          <p>{form?.description ?? survey?.description}</p>
+          <p>{form?.getDescription() ?? survey?.getDescription()}</p>
         </Article>
       </Link>
     </Article>

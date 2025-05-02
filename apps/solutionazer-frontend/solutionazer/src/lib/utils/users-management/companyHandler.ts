@@ -19,19 +19,18 @@
 const baseUrl: string =
   process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : ''
 
-export const registerUser = async (
-  fullName: string,
-  email: string,
-  password: string,
+export const registerCompany = async (
+  companyName: string,
+  loginEmail: string,
 ) => {
-  const res = await fetch(`${baseUrl}/users`, {
+  const res = await fetch(`${baseUrl}/companies`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      fullName,
-      email,
-      password,
+      companyName,
+      loginEmail,
     }),
+    credentials: 'include',
   })
 
   if (!res.ok) {
@@ -41,28 +40,9 @@ export const registerUser = async (
   return await res.json()
 }
 
-export const userExists = async (email: string) => {
-  const res = await fetch(`${baseUrl}/users/email/${email}`)
-
-  if (!res.ok) {
-    throw new Error((await res.json()).message)
-  }
-
-  return await res.json()
-}
-
-export const updateUser = async (
-  uuid: string,
-  fullName: string,
-  email: string,
-) => {
-  const res = await fetch(`${baseUrl}/users/${uuid}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      fullName,
-      email,
-    }),
+export const companyExists = async (email: string) => {
+  const res = await fetch(`${baseUrl}/companies/email/${email}`, {
+    method: 'GET',
     credentials: 'include',
   })
 

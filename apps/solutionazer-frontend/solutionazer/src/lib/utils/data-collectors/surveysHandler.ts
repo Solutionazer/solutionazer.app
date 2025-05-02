@@ -19,19 +19,10 @@
 const baseUrl: string =
   process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : ''
 
-export const registerUser = async (
-  fullName: string,
-  email: string,
-  password: string,
-) => {
-  const res = await fetch(`${baseUrl}/users`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      fullName,
-      email,
-      password,
-    }),
+export const getSurveys = async (userUuid: string) => {
+  const res = await fetch(`${baseUrl}/surveys/${userUuid}`, {
+    method: 'GET',
+    credentials: 'include',
   })
 
   if (!res.ok) {
@@ -41,8 +32,15 @@ export const registerUser = async (
   return await res.json()
 }
 
-export const userExists = async (email: string) => {
-  const res = await fetch(`${baseUrl}/users/email/${email}`)
+export const createSurvey = async (userUuid: string) => {
+  const res = await fetch(`${baseUrl}/surveys`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      userUuid,
+    }),
+    credentials: 'include',
+  })
 
   if (!res.ok) {
     throw new Error((await res.json()).message)
@@ -51,18 +49,24 @@ export const userExists = async (email: string) => {
   return await res.json()
 }
 
-export const updateUser = async (
-  uuid: string,
-  fullName: string,
-  email: string,
-) => {
-  const res = await fetch(`${baseUrl}/users/${uuid}`, {
+export const updateSurvey = async (surveyUuid: string) => {
+  const res = await fetch(`${baseUrl}/surveys/${surveyUuid}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      fullName,
-      email,
-    }),
+    body: JSON.stringify({}),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const deleteSurvey = async (surveyUuid: string) => {
+  const res = await fetch(`${baseUrl}/surveys/${surveyUuid}`, {
+    method: 'DELETE',
     credentials: 'include',
   })
 

@@ -32,20 +32,56 @@ import styles from './page.module.css'
 import Select from '@/components/shared/form/components/Select'
 import UserType from '@/lib/forms/enums/userType'
 import Option from '@/lib/options/option'
+import useAuthStore from '@/lib/auth/states/global/authStore'
+import React, { useEffect, useState } from 'react'
+import { updateUser } from '@/lib/utils/users-management/usersHandler'
+import Message from '@/components/shared/messages/Message'
+import { logout } from '@/lib/utils/auth/authHandler'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import { useRouter } from 'next/navigation'
 
 export default function Account() {
-  // formData global state
-  const { formData, setFormData } = useFormStore()
+  // auth global state
+  const { user } = useAuthStore()
 
-  // user type
-  const userType: string = formData.getUserType()
-  const isIndividual: boolean = userType === 'individual'
+  // formData global state
+  const { formData, setFormData, resetFormData } = useFormStore()
+
+  // configure router
+  const router: AppRouterInstance = useRouter()
+
+  // set initial formData
+  useEffect(() => {
+    if (user) {
+      const initialFormData = new FormData({
+        email: user.getEmail(),
+        userType: UserType.Individual,
+        fullName: user.getFullName(),
+      })
+
+      setFormData(initialFormData)
+    }
+  }, [user, setFormData])
 
   // 'onSubmit'
-  const handleAccountEdition: React.FormEventHandler<HTMLFormElement> = (
+  const handleAccountEdition: React.FormEventHandler<HTMLFormElement> = async (
     event,
   ) => {
     event.preventDefault()
+
+    if (user) {
+      try {
+        await updateUser(
+          user.getUuid(),
+          formData.getFullName() ?? '',
+          formData.getEmail() ?? '',
+        )
+
+        setInfoMessage(accountUpdated)
+      } catch {
+        setInfoMessage(accountUpdateFailed)
+      }
+    }
   }
 
   // 'onChange'
@@ -59,49 +95,81 @@ export default function Account() {
 
   // create FormData (object) function to use into handleInputValuesChange
   const createUpdatedFormData = (name: string, value: string): FormData => {
-    let updatedFullName: string | undefined
-    let updatedCompanyName: string | undefined
-
-    if (isIndividual) {
-      updatedFullName = name === 'full_name' ? value : formData.getFullName()
-      updatedCompanyName = ''
-    } else {
-      updatedCompanyName =
-        name === 'company_name' ? value : formData.getCompanyName()
-      updatedFullName = ''
-    }
-
     return new FormData({
       email: name === 'email' ? value : formData.getEmail(),
-      userType: name === 'user_type' ? value : userType,
-      password: formData.getPassword(),
-      passwordToConfirm: formData.getPasswordToConfirm(),
-      fullName: updatedFullName,
-      companyName: updatedCompanyName,
+      userType: name === 'user_type' ? value : formData.getUserType(),
+      fullName: name === 'full_name' ? value : formData.getFullName(),
     })
   }
 
+  // 'onReset'
+  const handleFormReset: React.FormEventHandler<HTMLFormElement> = () => {
+    const initialFormData = new FormData({
+      email: user?.getEmail() ?? '',
+      userType: UserType.Individual,
+      fullName: user?.getFullName() ?? '',
+    })
+
+    setFormData(initialFormData)
+  }
+
+  // logout
+  const handleLogOut = async () => {
+    try {
+      await logout()
+      resetFormData()
+
+      const path: string = '/login'
+
+      router.prefetch(path)
+      router.push(path)
+    } catch {}
+  }
+
+  // UI states
+  const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
+
+  // messages
+  const accountUpdated: string = `Account updated successfully!`
+  const accountUpdateFailed: string = `Failed to update account.`
+
   return (
     <Article params={{ className: styles.article }}>
-      <Form params={{ onSubmit: handleAccountEdition, method: 'post' }}>
+      <div className={styles.logout_btn_container}>
+        <Button
+          params={{
+            type: ButtonType.Button,
+            text: 'Log Out',
+            className: styles.logout_btn,
+            onClick: handleLogOut,
+          }}
+        />
+      </div>
+      <Form
+        params={{
+          onSubmit: handleAccountEdition,
+          onReset: handleFormReset,
+          method: 'post',
+        }}
+      >
         <Fieldset>
+          {infoMessage && <Message params={{ type: '', text: infoMessage }} />}
           <Fieldset>
             <Input
               params={{
                 type: 'text',
-                id: isIndividual ? 'full_name' : 'company_name',
-                value: isIndividual
-                  ? (formData.getFullName() ?? '')
-                  : (formData.getCompanyName() ?? ''),
+                id: 'full_name',
+                value: formData.getFullName() ?? '',
                 onChange: handleInputValuesChange,
                 placeholder: ' ',
                 required: true,
+                disabled: false,
               }}
             />
             <Label
               params={{
-                htmlFor: isIndividual ? 'full_name' : 'company_name',
-                text: isIndividual ? 'Full Name' : 'Company Name',
+                htmlFor: 'full_name',
+                text: 'Full Name',
               }}
             />
           </Fieldset>
@@ -110,10 +178,11 @@ export default function Account() {
               params={{
                 type: 'email',
                 id: 'email',
-                value: formData.getEmail(),
+                value: formData.getEmail() ?? '',
                 onChange: handleInputValuesChange,
                 placeholder: ' ',
                 required: true,
+                disabled: false,
               }}
             />
             <Label params={{ htmlFor: 'email', text: 'Email' }} />
@@ -122,13 +191,11 @@ export default function Account() {
             <Select
               params={{
                 id: 'user_type',
-                options: [
-                  new Option(1, UserType.Individual),
-                  new Option(2, UserType.Enterprise),
-                ],
-                value: userType,
+                options: [new Option(1, UserType.Individual)],
+                value: formData.getUserType() ?? '',
                 onChange: handleInputValuesChange,
                 required: true,
+                disabled: true,
               }}
             />
           </Fieldset>
@@ -136,21 +203,21 @@ export default function Account() {
         <Fieldset params={{ className: styles.buttons_container }}>
           <Button
             params={{
-              type: ButtonType.Submit,
-              text: 'Save',
+              type: ButtonType.Reset,
+              text: 'Reset',
             }}
           />
           <Button
             params={{
-              type: ButtonType.Reset,
-              text: 'Reset',
+              type: ButtonType.Submit,
+              text: 'Save',
             }}
           />
         </Fieldset>
         <Button
           params={{
             type: ButtonType.Button,
-            text: 'Reset Password',
+            text: 'Change Password',
           }}
         />
       </Form>

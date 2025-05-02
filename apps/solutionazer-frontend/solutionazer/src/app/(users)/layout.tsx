@@ -18,29 +18,37 @@
 
 'use client'
 
-import Option from '../../../lib/options/option'
-import Footer from '../../shared/containers/Footer'
-
-import styles from './moduleFooter.module.css'
+import { usePathname } from 'next/navigation'
+import styles from './layout.module.css'
+import ModuleFooter from '@/components/module/footer/ModuleFooter'
+import ToolsHeader from '@/components/module/tools/header/ToolsHeader'
 import { useModuleStore } from '@/lib/module/states/global/moduleStore'
-import Navbar from '@/components/shared/navigation/Navbar'
 
-export default function ModuleFooter() {
+export default function UsersLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   // module global state
   const { module } = useModuleStore()
 
-  // options
-  const options: Option[] = [
-    new Option(1, 'home'),
-    new Option(2, 'teams'),
-    new Option(3, 'account'),
-  ]
-
-  const routes: string[] = [`/${module}`, `/teams`, `/account`]
+  // path
+  const path: string = usePathname()
+  const isEditorPath: boolean = path.endsWith('/editor')
 
   return (
-    <Footer params={{ className: styles.secondary_footer }}>
-      <Navbar params={{ options, routes }} />
-    </Footer>
+    <>
+      {!isEditorPath ? (
+        <div className={styles.module_layout}>
+          {children}
+          <ModuleFooter />
+        </div>
+      ) : (
+        <div className={styles.users_layout}>
+          <ToolsHeader params={{ module: module ?? '' }} />
+          {children}
+        </div>
+      )}
+    </>
   )
 }

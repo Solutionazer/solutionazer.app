@@ -30,14 +30,16 @@ import useFormStore from '@/lib/forms/states/global/formStore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import { login } from '@/lib/utils/auth/authHandler'
-import useAuthStore from '@/lib/forms/states/global/authStore'
+import useAuthStore from '@/lib/auth/states/global/authStore'
+import { companyExists } from '@/lib/utils/users-management/companyHandler'
+import AuthUser from '@/lib/auth/authUser'
 
 export default function LoginForm() {
   // auth global state
   const { setUser } = useAuthStore()
 
   // formData global state
-  const { formData, setFormData } = useFormStore()
+  const { formData, setFormData, resetFormData } = useFormStore()
 
   // configure router
   const router: AppRouterInstance = useRouter()
@@ -50,12 +52,31 @@ export default function LoginForm() {
     try {
       const res = await login(formData.getEmail(), formData.getPassword() ?? '')
 
-      setUser(res.user)
+      setUser(
+        new AuthUser({
+          uuid: res.user.uuid,
+          fullName: res.user.fullName,
+          email: res.user.email,
+        }),
+      )
 
-      const path: string = '/forms'
+      try {
+        await companyExists(formData.getEmail())
 
-      router.prefetch(path)
-      router.push(path)
+        resetFormData()
+
+        const path: string = '/profiles'
+
+        router.prefetch(path)
+        router.push(path)
+      } catch {
+        resetFormData()
+
+        const path: string = '/forms'
+
+        router.prefetch(path)
+        router.push(path)
+      }
     } catch {}
   }
 

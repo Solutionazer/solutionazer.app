@@ -16,37 +16,8 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import styles from './page.module.css'
+import Canvas from '@/components/module/tools/editor/Canvas'
 
-export default function Route() {
-  const individuals: any[] = [
-    {
-      uuid: 'a',
-      fullName: 'Nombre 1',
-    },
-    {
-      uuid: 'b',
-      fullName: 'Nombre 2',
-    },
-    {
-      uuid: 'c',
-      fullName: 'Nombre 3',
-    },
-  ]
-
-  return (
-    <div className={styles.content}>
-      <aside className={styles.aside}>
-        <nav>
-          <ul>
-            {individuals.map((individual) => (
-              <li key={individual.uuid}>
-                <a href="#">{individual.fullName}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </aside>
-    </div>
-  )
+export default function Editor() {
+  return <Canvas />
 }
