@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install Dependencies
-RUN npm install --omit=dev
+RUN npm cache clean --force && npm install --omit=dev --verbose
 
 # Copy the rest of the code
 COPY . .
