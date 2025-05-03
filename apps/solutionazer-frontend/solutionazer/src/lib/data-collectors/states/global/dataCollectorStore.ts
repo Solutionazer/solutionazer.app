@@ -18,16 +18,39 @@
 
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import DataCollector from '../../dataCollector'
+import { persist } from 'zustand/middleware'
 
 interface DataCollectorState {
   dataCollector: DataCollector | null
   setDataCollector: (dataCollector: DataCollector) => void
 }
 
-const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> =
-  create<DataCollectorState>((set) => ({
-    dataCollector: null,
-    setDataCollector: (dataCollector) => set({ dataCollector }),
-  }))
+const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> = create<
+  DataCollectorState,
+  [['zustand/persist', DataCollectorState]]
+>(
+  persist(
+    (set) => ({
+      dataCollector: null,
+      setDataCollector: (dataCollector) => set({ dataCollector }),
+    }),
+    {
+      name: 'dataCollector',
+      onRehydrateStorage: () => (state) => {
+        if (state?.dataCollector) {
+          const plainDataCollector = state.dataCollector as any
+          state.dataCollector = new DataCollector({
+            uuid: plainDataCollector.uuid,
+            title: plainDataCollector.title,
+            description: plainDataCollector.description,
+            type: plainDataCollector.type,
+            userUuid: plainDataCollector.userUuid,
+            questions: plainDataCollector.questions,
+          })
+        }
+      },
+    },
+  ),
+)
 
 export default useDataCollector

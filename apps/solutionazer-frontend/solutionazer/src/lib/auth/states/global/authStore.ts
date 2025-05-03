@@ -18,17 +18,36 @@
 
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import AuthUser from '../../authUser'
+import { persist } from 'zustand/middleware'
 
 interface AuthState {
   user: AuthUser | null
   setUser: (user: AuthUser | null) => void
 }
 
-const useAuthStore: UseBoundStore<StoreApi<AuthState>> = create<AuthState>(
-  (set) => ({
-    user: null,
-    setUser: (user) => set({ user }),
-  }),
+const useAuthStore: UseBoundStore<StoreApi<AuthState>> = create<
+  AuthState,
+  [['zustand/persist', AuthState]]
+>(
+  persist<AuthState>(
+    (set) => ({
+      user: null,
+      setUser: (user) => set({ user }),
+    }),
+    {
+      name: 'authUser',
+      onRehydrateStorage: () => (state) => {
+        if (state?.user) {
+          const plainUser = state.user as any
+          state.user = new AuthUser({
+            uuid: plainUser.uuid,
+            fullName: plainUser.fullName,
+            email: plainUser.email,
+          })
+        }
+      },
+    },
+  ),
 )
 
 export default useAuthStore

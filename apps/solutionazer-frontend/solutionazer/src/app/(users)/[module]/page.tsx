@@ -53,7 +53,7 @@ export default function Module(props: Readonly<ModuleProps>) {
   const [showModal, setShowModal] = useState(false)
 
   // 'onClick' create btn
-  const handleDataCollectorCreation = () => {
+  const handleModalVisibility = () => {
     setShowModal(true)
   }
 
@@ -63,7 +63,7 @@ export default function Module(props: Readonly<ModuleProps>) {
       params={{
         text: 'Create',
         className: styles.btn,
-        onClick: handleDataCollectorCreation,
+        onClick: handleModalVisibility,
       }}
     />
   )
@@ -89,78 +89,87 @@ export default function Module(props: Readonly<ModuleProps>) {
       if (user) {
         const userUuid: string = user.getUuid() ?? ''
 
-        const fetchedForms: DataCollector[] = (await getForms(userUuid)).map(
-          (form: {
-            uuid: string
-            title: string
-            description: string
-            type: string
-            userUuid: string
-          }) => {
-            return new DataCollector({
-              uuid: form.uuid,
-              title: form.title,
-              description: form.description,
-              type: form.type,
-              userUuid: form.userUuid,
-            })
-          },
-        )
-        const fetchedSurveys: DataCollector[] = (
-          await getSurveys(userUuid)
-        ).map(
-          (survey: {
-            uuid: string
-            title: string
-            description: string
-            type: string
-            userUuid: string
-          }) => {
-            return new DataCollector({
-              uuid: survey.uuid,
-              title: survey.title,
-              description: survey.description,
-              type: survey.type,
-              userUuid: survey.userUuid,
-            })
-          },
-        )
+        let fetchedForms: DataCollector[]
+        let fetchedSurveys: DataCollector[]
 
-        setForms(fetchedForms)
-        setSurveys(fetchedSurveys)
+        if (isForms) {
+          fetchedForms = (await getForms(userUuid)).map(
+            (form: {
+              uuid: string
+              title: string
+              description: string
+              type: string
+              userUuid: string
+            }) => {
+              return new DataCollector({
+                uuid: form.uuid,
+                title: form.title,
+                description: form.description,
+                type: form.type,
+                userUuid: form.userUuid,
+              })
+            },
+          )
+
+          setForms(fetchedForms)
+        } else if (isSurveys) {
+          fetchedSurveys = (await getSurveys(userUuid)).map(
+            (survey: {
+              uuid: string
+              title: string
+              description: string
+              type: string
+              userUuid: string
+            }) => {
+              return new DataCollector({
+                uuid: survey.uuid,
+                title: survey.title,
+                description: survey.description,
+                type: survey.type,
+                userUuid: survey.userUuid,
+              })
+            },
+          )
+
+          setSurveys(fetchedSurveys)
+        }
       }
     }
 
     fetchData()
-  }, [user])
+  }, [user, isForms, isSurveys])
 
   // pages depend on the context
   const ModulePages: Record<string, JSX.Element> = {
     forms: (
       <>
         {forms.map((form) => (
-          <Card
-            key={form.getUuid()}
-            params={{
-              form,
-              onDelete: () =>
-                handleDataCollectorsDeletion(form.getUuid() ?? ''),
-            }}
-          />
+          <li key={form.getUuid()}>
+            <Card
+              key={form.getUuid()}
+              params={{
+                form,
+                onDelete: () =>
+                  handleDataCollectorsDeletion(form.getUuid() ?? ''),
+              }}
+            />
+          </li>
         ))}
       </>
     ),
     surveys: (
       <>
         {surveys.map((survey) => (
-          <Card
-            key={survey.getUuid()}
-            params={{
-              survey,
-              onDelete: () =>
-                handleDataCollectorsDeletion(survey.getUuid() ?? ''),
-            }}
-          />
+          <li key={survey.getUuid()}>
+            <Card
+              key={survey.getUuid()}
+              params={{
+                survey,
+                onDelete: () =>
+                  handleDataCollectorsDeletion(survey.getUuid() ?? ''),
+              }}
+            />
+          </li>
         ))}
       </>
     ),
@@ -224,7 +233,7 @@ export default function Module(props: Readonly<ModuleProps>) {
 
   return (
     <>
-      <div className={styles.content}>{ModulePages[module]}</div>
+      <ul className={styles.content}>{ModulePages[module]}</ul>
       {showModal && (
         <Modal params={{ setShowModal }}>
           <Article params={{ onClick: handleDataCollectorsCreation }}>

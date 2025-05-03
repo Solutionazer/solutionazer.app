@@ -16,8 +16,7 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-const baseUrl: string =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : ''
+const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
 export const getForms = async (userUuid: string) => {
   const res = await fetch(`${baseUrl}/forms/${userUuid}`, {

@@ -19,8 +19,7 @@
 import LoginFailed from '@/lib/errors/loginFailed'
 import LogoutFailed from '@/lib/errors/logoutFailed'
 
-const baseUrl: string =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3001' : ''
+const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
 export const login = async (email: string, password: string) => {
   const res = await fetch(`${baseUrl}/auth/login`, {
