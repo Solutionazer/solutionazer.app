@@ -1,4 +1,4 @@
-# Node.js version
+# Node.js version (LTS)
 FROM node:22.15.0-slim
 
 # Set work directory
@@ -7,8 +7,8 @@ WORKDIR /usr/src/app
 # Copy 'package.json' and 'package-lock.json'
 COPY package*.json ./
 
-# Install Dependencies
-RUN npm cache clean --force && npm install --omit=dev --verbose
+# Install dependencies
+RUN npm install -g @nestjs/cli && npm install --omit=dev --verbose
 
 # Copy the rest of the code
 COPY . .
