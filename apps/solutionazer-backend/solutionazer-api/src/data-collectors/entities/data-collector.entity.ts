@@ -38,10 +38,15 @@ export class DataCollector {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column({ type: 'varchar', length: 255, nullable: false })
+  @Column({
+    type: 'varchar',
+    length: 255,
+    nullable: false,
+    default: 'Untitled',
+  })
   title: string;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: true })
   description: string;
 
   @Column({ type: 'enum', enum: DataCollectorType, nullable: false })

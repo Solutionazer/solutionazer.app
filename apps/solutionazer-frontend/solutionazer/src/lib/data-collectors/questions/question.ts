@@ -16,16 +16,39 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { DataSource } from 'typeorm';
+interface QuestionProps {
+  uuid: string
+  text: string
+  required: boolean
+  order: number
+}
 
-const AppDataSource: DataSource = new DataSource({
-  type: 'postgres',
-  url: `prod_database_url`,
-  synchronize: false,
-  logging: true,
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/database/migrations/*.ts'],
-  migrationsTableName: 'migrations',
-});
+export default class Question {
+  private readonly uuid: string
+  private readonly text: string
+  private readonly required: boolean
+  private readonly order: number
 
-export default AppDataSource;
+  constructor(private readonly props: QuestionProps) {
+    this.uuid = props.uuid
+    this.text = props.text
+    this.required = props.required
+    this.order = props.order
+  }
+
+  public getUuid(): string {
+    return this.uuid
+  }
+
+  public getText(): string {
+    return this.text
+  }
+
+  public getRequired(): boolean {
+    return this.required
+  }
+
+  public getOrder(): number {
+    return this.order
+  }
+}

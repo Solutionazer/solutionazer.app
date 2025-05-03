@@ -17,23 +17,20 @@
  */
 
 import { PartialType } from '@nestjs/mapped-types';
-import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
-import { User } from 'src/users-management/entities/user.entity';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateDataCollectorDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   readonly title: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   readonly description: string;
 
   @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => User)
-  readonly user: User;
+  @IsString()
+  readonly userUuid: string;
 }
 
 export class UpdateDataCollectorDto extends PartialType(

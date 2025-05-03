@@ -16,16 +16,19 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { DataSource } from 'typeorm';
+import ToolsFooter from '@/components/module/tools/footer/ToolsFooter'
 
-const AppDataSource: DataSource = new DataSource({
-  type: 'postgres',
-  url: `dev_database_url`,
-  synchronize: false,
-  logging: true,
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/database/migrations/*.ts'],
-  migrationsTableName: 'migrations',
-});
+import styles from './layout.module.css'
 
-export default AppDataSource;
+export default function EditorLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <div className={styles.editor_layout}>
+      {children}
+      <ToolsFooter />
+    </div>
+  )
+}

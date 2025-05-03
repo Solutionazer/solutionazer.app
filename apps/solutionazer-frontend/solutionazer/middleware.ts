@@ -16,16 +16,16 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { DataSource } from 'typeorm';
+import authMiddleware from '@/lib/middlewares/authMiddleware'
+import { NextRequest } from 'next/server'
 
-const AppDataSource: DataSource = new DataSource({
-  type: 'postgres',
-  url: `stag_database_url`,
-  synchronize: false,
-  logging: true,
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/database/migrations/*.ts'],
-  migrationsTableName: 'migrations',
-});
+export function middleware(req: NextRequest) {
+  console.log('SE ENTRA EN MIDDLEWARE')
 
-export default AppDataSource;
+  // restrict access to '/login' and '/register' via url
+  return authMiddleware(req)
+}
+
+export const config = {
+  matcher: ['/'],
+}

@@ -25,12 +25,14 @@ import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const allowedOrigins = {
     development: 'http://localhost:3000',
-    staging: '',
-    prod: '',
+    staging: 'https://staging.solutionazer.app',
+    production: 'https://solutionazer.app',
   };
 
-  const currentOrigin =
-    allowedOrigins[process.env.NODE_ENV as keyof typeof allowedOrigins];
+  const env: string =
+    process.env.APP_ENV ?? process.env.NODE_ENV ?? 'development';
+
+  const currentOrigin = allowedOrigins[env as keyof typeof allowedOrigins];
 
   const app = await NestFactory.create(AppModule);
   app.enableCors({

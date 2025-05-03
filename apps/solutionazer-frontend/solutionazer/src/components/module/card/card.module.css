@@ -1,0 +1,98 @@
+/**
+ * This file is part of solutionazer.app.
+ *
+ * solutionazer.app is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License only.
+ *
+ * solutionazer.app is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with solutionazer.app. If not, see <https://www.gnu.org/licenses/gpl-3.0.en.html>.
+ *
+ * Copyright (C) 2025 David Llamas Román
+ */
+
+.card_container {
+  display: grid;
+  grid-template-rows: auto 1fr;
+
+  margin: 0.25rem 1rem 0 0;
+
+  & div {
+    display: flex;
+    justify-content: right;
+
+    .delete_btn {
+      position: relative;
+      top: 15px;
+      right: -10px;
+
+      display: grid;
+      place-items: center;
+
+      width: 25px;
+      aspect-ratio: 1/1;
+
+      background-color: var(--background-color);
+      color: var(--text-color);
+
+      font-weight: 700;
+      text-decoration: none;
+
+      border: 2px solid var(--foreground-color);
+      border-radius: 50%;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      -ms-border-radius: 50%;
+      -o-border-radius: 50%;
+    }
+  }
+
+  .card {
+    aspect-ratio: 21/9;
+
+    padding: 1rem;
+
+    text-decoration: none;
+
+    border: 2px solid var(--foreground-color);
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+
+    .info {
+      padding: 1rem;
+
+      background-color: var(--foreground-color);
+
+      border-radius: 4px;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      -ms-border-radius: 4px;
+      -o-border-radius: 4px;
+
+      & h2 {
+        padding-bottom: 0.5rem;
+
+        color: var(--title-color);
+      }
+
+      & p {
+        display: -webkit-box;
+        line-clamp: 1;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        color: var(--text-color);
+      }
+    }
+  }
+}

@@ -21,6 +21,7 @@ import {
   IsArray,
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -35,13 +36,9 @@ export class CreateCompanyDto {
 
   @IsNotEmpty()
   @IsEmail()
-  readonly logInEmail: string;
+  readonly loginEmail: string;
 
-  @IsNotEmpty()
-  @IsString()
-  readonly logInPassword: string;
-
-  @IsNotEmpty()
+  @IsOptional()
   @IsArray()
   @ValidateNested()
   @Type(() => User)

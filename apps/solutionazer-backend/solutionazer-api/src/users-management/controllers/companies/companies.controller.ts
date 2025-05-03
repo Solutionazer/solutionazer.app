@@ -53,6 +53,13 @@ export class CompaniesController {
     return this.companiesServices.findOne(uuid);
   }
 
+  @Permissions('company:checkEmail')
+  @Get('email/:email')
+  @HttpCode(HttpStatus.OK)
+  checkEmail(@Param('email') email: string) {
+    return this.companiesServices.checkEmail(email);
+  }
+
   @Permissions('company:create')
   @Post()
   @HttpCode(HttpStatus.CREATED)

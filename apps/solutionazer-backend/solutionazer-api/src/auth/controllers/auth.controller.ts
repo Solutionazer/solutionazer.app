@@ -34,21 +34,34 @@ export class AuthController {
     const user: User = req.user as User;
     const { accessToken } = await this.authService.generateJWT(user);
 
+    const isProduction: boolean = process.env.NODE_ENV === 'production';
+    const isStaging: boolean = process.env.APP_ENV === 'staging';
+    const isStagingDomain: string | undefined = isStaging
+      ? 'staging.solutionazer.app'
+      : undefined;
+
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: false,
+      secure: isProduction || isStaging,
       sameSite: 'lax',
+      domain: isProduction ? '.solutionazer.app' : isStagingDomain,
       maxAge: 60 * 60 * 24 * 7 * 1000,
     });
 
-    res.status(200).json({ message: 'Login successful', user });
+    const { uuid, fullName, email } = user;
+    const safeUser = { uuid, fullName, email };
+
+    res.status(200).json({ message: 'Login successful', user: safeUser });
   }
 
   @Post('logout')
   logout(@Res() res: Response) {
+    const isProduction: boolean = process.env.NODE_ENV === 'production';
+    const isStaging: boolean = process.env.APP_ENV === 'staging';
+
     res.clearCookie('accessToken', {
       httpOnly: true,
-      secure: false,
+      secure: isProduction || isStaging,
       sameSite: 'lax',
     });
 
