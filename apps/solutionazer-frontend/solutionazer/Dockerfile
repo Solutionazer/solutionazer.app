@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --omit=dev --verbose
+RUN npm install --verbose
 
 # Copy the rest of the code
 COPY . .
