@@ -32,9 +32,29 @@ export class QuestionsService {
     private readonly questionRepository: Repository<Question>,
   ) {}
 
-  findAllByFormUuid(uuid: string) {}
+  findAllByFormUuid(uuid: string) {
+    return this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.dataCollector', 'dataCollector')
+      .where('dataCollector.uuid = :uuid', { uuid })
+      .andWhere('dataCollector.type = :type', {
+        type: 'form',
+      })
+      .orderBy('question.order', 'ASC')
+      .getMany();
+  }
 
-  findAllBySurveyUuid(uuid: string) {}
+  findAllBySurveyUuid(uuid: string) {
+    return this.questionRepository
+      .createQueryBuilder('question')
+      .leftJoinAndSelect('question.dataCollector', 'dataCollector')
+      .where('dataCollector.uuid = :uuid', { uuid })
+      .andWhere('dataCollector.type = :type', {
+        type: 'survey',
+      })
+      .orderBy('question.order', 'ASC')
+      .getMany();
+  }
 
   async findOne(uuid: string) {
     const question: Question | null = await this.questionRepository.findOne({
