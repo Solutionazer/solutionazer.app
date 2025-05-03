@@ -20,5 +20,7 @@ RUN npm run build
 EXPOSE 3001
 
 # Command to boot
-CMD ["NODE-ENV=production", "npm", "run", "start:prod"]
+ENV NODE_ENV=production
+
+CMD ["npm", "run", "start:prod"]
 
