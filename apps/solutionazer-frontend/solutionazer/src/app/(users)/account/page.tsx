@@ -54,7 +54,7 @@ export default function Account() {
   useEffect(() => {
     if (user) {
       const initialFormData = new FormData({
-        email: user.getEmail(),
+        email: user.getEmail() ?? '',
         userType: UserType.Individual,
         fullName: user.getFullName(),
       })
