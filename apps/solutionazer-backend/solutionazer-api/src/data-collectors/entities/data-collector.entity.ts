@@ -16,7 +16,6 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Exclude } from 'class-transformer';
 import { User } from '../../users-management/entities/user.entity';
 import {
   Column,
@@ -68,11 +67,9 @@ export class DataCollector {
   @JoinColumn({ name: 'statsUuid' })
   stats: Stats;
 
-  @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: Date;
 
-  @Exclude()
   @UpdateDateColumn({ type: 'timestamp with time zone' })
   updatedAt: Date;
 }

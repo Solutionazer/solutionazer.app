@@ -28,6 +28,7 @@ import {
 import { DataCollector } from './data-collector.entity';
 import { Transition } from './transition.entity';
 import { Exclude } from 'class-transformer';
+import { QuestionType } from './question-type.entity';
 
 @Entity()
 export class Question {
@@ -49,6 +50,11 @@ export class Question {
   })
   @JoinColumn({ name: 'formUuid' })
   dataCollector: DataCollector;
+
+  // questions
+  @ManyToOne(() => QuestionType, { nullable: false })
+  @JoinColumn({ name: 'questionTypeUuid' })
+  questionType: QuestionType;
 
   // transition
   @ManyToOne(() => Transition, (transition) => transition.question, {

@@ -33,10 +33,51 @@ import { DataCollector } from './entities/data-collector.entity';
 import { Question } from './entities/question.entity';
 import { Stats } from './entities/stats.entity';
 import { Transition } from './entities/transition.entity';
+import { QuestionType } from './entities/question-type.entity';
+import { MultipleChoiceConfig } from './entities/questions/multiple-choice-config.entity';
+import { ScaleConfig } from './entities/questions/scale-config.entity';
+import { ShortTextConfig } from './entities/questions/short-text-config.entity';
+import { LongTextConfig } from './entities/questions/long-text-config.entity';
+import { YesNoConfig } from './entities/questions/yes-no-config.entity';
+import { EmailConfig } from './entities/questions/email-config.entity';
+import { DateConfig } from './entities/questions/date-config.entity';
+import { FileUploadConfig } from './entities/questions/file-upload-config.entity';
+import { DropDownConfig } from './entities/questions/dropdown-config.entity';
+import { LegalConfig } from './entities/questions/legal-config.entity';
+import { WebsiteConfig } from './entities/questions/website-config.entity';
+import { StatementConfig } from './entities/questions/statement-config.entity';
+import { RatingConfig } from './entities/questions/rating-config.entity';
+import { PhoneNumberConfig } from './entities/questions/phone-number-config.entity';
+import { PictureChoiceConfig } from './entities/questions/picture-choice-config.entity';
+import { GreetingsScreenConfig } from './entities/questions/greetings-screen-config.entity';
+import { WelcomeScreenConfig } from './entities/questions/welcome-screen-config.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([DataCollector, Question, Stats, Transition]),
+    TypeOrmModule.forFeature([
+      DataCollector,
+      Question,
+      QuestionType,
+      MultipleChoiceConfig,
+      ScaleConfig,
+      ShortTextConfig,
+      LongTextConfig,
+      YesNoConfig,
+      EmailConfig,
+      DateConfig,
+      FileUploadConfig,
+      DropDownConfig,
+      LegalConfig,
+      WebsiteConfig,
+      StatementConfig,
+      RatingConfig,
+      PhoneNumberConfig,
+      PictureChoiceConfig,
+      GreetingsScreenConfig,
+      WelcomeScreenConfig,
+      Stats,
+      Transition,
+    ]),
     forwardRef(() => UsersManagementModule),
   ],
   controllers: [
