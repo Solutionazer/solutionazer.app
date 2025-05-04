@@ -16,13 +16,25 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import LoginClient from '@/components/login/pages/LoginClient'
-import { Suspense } from 'react'
+'use client'
 
-export default function Login() {
+import AuthForm from '@/components/shared/form/auth/AuthForm'
+import Title from '@/components/shared/titles/Title'
+import { useSearchParams } from 'next/navigation'
+
+export default function LoginClient() {
+  const params = useSearchParams()
+  const context = params.get('context') ?? 'login'
+
   return (
-    <Suspense fallback={null}>
-      <LoginClient />
-    </Suspense>
+    <>
+      <Title
+        params={{
+          text: context === 'login' ? 'Log In or Register' : 'Log In',
+          classNames: ['title'],
+        }}
+      />
+      <AuthForm params={{ context }} />
+    </>
   )
 }
