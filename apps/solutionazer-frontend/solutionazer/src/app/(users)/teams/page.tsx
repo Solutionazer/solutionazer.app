@@ -18,12 +18,12 @@
 
 'use client'
 
-import useAuthStore from '@/lib/auth/states/global/authStore'
+// import useAuthStore from '@/lib/auth/states/global/authStore'
 import styles from './page.module.css'
 
 export default function Route() {
   // auth global state
-  const { user } = useAuthStore()
+  // const { user } = useAuthStore()
 
   return (
     <div className={styles.content}>

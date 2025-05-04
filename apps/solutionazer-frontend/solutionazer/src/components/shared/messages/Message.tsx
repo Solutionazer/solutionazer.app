@@ -28,7 +28,7 @@ interface MessageProps {
 }
 
 export default function Message(props: Readonly<MessageProps>) {
-  const { type, text } = props.params
+  const { /*type,*/ text } = props.params
 
   return (
     <Article params={{ className: styles.error_message }}>
