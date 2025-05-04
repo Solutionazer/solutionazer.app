@@ -13,6 +13,10 @@ RUN npm install --verbose
 # Copy the rest of the code
 COPY . .
 
+# Define the environment variables for the build
+ARG NEXT_PUBLIC_API_BASE_URL
+ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
+
 # Build Next.js
 RUN npm run build
 
