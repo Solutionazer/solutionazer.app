@@ -40,9 +40,9 @@ import Article from '@/components/shared/containers/Article'
 import DataCollector from '@/lib/data-collectors/dataCollector'
 
 interface ModuleProps {
-  params: {
+  params: Promise<{
     module: string
-  }
+  }>
 }
 
 export default function Module(props: Readonly<ModuleProps>) {
