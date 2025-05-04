@@ -18,18 +18,18 @@
 
 'use client'
 
-import ButtonType from '@/lib/forms/enums/buttonType'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import Button from '../../shared/form/components/Button'
 import Fieldset from '../../shared/form/components/containers/fieldset/Fieldset'
 import Input from '../../shared/form/components/Input'
 import Form from '../../shared/form/Form'
 import Label from '../../shared/form/components/Label'
 import { capitalize } from '@/lib/utils/textHandler'
-import FormData from '@/lib/forms/formData'
+import FormData from '@/lib/auth/forms/formData'
 import { useRouter } from 'next/navigation'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import useFormStore from '@/lib/forms/states/global/formStore'
-import UserType from '@/lib/forms/enums/userType'
+import useFormStore from '@/lib/auth/forms/states/global/formStore'
+import UserType from '@/lib/auth/forms/enums/userType'
 import { userExists } from '@/lib/utils/users-management/usersHandler'
 
 export default function VerifyEmailForm() {

@@ -37,7 +37,8 @@ import styles from './page.module.css'
 import Button from '@/components/shared/form/components/Button'
 import Modal from '@/components/shared/containers/modal/Modal'
 import Article from '@/components/shared/containers/Article'
-import DataCollector from '@/lib/data-collectors/dataCollector'
+import DataCollector from '@/lib/module/data-collectors/dataCollector'
+import useSearch from '@/lib/module/states/global/searchStore'
 
 interface ModuleProps {
   params: Promise<{
@@ -77,6 +78,9 @@ export default function Module(props: Readonly<ModuleProps>) {
   // auth global state
   const { user } = useAuthStore()
 
+  // search global state
+  const { searchInput } = useSearch()
+
   // forms state
   const [forms, setForms] = useState<DataCollector[]>([])
 
@@ -100,6 +104,8 @@ export default function Module(props: Readonly<ModuleProps>) {
               description: string
               type: string
               userUuid: string
+              updatedAt: string
+              createdAt: string
             }) => {
               return new DataCollector({
                 uuid: form.uuid,
@@ -107,6 +113,8 @@ export default function Module(props: Readonly<ModuleProps>) {
                 description: form.description,
                 type: form.type,
                 userUuid: form.userUuid,
+                updatedAt: new Date(form.updatedAt),
+                createdAt: new Date(form.updatedAt),
               })
             },
           )
@@ -120,6 +128,8 @@ export default function Module(props: Readonly<ModuleProps>) {
               description: string
               type: string
               userUuid: string
+              updatedAt: string
+              createdAt: string
             }) => {
               return new DataCollector({
                 uuid: survey.uuid,
@@ -127,6 +137,8 @@ export default function Module(props: Readonly<ModuleProps>) {
                 description: survey.description,
                 type: survey.type,
                 userUuid: survey.userUuid,
+                updatedAt: new Date(survey.updatedAt),
+                createdAt: new Date(survey.createdAt),
               })
             },
           )
@@ -139,11 +151,71 @@ export default function Module(props: Readonly<ModuleProps>) {
     fetchData()
   }, [user, isForms, isSurveys])
 
+  // filter by searchInput value
+  const filteredForms: DataCollector[] = forms.filter((form) => {
+    const title: string = form.getTitle()?.toLowerCase() ?? ''
+    const description: string = form.getDescription()?.toLowerCase() ?? ''
+
+    const query: string = searchInput.toLowerCase()
+
+    return title.includes(query) || description.includes(query)
+  })
+
+  const filteredSurveys: DataCollector[] = surveys.filter((survey) => {
+    const title: string = survey.getTitle()?.toLowerCase() ?? ''
+    const description: string = survey.getDescription()?.toLowerCase() ?? ''
+
+    const query: string = searchInput.toLowerCase()
+
+    return title.includes(query) || description.includes(query)
+  })
+
+  // order by updatedAt
+  const sortedForms: DataCollector[] = filteredForms.sort(
+    (firstForm, secondForm) => {
+      const firstFormUpdatedAt: number =
+        firstForm.getUpdatedAt()?.getTime() ?? 0
+      const secondFormUpdatedAt: number =
+        secondForm.getUpdatedAt()?.getTime() ?? 0
+
+      if (firstFormUpdatedAt !== secondFormUpdatedAt) {
+        return secondFormUpdatedAt - firstFormUpdatedAt
+      }
+
+      const firstFormCreatedAt: number =
+        firstForm.getCreatedAt()?.getTime() ?? 0
+      const secondFormCreatedAt: number =
+        secondForm.getCreatedAt()?.getTime() ?? 0
+
+      return secondFormCreatedAt - firstFormCreatedAt
+    },
+  )
+
+  const sortedSurveys: DataCollector[] = filteredSurveys.sort(
+    (firstSurvey, secondSurvey) => {
+      const firstSurveyUpdatedAt: number =
+        firstSurvey.getUpdatedAt()?.getTime() ?? 0
+      const secondSurveyUpdatedAt: number =
+        secondSurvey.getUpdatedAt()?.getTime() ?? 0
+
+      if (firstSurveyUpdatedAt !== secondSurveyUpdatedAt) {
+        return secondSurveyUpdatedAt - firstSurveyUpdatedAt
+      }
+
+      const firstSurveyCreatedAt: number =
+        firstSurvey.getCreatedAt()?.getTime() ?? 0
+      const secondSurveyCreatedAt: number =
+        secondSurvey.getCreatedAt()?.getTime() ?? 0
+
+      return secondSurveyCreatedAt - firstSurveyCreatedAt
+    },
+  )
+
   // pages depend on the context
   const ModulePages: Record<string, JSX.Element> = {
     forms: (
       <>
-        {forms.map((form) => (
+        {sortedForms.map((form) => (
           <li key={form.getUuid()}>
             <Card
               key={form.getUuid()}
@@ -159,7 +231,7 @@ export default function Module(props: Readonly<ModuleProps>) {
     ),
     surveys: (
       <>
-        {surveys.map((survey) => (
+        {sortedSurveys.map((survey) => (
           <li key={survey.getUuid()}>
             <Card
               key={survey.getUuid()}
@@ -183,6 +255,8 @@ export default function Module(props: Readonly<ModuleProps>) {
       description: string
       type: string
       userUuid: string
+      updatedAt: string
+      createdAt: string
     }
 
     if (isForms) {
@@ -194,6 +268,8 @@ export default function Module(props: Readonly<ModuleProps>) {
         description: newItem.description,
         type: newItem.type,
         userUuid: newItem.userUuid,
+        updatedAt: new Date(newItem.updatedAt),
+        createdAt: new Date(newItem.createdAt),
       })
 
       setForms((prev) => [newDataCollector, ...prev])
@@ -206,6 +282,8 @@ export default function Module(props: Readonly<ModuleProps>) {
         description: newItem.description,
         type: newItem.type,
         userUuid: newItem.userUuid,
+        updatedAt: new Date(newItem.updatedAt),
+        createdAt: new Date(newItem.createdAt),
       })
 
       setSurveys((prev) => [newDataCollector, ...prev])

@@ -6,10 +6,10 @@ import Option from '@/lib/options/option'
 
 import styles from './toolsHeader.module.css'
 import Link from 'next/link'
-import useDataCollector from '@/lib/data-collectors/states/global/dataCollectorStore'
+import useDataCollector from '@/lib/module/data-collectors/states/global/dataCollectorStore'
 import { useEffect, useState } from 'react'
 import { updateFormTitle } from '@/lib/utils/data-collectors/formsHandler'
-import DataCollector from '@/lib/data-collectors/dataCollector'
+import DataCollector from '@/lib/module/data-collectors/dataCollector'
 
 interface ToolsHeaderProps {
   params: {

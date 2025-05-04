@@ -27,6 +27,7 @@ import Fieldset from '../../shared/form/components/containers/fieldset/Fieldset'
 import Label from '../../shared/form/components/Label'
 import ModuleOptions from '@/lib/module/record/moduleOptions'
 import Navbar from '@/components/shared/navigation/Navbar'
+import useSearch from '@/lib/module/states/global/searchStore'
 
 interface ModuleHeaderProps {
   params: {
@@ -38,19 +39,24 @@ export default function ModuleHeader(props: Readonly<ModuleHeaderProps>) {
   // props
   const { module } = props.params
 
+  // options
   const options: Option[] = ModuleOptions[module].map(
     (name, index) => new Option(index + 1, name),
   )
 
+  // routes
   const routes: string[] = ModuleOptions[module].map((name) =>
     name.toLowerCase().replace(/\s+/g, '-'),
   )
+
+  // search input state
+  const { searchInput, setSearchInput } = useSearch()
 
   // 'onChange'
   const handleInputValuesChange: React.ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
-    event.preventDefault()
+    setSearchInput(event.target.value)
   }
 
   // an input type
@@ -63,7 +69,7 @@ export default function ModuleHeader(props: Readonly<ModuleHeaderProps>) {
           params={{
             type: typeSearch,
             id: typeSearch,
-            value: '',
+            value: searchInput,
             onChange: handleInputValuesChange,
             placeholder: ' ',
             required: false,

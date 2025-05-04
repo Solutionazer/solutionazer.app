@@ -16,26 +16,27 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-'use client'
+import { create, StoreApi, UseBoundStore } from 'zustand'
+import { persist } from 'zustand/middleware'
 
-import AuthForm from '@/components/shared/form/auth/AuthForm'
-import Title from '@/components/shared/titles/Title'
-
-import { useSearchParams } from 'next/navigation'
-
-export default function LoginClient() {
-  const params = useSearchParams()
-  const context = params.get('context') ?? 'login'
-
-  return (
-    <>
-      <Title
-        params={{
-          text: context === 'login' ? 'Log In or Register' : 'Log In',
-          classNames: ['title'],
-        }}
-      />
-      <AuthForm params={{ context }} />
-    </>
-  )
+interface SearchState {
+  searchInput: string
+  setSearchInput: (value: string) => void
 }
+
+const useSearch: UseBoundStore<StoreApi<SearchState>> = create<
+  SearchState,
+  [['zustand/persist', SearchState]]
+>(
+  persist(
+    (set) => ({
+      searchInput: '',
+      setSearchInput: (value: string) => set({ searchInput: value }),
+    }),
+    {
+      name: 'searchValue',
+    },
+  ),
+)
+
+export default useSearch

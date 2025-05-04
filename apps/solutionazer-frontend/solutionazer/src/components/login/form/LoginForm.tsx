@@ -18,15 +18,15 @@
 
 'use client'
 
-import ButtonType from '@/lib/forms/enums/buttonType'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import Button from '../../shared/form/components/Button'
 import Input from '../../shared/form/components/Input'
 import Form from '../../shared/form/Form'
 import Fieldset from '../../shared/form/components/containers/fieldset/Fieldset'
 import Label from '../../shared/form/components/Label'
 import { capitalize } from '@/lib/utils/textHandler'
-import FormData from '@/lib/forms/formData'
-import useFormStore from '@/lib/forms/states/global/formStore'
+import FormData from '@/lib/auth/forms/formData'
+import useFormStore from '@/lib/auth/forms/states/global/formStore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import { login } from '@/lib/utils/auth/authHandler'

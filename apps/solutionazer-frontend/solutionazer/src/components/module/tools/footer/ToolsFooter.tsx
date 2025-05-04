@@ -3,23 +3,26 @@
 import Footer from '@/components/shared/containers/Footer'
 
 import styles from './toolsFooter.module.css'
-import useDataCollector from '@/lib/data-collectors/states/global/dataCollectorStore'
+import useDataCollector from '@/lib/module/data-collectors/states/global/dataCollectorStore'
 import Button from '@/components/shared/form/components/Button'
-import ButtonType from '@/lib/forms/enums/buttonType'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import { useEffect, useState } from 'react'
-import Question from '@/lib/data-collectors/questions/question'
+import Question from '@/lib/module/data-collectors/questions/question'
 import { getQuestionsByForm } from '@/lib/utils/data-collectors/questions/questionsHandler'
-import DataCollector from '@/lib/data-collectors/dataCollector'
+import DataCollector from '@/lib/module/data-collectors/dataCollector'
 import Modal from '@/components/shared/containers/modal/Modal'
 
 export default function ToolsFooter() {
   // dataCollector global state
   const { dataCollector, setDataCollector } = useDataCollector()
 
+  //  has questions loading been done?
+  const [hasLoadedQuestions, setHasLoadedQuestions] = useState(false)
+
   // fetch questions
   useEffect(() => {
     const fetchData = async () => {
-      if (dataCollector) {
+      if (dataCollector && !hasLoadedQuestions) {
         const fetchedQuestions: Question[] = (
           await getQuestionsByForm(dataCollector?.getUuid() ?? '')
         ).map(
@@ -38,17 +41,36 @@ export default function ToolsFooter() {
           },
         )
 
-        const updatedDataCollector: DataCollector = new DataCollector({
-          ...dataCollector?.['props'],
-          questions: fetchedQuestions,
-        })
+        const currentQuestions: Question[] = dataCollector.getQuestions() ?? []
 
-        setDataCollector(updatedDataCollector)
+        const areDifferent: boolean =
+          currentQuestions.length !== fetchedQuestions.length ||
+          currentQuestions.some((question, index) => {
+            const fetchedQuestion = fetchedQuestions[index]
+
+            return (
+              question.getUuid() !== fetchedQuestion.getUuid() ||
+              question.getText() !== fetchedQuestion.getText() ||
+              question.getRequired() !== fetchedQuestion.getRequired() ||
+              question.getOrder() !== fetchedQuestion.getOrder()
+            )
+          })
+
+        if (areDifferent) {
+          const updatedDataCollector: DataCollector = new DataCollector({
+            ...dataCollector?.['props'],
+            questions: fetchedQuestions,
+          })
+
+          setDataCollector(updatedDataCollector)
+        }
+
+        setHasLoadedQuestions(true)
       }
     }
 
     fetchData()
-  })
+  }, [dataCollector, setDataCollector, hasLoadedQuestions])
 
   // questions
   const questions: Question[] = dataCollector?.getQuestions() ?? []

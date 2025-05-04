@@ -1,4 +1,4 @@
-import ButtonType from '@/lib/forms/enums/buttonType'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
 
 interface ButtonProps {
   params: {

@@ -18,20 +18,20 @@
 
 'use client'
 
-import ButtonType from '@/lib/forms/enums/buttonType'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import Button from '../../shared/form/components/Button'
 import Fieldset from '../../shared/form/components/containers/fieldset/Fieldset'
 import Input from '../../shared/form/components/Input'
 import Form from '../../shared/form/Form'
 import Label from '../../shared/form/components/Label'
 import { capitalize } from '@/lib/utils/textHandler'
-import FormData from '@/lib/forms/formData'
-import useFormStore from '@/lib/forms/states/global/formStore'
+import FormData from '@/lib/auth/forms/formData'
+import useFormStore from '@/lib/auth/forms/states/global/formStore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import Select from '../../shared/form/components/Select'
 import Option from '@/lib/options/option'
-import UserType from '@/lib/forms/enums/userType'
+import UserType from '@/lib/auth/forms/enums/userType'
 import {
   registerUser,
   userExists,
@@ -233,6 +233,11 @@ export default function RegisterForm() {
                 type: typePassword,
                 id: typePassword,
                 value: formData.getPassword() ?? '',
+                minLength: 8,
+                maxLength: 32,
+                pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).*$',
+                title:
+                  'Password must be 8–32 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
                 onChange: handleInputValuesChange,
                 placeholder: ' ',
                 required: true,

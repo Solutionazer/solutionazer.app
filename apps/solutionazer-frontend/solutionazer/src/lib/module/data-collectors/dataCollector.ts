@@ -25,6 +25,8 @@ interface DataCollectorProps {
   type?: string
   userUuid?: string
   questions?: Question[]
+  updatedAt?: Date
+  createdAt?: Date
 }
 
 export default class DataCollector {
@@ -34,6 +36,8 @@ export default class DataCollector {
   private readonly type: string | undefined
   private readonly userUuid: string | undefined
   private readonly questions: Question[] | undefined
+  private readonly updatedAt: Date | undefined
+  private readonly createdAt: Date | undefined
 
   constructor(private readonly props: DataCollectorProps) {
     this.uuid = props.uuid
@@ -42,6 +46,8 @@ export default class DataCollector {
     this.type = props.type
     this.userUuid = props.userUuid
     this.questions = props.questions
+    this.updatedAt = props.updatedAt
+    this.createdAt = props.createdAt
   }
 
   public getUuid(): string | undefined {
@@ -66,5 +72,13 @@ export default class DataCollector {
 
   public getQuestions(): Question[] | undefined {
     return this.questions
+  }
+
+  public getUpdatedAt(): Date | undefined {
+    return this.updatedAt
+  }
+
+  public getCreatedAt(): Date | undefined {
+    return this.createdAt
   }
 }

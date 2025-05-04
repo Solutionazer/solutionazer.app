@@ -24,13 +24,13 @@ import Fieldset from '@/components/shared/form/components/containers/fieldset/Fi
 import Input from '@/components/shared/form/components/Input'
 import Label from '@/components/shared/form/components/Label'
 import Form from '@/components/shared/form/Form'
-import ButtonType from '@/lib/forms/enums/buttonType'
-import FormData from '@/lib/forms/formData'
-import useFormStore from '@/lib/forms/states/global/formStore'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
+import FormData from '@/lib/auth/forms/formData'
+import useFormStore from '@/lib/auth/forms/states/global/formStore'
 
 import styles from './page.module.css'
 import Select from '@/components/shared/form/components/Select'
-import UserType from '@/lib/forms/enums/userType'
+import UserType from '@/lib/auth/forms/enums/userType'
 import Option from '@/lib/options/option'
 import useAuthStore from '@/lib/auth/states/global/authStore'
 import React, { useEffect, useState } from 'react'
@@ -42,7 +42,7 @@ import { useRouter } from 'next/navigation'
 
 export default function Account() {
   // auth global state
-  const { user } = useAuthStore()
+  const { user, setUser } = useAuthStore()
 
   // formData global state
   const { formData, setFormData, resetFormData } = useFormStore()
@@ -117,6 +117,7 @@ export default function Account() {
   const handleLogOut = async () => {
     try {
       await logout()
+      setUser(null)
       resetFormData()
 
       const path: string = '/login'

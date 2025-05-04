@@ -22,9 +22,9 @@ import MediumTitle from '../../shared/titles/MediumTitle'
 
 import styles from './card.module.css'
 import Button from '@/components/shared/form/components/Button'
-import ButtonType from '@/lib/forms/enums/buttonType'
-import useDataCollector from '@/lib/data-collectors/states/global/dataCollectorStore'
-import DataCollector from '@/lib/data-collectors/dataCollector'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
+import useDataCollector from '@/lib/module/data-collectors/states/global/dataCollectorStore'
+import DataCollector from '@/lib/module/data-collectors/dataCollector'
 
 interface CardProps {
   params: {

@@ -47,6 +47,8 @@ const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> = create<
             type: plainDataCollector.type,
             userUuid: plainDataCollector.userUuid,
             questions: plainDataCollector.questions,
+            updatedAt: plainDataCollector.updatedAt,
+            createdAt: plainDataCollector.createdAt,
           })
         }
       },
