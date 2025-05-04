@@ -31,7 +31,7 @@ export default function Modal({ children, params }: Readonly<ModalProps>) {
   const setShowModal = params?.setShowModal
 
   // handle click in the modal's background
-  const handleClickOutside = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClickOutside = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget && typeof setShowModal === 'function') {
       setShowModal(false)
     }
