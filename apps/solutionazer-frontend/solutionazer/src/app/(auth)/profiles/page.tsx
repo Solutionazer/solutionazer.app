@@ -18,17 +18,17 @@
 
 'use client'
 
-import Card from '@/components/profiles/Card'
+//import Card from '@/components/profiles/Card'
 import Article from '@/components/shared/containers/Article'
 import Section from '@/components/shared/containers/Section'
 import MediumTitle from '@/components/shared/titles/MediumTitle'
 import SmallTitle from '@/components/shared/titles/SmallTitle'
 import Title from '@/components/shared/titles/Title'
-import useAuthStore from '@/lib/auth/states/global/authStore'
+//import useAuthStore from '@/lib/auth/states/global/authStore'
 
 export default function Profiles() {
   // auth global state
-  const { user } = useAuthStore()
+  //const { user } = useAuthStore()
 
   return (
     <>
@@ -39,11 +39,9 @@ export default function Profiles() {
         />
         <Article params={{ className: '' }}>
           <SmallTitle params={{ text: 'User' }} />
-          <Card params={{}} />
         </Article>
         <Article params={{ className: '' }}>
           <SmallTitle params={{ text: 'Companies' }} />
-          <Card params={{}} />
         </Article>
       </Section>
     </>
