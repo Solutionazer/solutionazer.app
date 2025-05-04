@@ -38,6 +38,7 @@ const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> = create<
       name: 'dataCollector',
       onRehydrateStorage: () => (state) => {
         if (state?.dataCollector) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const plainDataCollector = state.dataCollector as any
           state.dataCollector = new DataCollector({
             uuid: plainDataCollector.uuid,

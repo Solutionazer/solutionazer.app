@@ -38,6 +38,7 @@ const useAuthStore: UseBoundStore<StoreApi<AuthState>> = create<
       name: 'authUser',
       onRehydrateStorage: () => (state) => {
         if (state?.user) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const plainUser = state.user as any
           state.user = new AuthUser({
             uuid: plainUser.uuid,

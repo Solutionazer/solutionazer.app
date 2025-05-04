@@ -16,18 +16,17 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import AuthUser from '@/lib/auth/authUser'
-import Article from '../shared/containers/Article'
-
+//import AuthUser from '@/lib/auth/authUser'
+//import Article from '../shared/containers/Article'
+/*
 interface CardProps {
   params: {
     user?: AuthUser
     company?: object
   }
 }
-
-export default function Card(props: Readonly<CardProps>) {
-  const { user, company } = props.params
-
-  return <Article params={{ className: '' }}></Article>
+*/
+export default function Card(/*props: Readonly<CardProps>*/) {
+  //const { user, company } = props.params
+  //return <Article params={{ className: '' }}></Article>
 }
