@@ -37,10 +37,7 @@ export class Company {
   uuid: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false })
-  companyName: string;
-
-  @Column({ type: 'varchar', length: 255, nullable: false })
-  loginEmail: string;
+  name: string;
 
   // admins
   @ManyToMany(() => User)

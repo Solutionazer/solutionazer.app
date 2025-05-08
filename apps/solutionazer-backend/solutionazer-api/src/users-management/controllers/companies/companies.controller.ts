@@ -46,6 +46,13 @@ export class CompaniesController {
     return this.companiesServices.findAll();
   }
 
+  @Permissions('company:readAllByUser')
+  @Get('user/:uuid')
+  @HttpCode(HttpStatus.OK)
+  findAllByUserUuid(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+    return this.companiesServices.findAllByUserUuid(uuid);
+  }
+
   @Permissions('company:readOne')
   @Get(':uuid')
   @HttpCode(HttpStatus.OK)
@@ -53,11 +60,11 @@ export class CompaniesController {
     return this.companiesServices.findOne(uuid);
   }
 
-  @Permissions('company:checkEmail')
-  @Get('email/:email')
+  @Permissions('company:checkUserUuid')
+  @Get('check/:userUuid')
   @HttpCode(HttpStatus.OK)
-  checkEmail(@Param('email') email: string) {
-    return this.companiesServices.checkEmail(email);
+  checkUserUuid(@Param('userUuid', new ParseUUIDPipe()) userUuid: string) {
+    return this.companiesServices.checkUserUuid(userUuid);
   }
 
   @Permissions('company:create')

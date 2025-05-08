@@ -48,13 +48,13 @@ export class Question {
   @ManyToOne(() => DataCollector, (dataCollector) => dataCollector.questions, {
     nullable: true,
   })
-  @JoinColumn({ name: 'formUuid' })
+  @JoinColumn({ name: 'dataCollectorUuid' })
   dataCollector: DataCollector;
 
   // questions
   @ManyToOne(() => QuestionType, { nullable: false })
   @JoinColumn({ name: 'questionTypeUuid' })
-  questionType: QuestionType;
+  type: QuestionType;
 
   // transition
   @ManyToOne(() => Transition, (transition) => transition.question, {

@@ -28,4 +28,6 @@ export class DateConfig {
 
   @Column({ type: 'boolean', nullable: false, default: true })
   allowPastDates: boolean;
+
+  //! minDate & maxDate
 }

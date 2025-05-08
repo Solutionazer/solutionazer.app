@@ -39,6 +39,13 @@ import { QuestionsService } from 'src/data-collectors/services/questions/questio
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 
+  @Permissions('question:readAllTypes')
+  @Get('types')
+  @HttpCode(HttpStatus.OK)
+  findAllTypes() {
+    return this.questionsService.findAllTypes();
+  }
+
   @Permissions('question:readAllByForm')
   @Get('form/:formUuid')
   @HttpCode(HttpStatus.OK)

@@ -16,19 +16,9 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
-import { PartialType } from '@nestjs/mapped-types';
-import { AdminDto } from './admin.dtos';
+import { IsUUID } from 'class-validator';
 
-export class CreateCompanyDto {
-  @IsNotEmpty()
-  @IsString()
-  readonly companyName: string;
-
-  @IsNotEmpty()
-  @IsArray()
-  readonly admins: AdminDto[];
+export class AdminDto {
+  @IsUUID()
+  readonly uuid: string;
 }
-
-export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {}

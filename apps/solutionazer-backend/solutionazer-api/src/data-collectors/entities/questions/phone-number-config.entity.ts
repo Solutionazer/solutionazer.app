@@ -25,4 +25,6 @@ export class PhoneNumberConfig {
 
   @Column({ type: 'varchar', length: 5, nullable: false, default: '+34' })
   countryCode: string;
+
+  //! validationPattern?
 }

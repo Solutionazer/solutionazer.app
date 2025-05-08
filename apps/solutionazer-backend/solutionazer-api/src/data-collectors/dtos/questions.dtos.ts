@@ -31,6 +31,14 @@ export class CreateQuestionDto {
   @IsNotEmpty()
   @IsNumber()
   readonly order: number;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly type: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly dataCollectorUuid: string;
 }
 
 export class UpdateQuestionDto extends PartialType(CreateQuestionDto) {}

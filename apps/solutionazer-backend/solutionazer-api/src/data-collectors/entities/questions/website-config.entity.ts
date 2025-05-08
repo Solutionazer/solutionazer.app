@@ -22,4 +22,6 @@ import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class WebsiteConfig {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
+
+  //! validationPattern? openInNewTab
 }

@@ -22,4 +22,6 @@ import { Entity, PrimaryGeneratedColumn } from 'typeorm';
 export class EmailConfig {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
+
+  //! validation pattern?
 }

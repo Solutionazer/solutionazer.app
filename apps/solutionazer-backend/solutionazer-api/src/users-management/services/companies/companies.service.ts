@@ -40,12 +40,17 @@ export class CompaniesService {
       relations: ['admins'],
     });
 
-    return companies.map(({ uuid, companyName, loginEmail, admins }) => ({
+    return companies.map(({ uuid, name, admins }) => ({
       uuid,
-      companyName,
-      loginEmail,
+      name,
       admins,
     }));
+  }
+
+  async findAllByUserUuid(uuid: string) {
+    return await this.companyRepository.find({
+      where: { admins: { uuid } },
+    });
   }
 
   async findOne(uuid: string) {
@@ -58,30 +63,17 @@ export class CompaniesService {
       throw new NotFoundException(`Company = { uuid: ${uuid} } not found`);
     }
 
-    const { uuid: companyUuid, companyName, loginEmail, admins } = company;
+    const { uuid: companyUuid, name, admins } = company;
 
     return {
       uuid: companyUuid,
-      companyName,
-      loginEmail,
+      name,
       admins,
     } as Company;
   }
 
-  async findOneByLoginEmail(email: string) {
-    const company: Company | null = await this.companyRepository.findOne({
-      where: { loginEmail: email },
-    });
-
-    if (!company) {
-      throw new NotFoundException(`Company = { email: ${email} } not found`);
-    }
-
-    return company;
-  }
-
-  async checkEmail(email: string) {
-    const company: Company = await this.findOneByLoginEmail(email);
+  async checkUserUuid(uuid: string) {
+    const company: Company[] = await this.findAllByUserUuid(uuid);
 
     return company || true;
   }

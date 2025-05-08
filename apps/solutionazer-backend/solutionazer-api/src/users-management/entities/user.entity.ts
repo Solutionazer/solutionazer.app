@@ -56,7 +56,6 @@ export class User {
 
   // companies where user be
   @ManyToMany(() => Company)
-  @JoinTable({ name: 'user_companies' })
   companies: Company[];
 
   // company roles
