@@ -20,7 +20,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from '../../dtos/users.dtos';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 import { RolesService } from '../roles/roles.service';
@@ -36,9 +36,10 @@ export class UsersService {
     return this.userRepository.find();
   }
 
-  async findOne(uuid: string) {
+  async findOne(uuid: string, options?: FindOneOptions<User>) {
     const user: User | null = await this.userRepository.findOne({
       where: { uuid },
+      ...options,
     });
 
     if (!user) {

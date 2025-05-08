@@ -37,17 +37,38 @@ export class TeamsService {
   ) {}
 
   async findAllByUserUuid(uuid: string) {
-    const user: User = await this.usersService.findOne(uuid);
+    const user: User = await this.usersService.findOne(uuid, {
+      relations: ['teams'],
+    });
+
+    console.log(user.teams);
 
     const teams: Team[] = user.teams;
 
     return teams.map((team) => {
+      const isOwner: boolean = team.owner.uuid === user.uuid;
+      const isCompanyTeam: boolean = !!team.company;
+      const isUserInCompany: boolean = user.companies.some(
+        (company) => company.uuid === team.company.uuid,
+      );
+
+      let type: 'freelance-own' | 'company-own' | 'external';
+
+      if (isOwner && !isCompanyTeam) {
+        type = 'freelance-own';
+      } else if (isCompanyTeam && isUserInCompany) {
+        type = 'company-own';
+      } else {
+        type = 'external';
+      }
+
       const { uuid, name, owner, members } = team;
       return {
         uuid,
         owner,
         name,
         members,
+        type,
       };
     });
   }
@@ -82,16 +103,35 @@ export class TeamsService {
     return team;
   }
 
-  create(data: CreateTeamDto) {
-    const newTeam: Team = this.teamRepository.create(data);
+  async create(data: CreateTeamDto) {
+    const { owner: ownerUuid, ...rest } = data;
+
+    let owner: User | undefined;
+    if (ownerUuid) {
+      owner = await this.usersService.findOne(ownerUuid);
+    }
+
+    const newTeam: Team = this.teamRepository.create({
+      ...rest,
+      owner,
+    });
     return this.teamRepository.save(newTeam);
   }
 
   async update(uuid: string, changes: UpdateTeamDto) {
     const team: Team = await this.findOne(uuid);
 
-    this.teamRepository.merge(team, changes);
-    return this.teamRepository.save(team);
+    let updatedOwner: User | undefined;
+    if (changes.owner) {
+      updatedOwner = await this.usersService.findOne(changes.owner);
+    }
+
+    const updatedTeam = this.teamRepository.merge(team, {
+      ...changes,
+      owner: updatedOwner ?? team.owner,
+    });
+
+    return this.teamRepository.save(updatedTeam);
   }
 
   async remove(uuid: string) {

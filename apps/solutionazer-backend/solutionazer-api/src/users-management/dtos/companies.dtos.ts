@@ -24,7 +24,7 @@ import { AdminDto } from './admin.dtos';
 export class CreateCompanyDto {
   @IsNotEmpty()
   @IsString()
-  readonly companyName: string;
+  readonly name: string;
 
   @IsNotEmpty()
   @IsArray()

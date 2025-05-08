@@ -37,6 +37,7 @@ import { Team } from './entities/team.entity';
 import { TeamUserRole } from './entities/team-user-role.entity';
 import { TeamsService } from './services/teams/teams.service';
 import { DataCollectorsModule } from 'src/data-collectors/data-collectors.module';
+import { TeamsController } from './controllers/teams/teams.controller';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { DataCollectorsModule } from 'src/data-collectors/data-collectors.module
   controllers: [
     UsersController,
     CompaniesController,
+    TeamsController,
     RolesController,
     PermissionsController,
   ],
