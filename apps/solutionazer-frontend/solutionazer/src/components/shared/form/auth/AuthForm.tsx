@@ -30,7 +30,7 @@ interface AuthFormProps {
   params: {
     context: string
     isPasswordEmpty?: boolean
-    setIsPasswordEmpty?: Dispatch<SetStateAction<boolean | undefined>>
+    setIsPasswordEmpty?: Dispatch<SetStateAction<boolean>>
     infoMessage?: string | null
   }
 }

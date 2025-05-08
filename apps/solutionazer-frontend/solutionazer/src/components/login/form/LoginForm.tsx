@@ -39,7 +39,7 @@ import Message from '@/components/shared/messages/Message'
 interface LoginFormProps {
   params?: {
     isPasswordEmpty?: boolean
-    setIsPasswordEmpty?: Dispatch<SetStateAction<boolean | undefined>>
+    setIsPasswordEmpty?: Dispatch<SetStateAction<boolean>>
     infoMessage?: string | null
   }
 }
@@ -51,7 +51,7 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
   const infoMessageFromLoginClient = props.params?.infoMessage
 
   // auth global state
-  const { setUser } = useAuthStore()
+  const { user, setUser } = useAuthStore()
 
   // formData global state
   const { formData, setFormData, resetFormData } = useFormStore()
@@ -64,6 +64,7 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
 
   // messages
   const passwordError: string = 'Incorrect password.'
+  const loggedInClickHere: string = `You are now logged in. You can now click 'Click here' to create an 'Enterprise' account.`
 
   // 'onSubmit'
   const handleLogin: React.FormEventHandler<HTMLFormElement> = async (
@@ -75,6 +76,7 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
 
     if (password.trim() === '') {
       setIsPasswordEmpty?.(true)
+      return
     }
 
     try {
@@ -91,22 +93,26 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
       try {
         await companyExists(res.user.uuid)
 
-        resetFormData()
+        if (!infoMessageFromLoginClient) {
+          resetFormData()
 
-        if (!isPasswordEmpty) {
           const path: string = '/profiles'
 
           router.prefetch(path)
           router.push(path)
+        } else {
+          setInfoMessage(loggedInClickHere)
         }
       } catch {
-        resetFormData()
+        if (!infoMessageFromLoginClient) {
+          resetFormData()
 
-        if (!isPasswordEmpty) {
           const path: string = '/forms'
 
           router.prefetch(path)
           router.push(path)
+        } else {
+          setInfoMessage(loggedInClickHere)
         }
       }
     } catch {
@@ -119,6 +125,7 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
     event,
   ) => {
     setInfoMessage(null)
+    setIsPasswordEmpty?.(false)
 
     const { name, value } = event.target
 
@@ -153,7 +160,7 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
                 onChange: handleInputValuesChange,
                 placeholder: ' ',
                 required: true,
-                disabled: false,
+                disabled: user !== null,
               }}
             />
             <Label
@@ -165,6 +172,7 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
           params={{
             type: ButtonType.Submit,
             text: 'Log In',
+            disabled: user !== null,
           }}
         />
       </Form>

@@ -6,14 +6,20 @@ interface ButtonProps {
     text: string
     className?: string
     onClick?: () => void
+    disabled?: boolean
   }
 }
 
 export default function Button(props: Readonly<ButtonProps>) {
-  const { type, text, className, onClick } = props.params
+  const { type, text, className, onClick, disabled } = props.params
 
   return (
-    <button type={type} className={className} onClick={onClick}>
+    <button
+      type={type}
+      className={className}
+      onClick={onClick}
+      disabled={disabled}
+    >
       {text}
     </button>
   )

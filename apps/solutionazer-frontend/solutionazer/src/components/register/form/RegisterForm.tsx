@@ -48,7 +48,7 @@ export default function RegisterForm() {
   const params = useSearchParams()
 
   // userType through query params
-  const userTypeByParams: string = params.get('userType')
+  const userTypeByParams: string | null = params.get('userType')
 
   // auth global state
   const { user, setUser } = useAuthStore()
@@ -94,6 +94,8 @@ export default function RegisterForm() {
     const checkUserExistence = async () => {
       if (!isIndividual) {
         try {
+          console.log(formData.getEmail())
+
           await userExists(formData.getEmail())
 
           if (!userTypeByParams) {
@@ -177,11 +179,9 @@ export default function RegisterForm() {
         }
       } catch {}
     } else {
-      await registerCompany(
-        formData.getCompanyName() ?? '',
-        formData.getEmail(),
-        [{ uuid: user?.getUuid() ?? '' }],
-      )
+      await registerCompany(formData.getCompanyName() ?? '', [
+        { uuid: user?.getUuid() ?? '' },
+      ])
 
       resetFormData()
 
@@ -235,7 +235,9 @@ export default function RegisterForm() {
 
   // disable inputs?
   const disableFullName: boolean = !isIndividual
-  const disableCompanyName: boolean = !(!isIndividual && showSkip)
+  const disableCompanyName: boolean = userTypeByParams
+    ? false
+    : !(!isIndividual && showSkip)
 
   return (
     <>

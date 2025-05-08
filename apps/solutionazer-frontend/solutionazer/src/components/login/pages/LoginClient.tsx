@@ -20,9 +20,11 @@
 
 import AuthForm from '@/components/shared/form/auth/AuthForm'
 import Title from '@/components/shared/titles/Title'
+import useAuthStore from '@/lib/auth/states/global/authStore'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import Link from 'next/link'
 
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 export default function LoginClient() {
@@ -32,8 +34,14 @@ export default function LoginClient() {
   // context
   const context = params.get('context') ?? 'login'
 
+  // router
+  const router: AppRouterInstance = useRouter()
+
+  // auth global state
+  const { user } = useAuthStore()
+
   // password empty state
-  const [isPasswordEmpty, setIsPasswordEmpty] = useState<boolean>()
+  const [isPasswordEmpty, setIsPasswordEmpty] = useState<boolean>(false)
 
   // UI states
   const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
@@ -42,13 +50,20 @@ export default function LoginClient() {
   const passwordEmpty: string = `You must first 'Log In'`
 
   // 'onClick'
-  const handleLinkClick = (event) => {
+  const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
 
-    if (isPasswordEmpty) {
+    if (!user) {
+      setIsPasswordEmpty(true)
       setInfoMessage(passwordEmpty)
     } else {
+      setIsPasswordEmpty(false)
       setInfoMessage(null)
+
+      const path: string = '/register?userType=enterprise'
+
+      router.prefetch(path)
+      router.push(path)
     }
   }
 

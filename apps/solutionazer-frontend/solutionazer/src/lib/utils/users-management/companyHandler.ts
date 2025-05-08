@@ -18,17 +18,12 @@
 
 const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
-export const registerCompany = async (
-  companyName: string,
-  loginEmail: string,
-  admins: object[],
-) => {
+export const registerCompany = async (name: string, admins: object[]) => {
   const res = await fetch(`${baseUrl}/companies`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      companyName,
-      loginEmail,
+      name,
       admins,
     }),
     credentials: 'include',
