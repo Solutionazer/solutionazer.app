@@ -23,6 +23,8 @@ import { persist } from 'zustand/middleware'
 interface DataCollectorState {
   dataCollector: DataCollector | null
   setDataCollector: (dataCollector: DataCollector) => void
+  selectedQuestionUuid: string | null
+  setSelectedQuestionUuid: (selectedQuestionUuid: string) => void
 }
 
 const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> = create<
@@ -33,6 +35,9 @@ const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> = create<
     (set) => ({
       dataCollector: null,
       setDataCollector: (dataCollector) => set({ dataCollector }),
+      selectedQuestionUuid: null,
+      setSelectedQuestionUuid: (selectedQuestionUuid: string) =>
+        set({ selectedQuestionUuid }),
     }),
     {
       name: 'dataCollector',

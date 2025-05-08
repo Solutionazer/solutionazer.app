@@ -20,12 +20,37 @@
 
 import AuthForm from '@/components/shared/form/auth/AuthForm'
 import Title from '@/components/shared/titles/Title'
+import Link from 'next/link'
 
 import { useSearchParams } from 'next/navigation'
+import { useState } from 'react'
 
 export default function LoginClient() {
+  // query params
   const params = useSearchParams()
+
+  // context
   const context = params.get('context') ?? 'login'
+
+  // password empty state
+  const [isPasswordEmpty, setIsPasswordEmpty] = useState<boolean>()
+
+  // UI states
+  const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
+
+  // messages
+  const passwordEmpty: string = `You must first 'Log In'`
+
+  // 'onClick'
+  const handleLinkClick = (event) => {
+    event.preventDefault()
+
+    if (isPasswordEmpty) {
+      setInfoMessage(passwordEmpty)
+    } else {
+      setInfoMessage(null)
+    }
+  }
 
   return (
     <>
@@ -35,7 +60,17 @@ export default function LoginClient() {
           classNames: ['title'],
         }}
       />
-      <AuthForm params={{ context }} />
+      <AuthForm
+        params={{ context, isPasswordEmpty, setIsPasswordEmpty, infoMessage }}
+      />
+      {!context && (
+        <p>
+          {`Do you want to create an 'Enterprise' account?`}
+          <Link href="/register?userType=enterprise" onClick={handleLinkClick}>
+            Click here
+          </Link>
+        </p>
+      )}
     </>
   )
 }

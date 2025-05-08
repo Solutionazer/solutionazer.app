@@ -18,6 +18,19 @@
 
 const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
+export const getAllQuestionTypes = async () => {
+  const res = await fetch(`${baseUrl}/questions/types`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
 export const getQuestionsByForm = async (formUuid: string) => {
   const res = await fetch(`${baseUrl}/questions/form/${formUuid}`, {
     method: 'GET',
@@ -35,6 +48,26 @@ export const getQuestionsBySurvey = async (formUuid: string) => {
   const res = await fetch(`${baseUrl}/questions/survey/${formUuid}`, {
     method: 'GET',
     credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const createQuestion = async (
+  dataCollectorUuid: string,
+  type: string,
+) => {
+  const res = await fetch(`${baseUrl}/questions`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      dataCollectorUuid,
+      type,
+    }),
   })
 
   if (!res.ok) {

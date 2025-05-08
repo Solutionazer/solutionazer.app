@@ -21,6 +21,7 @@ const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 export const registerCompany = async (
   companyName: string,
   loginEmail: string,
+  admins: object[],
 ) => {
   const res = await fetch(`${baseUrl}/companies`, {
     method: 'POST',
@@ -28,6 +29,7 @@ export const registerCompany = async (
     body: JSON.stringify({
       companyName,
       loginEmail,
+      admins,
     }),
     credentials: 'include',
   })
@@ -39,8 +41,21 @@ export const registerCompany = async (
   return await res.json()
 }
 
-export const companyExists = async (email: string) => {
-  const res = await fetch(`${baseUrl}/companies/email/${email}`, {
+export const companyExists = async (userUuid: string) => {
+  const res = await fetch(`${baseUrl}/companies/check/${userUuid}`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const getCompaniesByUser = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/companies/user/${uuid}`, {
     method: 'GET',
     credentials: 'include',
   })

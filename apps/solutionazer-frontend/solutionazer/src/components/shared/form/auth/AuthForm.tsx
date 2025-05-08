@@ -18,7 +18,7 @@
 
 import MediumTitle from '../../titles/MediumTitle'
 import Section from '../../containers/Section'
-import { ReactElement } from 'react'
+import { Dispatch, ReactElement, SetStateAction } from 'react'
 import RegisterForm from '@/components/register/form/RegisterForm'
 import LoginForm from '@/components/login/form/LoginForm'
 import VerifyEmailForm from '@/components/login/form/VerifyEmailForm'
@@ -29,12 +29,16 @@ import styles from './authForm.module.css'
 interface AuthFormProps {
   params: {
     context: string
+    isPasswordEmpty?: boolean
+    setIsPasswordEmpty?: Dispatch<SetStateAction<boolean | undefined>>
+    infoMessage?: string | null
   }
 }
 
 export default function AuthForm(props: Readonly<AuthFormProps>) {
   // props
-  const { context } = props.params
+  const { context, isPasswordEmpty, setIsPasswordEmpty, infoMessage } =
+    props.params
 
   // evaluate 'context' | is 'login'?
   const isLogin: boolean = context === 'login'
@@ -49,7 +53,7 @@ export default function AuthForm(props: Readonly<AuthFormProps>) {
   const isRegisterMainResult: ReactElement = isRegister ? (
     <RegisterForm />
   ) : (
-    <LoginForm />
+    <LoginForm params={{ isPasswordEmpty, setIsPasswordEmpty, infoMessage }} />
   )
 
   return (

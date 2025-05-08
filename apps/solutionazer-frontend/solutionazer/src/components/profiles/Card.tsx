@@ -16,17 +16,45 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-//import AuthUser from '@/lib/auth/authUser'
-//import Article from '../shared/containers/Article'
-/*
+'use client'
+
+import Link from 'next/link'
+import Article from '../shared/containers/Article'
+
+import styles from './card.module.css'
+import useAuthStore from '@/lib/auth/states/global/authStore'
+import Company from '@/lib/auth/companies/company'
+
 interface CardProps {
   params: {
-    user?: AuthUser
-    company?: object
+    userFullName?: string
+    company?: Company
   }
 }
-*/
-export default function Card(/*props: Readonly<CardProps>*/) {
-  //const { user, company } = props.params
-  //return <Article params={{ className: '' }}></Article>
+
+export default function Card(props: Readonly<CardProps>) {
+  // props
+  const { userFullName, company } = props.params
+
+  // auth global state
+  const { setCompany } = useAuthStore()
+
+  // 'onClick'
+  const handleLinkClick = () => {
+    if (company) {
+      setCompany(company)
+    }
+  }
+
+  return (
+    <Link
+      href={userFullName ? '/forms' : '/dashboard'}
+      className={styles.card}
+      onClick={handleLinkClick}
+    >
+      <Article>
+        <p>{userFullName ?? company?.getName()}</p>
+      </Article>
+    </Link>
+  )
 }

@@ -16,13 +16,18 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import AuthUser from '../../authUser'
 import { persist } from 'zustand/middleware'
+import Company from '../../companies/company'
 
 interface AuthState {
   user: AuthUser | null
   setUser: (user: AuthUser | null) => void
+  company: Company | null
+  setCompany: (company: Company | null) => void
 }
 
 const useAuthStore: UseBoundStore<StoreApi<AuthState>> = create<
@@ -33,17 +38,25 @@ const useAuthStore: UseBoundStore<StoreApi<AuthState>> = create<
     (set) => ({
       user: null,
       setUser: (user) => set({ user }),
+      company: null,
+      setCompany: (company) => set({ company }),
     }),
     {
       name: 'authUser',
       onRehydrateStorage: () => (state) => {
         if (state?.user) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const plainUser = state.user as any
           state.user = new AuthUser({
             uuid: plainUser.uuid,
             fullName: plainUser.fullName,
             email: plainUser.email,
+          })
+        }
+        if (state?.company) {
+          const plainCompany = state.company as any
+          state.company = new Company({
+            uuid: plainCompany.uuid,
+            name: plainCompany.name,
           })
         }
       },

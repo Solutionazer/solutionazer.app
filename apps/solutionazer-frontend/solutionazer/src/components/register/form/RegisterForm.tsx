@@ -28,7 +28,7 @@ import { capitalize } from '@/lib/utils/textHandler'
 import FormData from '@/lib/auth/forms/formData'
 import useFormStore from '@/lib/auth/forms/states/global/formStore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Select from '../../shared/form/components/Select'
 import Option from '@/lib/options/option'
 import UserType from '@/lib/auth/forms/enums/userType'
@@ -44,8 +44,14 @@ import { registerCompany } from '@/lib/utils/users-management/companyHandler'
 import AuthUser from '@/lib/auth/authUser'
 
 export default function RegisterForm() {
+  // query params
+  const params = useSearchParams()
+
+  // userType through query params
+  const userTypeByParams: string = params.get('userType')
+
   // auth global state
-  const { setUser } = useAuthStore()
+  const { user, setUser } = useAuthStore()
 
   // formData global state
   const { formData, setFormData, resetFormData } = useFormStore()
@@ -68,6 +74,20 @@ export default function RegisterForm() {
   // messages
   const ifUserNotExists: string = `To create an 'Enterprise' account, you must first switch your account type to 'Individual'. Only after that can you create an 'Enterprise' account.`
   const ifUserExists: string = `You can now create your 'Enterprise' account. If you'd prefer to skip this step, simply press the 'Skip' button.`
+  const passwordError: string =
+    'Passwords do not match. Please make sure both password fields are identical.'
+
+  // userTypeByParams formData load
+  useEffect(() => {
+    if (userTypeByParams) {
+      const updatedFormData: FormData = new FormData({
+        email: formData.getEmail(),
+        userType: UserType.Enterprise,
+      })
+
+      setFormData(updatedFormData)
+    }
+  }, [userTypeByParams, setFormData])
 
   // check individual user existence
   useEffect(() => {
@@ -76,7 +96,9 @@ export default function RegisterForm() {
         try {
           await userExists(formData.getEmail())
 
-          setInfoMessage(ifUserExists)
+          if (!userTypeByParams) {
+            setInfoMessage(ifUserExists)
+          }
         } catch {
           setInfoMessage(ifUserNotExists)
         }
@@ -86,13 +108,27 @@ export default function RegisterForm() {
     }
 
     checkUserExistence()
-  }, [userType, formData, ifUserExists, ifUserNotExists, isIndividual])
+  }, [
+    userType,
+    formData,
+    ifUserExists,
+    ifUserNotExists,
+    isIndividual,
+    userTypeByParams,
+  ])
 
   // 'onSubmit'
   const handleRegister: React.FormEventHandler<HTMLFormElement> = async (
     event,
   ) => {
     event.preventDefault()
+
+    if (formData.getPassword() !== formData.getPasswordToConfirm()) {
+      setInfoMessage(passwordError)
+      return
+    } else {
+      setInfoMessage(null)
+    }
 
     if (isIndividual) {
       try {
@@ -144,6 +180,7 @@ export default function RegisterForm() {
       await registerCompany(
         formData.getCompanyName() ?? '',
         formData.getEmail(),
+        [{ uuid: user?.getUuid() ?? '' }],
       )
 
       resetFormData()
@@ -199,7 +236,6 @@ export default function RegisterForm() {
   // disable inputs?
   const disableFullName: boolean = !isIndividual
   const disableCompanyName: boolean = !(!isIndividual && showSkip)
-  const disablePasswordField: boolean = !isIndividual
 
   return (
     <>
@@ -227,46 +263,54 @@ export default function RegisterForm() {
               }}
             />
           </Fieldset>
-          <Fieldset>
-            <Input
-              params={{
-                type: typePassword,
-                id: typePassword,
-                value: formData.getPassword() ?? '',
-                minLength: 8,
-                maxLength: 32,
-                pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).*$',
-                title:
-                  'Password must be 8–32 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
-                onChange: handleInputValuesChange,
-                placeholder: ' ',
-                required: true,
-                disabled: disablePasswordField,
-              }}
-            />
-            <Label
-              params={{ htmlFor: typePassword, text: capitalize(typePassword) }}
-            />
-          </Fieldset>
-          <Fieldset>
-            <Input
-              params={{
-                type: typePassword,
-                id: 'confirm_password',
-                value: formData.getPasswordToConfirm() ?? '',
-                onChange: handleInputValuesChange,
-                placeholder: ' ',
-                required: true,
-                disabled: disablePasswordField,
-              }}
-            />
-            <Label
-              params={{
-                htmlFor: 'confirm_password',
-                text: `Confirm ${capitalize(typePassword)}`,
-              }}
-            />
-          </Fieldset>
+          {isIndividual && (
+            <>
+              <Fieldset>
+                <Input
+                  params={{
+                    type: typePassword,
+                    id: typePassword,
+                    value: formData.getPassword() ?? '',
+                    minLength: 8,
+                    maxLength: 32,
+                    pattern:
+                      '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).*$',
+                    title:
+                      'Password must be 8–32 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
+                    onChange: handleInputValuesChange,
+                    placeholder: ' ',
+                    required: true,
+                    disabled: false,
+                  }}
+                />
+                <Label
+                  params={{
+                    htmlFor: typePassword,
+                    text: capitalize(typePassword),
+                  }}
+                />
+              </Fieldset>
+              <Fieldset>
+                <Input
+                  params={{
+                    type: typePassword,
+                    id: 'confirm_password',
+                    value: formData.getPasswordToConfirm() ?? '',
+                    onChange: handleInputValuesChange,
+                    placeholder: ' ',
+                    required: true,
+                    disabled: false,
+                  }}
+                />
+                <Label
+                  params={{
+                    htmlFor: 'confirm_password',
+                    text: `Confirm ${capitalize(typePassword)}`,
+                  }}
+                />
+              </Fieldset>
+            </>
+          )}
           <Fieldset>
             <Select
               params={{

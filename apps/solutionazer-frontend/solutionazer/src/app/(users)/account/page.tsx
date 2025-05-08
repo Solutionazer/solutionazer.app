@@ -39,10 +39,11 @@ import Message from '@/components/shared/messages/Message'
 import { logout } from '@/lib/utils/auth/authHandler'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function Account() {
   // auth global state
-  const { user, setUser } = useAuthStore()
+  const { user, setUser, company } = useAuthStore()
 
   // formData global state
   const { formData, setFormData, resetFormData } = useFormStore()
@@ -136,7 +137,12 @@ export default function Account() {
 
   return (
     <Article params={{ className: styles.article }}>
-      <div className={styles.logout_btn_container}>
+      <div className={styles.auth_btn_container}>
+        {company !== null && (
+          <Link href="/profiles" className={styles.profiles_btn}>
+            Profiles
+          </Link>
+        )}
         <Button
           params={{
             type: ButtonType.Button,

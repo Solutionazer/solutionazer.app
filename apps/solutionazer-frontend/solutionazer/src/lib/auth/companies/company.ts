@@ -16,42 +16,25 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-interface QuestionProps {
-  uuid?: string
-  text: string
-  required: boolean
-  order: number
-  type?: string
+interface CompanyProps {
+  uuid: string
+  name: string
 }
 
-export default class Question {
-  private readonly uuid: string | undefined
-  private readonly text: string
-  private readonly required: boolean
-  private readonly order: number
-  private readonly type: string | undefined
+export default class Company {
+  private readonly uuid: string
+  private readonly name: string
 
-  constructor(private readonly props: QuestionProps) {
+  constructor(private readonly props: CompanyProps) {
     this.uuid = props.uuid
-    this.text = props.text
-    this.required = props.required
-    this.order = props.order
-    this.type = props.type
+    this.name = props.name
   }
 
-  public getUuid(): string | undefined {
+  public getUuid(): string {
     return this.uuid
   }
 
-  public getText(): string {
-    return this.text
-  }
-
-  public getRequired(): boolean {
-    return this.required
-  }
-
-  public getOrder(): number {
-    return this.order
+  public getName(): string {
+    return this.name
   }
 }

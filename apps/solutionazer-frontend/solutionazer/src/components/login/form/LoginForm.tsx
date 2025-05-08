@@ -33,8 +33,23 @@ import { login } from '@/lib/utils/auth/authHandler'
 import useAuthStore from '@/lib/auth/states/global/authStore'
 import { companyExists } from '@/lib/utils/users-management/companyHandler'
 import AuthUser from '@/lib/auth/authUser'
+import { Dispatch, SetStateAction, useState } from 'react'
+import Message from '@/components/shared/messages/Message'
 
-export default function LoginForm() {
+interface LoginFormProps {
+  params?: {
+    isPasswordEmpty?: boolean
+    setIsPasswordEmpty?: Dispatch<SetStateAction<boolean | undefined>>
+    infoMessage?: string | null
+  }
+}
+
+export default function LoginForm(props: Readonly<LoginFormProps>) {
+  // props
+  const isPasswordEmpty = props.params?.isPasswordEmpty
+  const setIsPasswordEmpty = props.params?.setIsPasswordEmpty
+  const infoMessageFromLoginClient = props.params?.infoMessage
+
   // auth global state
   const { setUser } = useAuthStore()
 
@@ -44,13 +59,26 @@ export default function LoginForm() {
   // configure router
   const router: AppRouterInstance = useRouter()
 
+  // UI states
+  const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
+
+  // messages
+  const passwordError: string = 'Incorrect password.'
+
   // 'onSubmit'
   const handleLogin: React.FormEventHandler<HTMLFormElement> = async (
     event,
   ) => {
     event.preventDefault()
+
+    const password: string = formData.getPassword() ?? ''
+
+    if (password.trim() === '') {
+      setIsPasswordEmpty?.(true)
+    }
+
     try {
-      const res = await login(formData.getEmail(), formData.getPassword() ?? '')
+      const res = await login(formData.getEmail(), password)
 
       setUser(
         new AuthUser({
@@ -61,29 +89,37 @@ export default function LoginForm() {
       )
 
       try {
-        await companyExists(formData.getEmail())
+        await companyExists(res.user.uuid)
 
         resetFormData()
 
-        const path: string = '/profiles'
+        if (!isPasswordEmpty) {
+          const path: string = '/profiles'
 
-        router.prefetch(path)
-        router.push(path)
+          router.prefetch(path)
+          router.push(path)
+        }
       } catch {
         resetFormData()
 
-        const path: string = '/forms'
+        if (!isPasswordEmpty) {
+          const path: string = '/forms'
 
-        router.prefetch(path)
-        router.push(path)
+          router.prefetch(path)
+          router.push(path)
+        }
       }
-    } catch {}
+    } catch {
+      setInfoMessage(passwordError)
+    }
   }
 
   // 'onChange'
   const handleInputValuesChange: React.ChangeEventHandler<HTMLInputElement> = (
     event,
   ) => {
+    setInfoMessage(null)
+
     const { name, value } = event.target
 
     const updatedFormData: FormData = new FormData({
@@ -99,31 +135,39 @@ export default function LoginForm() {
   const typePassword: string = 'password'
 
   return (
-    <Form params={{ onSubmit: handleLogin, method: 'post' }}>
-      <Fieldset>
+    <>
+      {isPasswordEmpty && (
+        <Message
+          params={{ type: '', text: infoMessageFromLoginClient ?? '' }}
+        />
+      )}
+      {infoMessage && <Message params={{ type: '', text: infoMessage }} />}
+      <Form params={{ onSubmit: handleLogin, method: 'post' }}>
         <Fieldset>
-          <Input
-            params={{
-              type: typePassword,
-              id: typePassword,
-              value: formData.getPassword() ?? '',
-              onChange: handleInputValuesChange,
-              placeholder: ' ',
-              required: true,
-              disabled: false,
-            }}
-          />
-          <Label
-            params={{ htmlFor: typePassword, text: capitalize(typePassword) }}
-          />
+          <Fieldset>
+            <Input
+              params={{
+                type: typePassword,
+                id: typePassword,
+                value: formData.getPassword() ?? '',
+                onChange: handleInputValuesChange,
+                placeholder: ' ',
+                required: true,
+                disabled: false,
+              }}
+            />
+            <Label
+              params={{ htmlFor: typePassword, text: capitalize(typePassword) }}
+            />
+          </Fieldset>
         </Fieldset>
-      </Fieldset>
-      <Button
-        params={{
-          type: ButtonType.Submit,
-          text: 'Log In',
-        }}
-      />
-    </Form>
+        <Button
+          params={{
+            type: ButtonType.Submit,
+            text: 'Log In',
+          }}
+        />
+      </Form>
+    </>
   )
 }

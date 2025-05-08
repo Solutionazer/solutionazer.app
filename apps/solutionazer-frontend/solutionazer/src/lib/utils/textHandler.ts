@@ -19,3 +19,11 @@
 export function capitalize(word: string): string {
   return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
 }
+
+export function splitCamelCaseAndCapitalize(text: string): string {
+  return text
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .split(' ')
+    .map((word) => capitalize(word))
+    .join(' ')
+}
