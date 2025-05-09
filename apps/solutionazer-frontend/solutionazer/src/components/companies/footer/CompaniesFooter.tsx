@@ -16,27 +16,24 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-'use client'
-
-import Option from '../../../lib/options/option'
-import Footer from '../../shared/containers/Footer'
-
-import styles from './moduleFooter.module.css'
-import { useModuleStore } from '@/lib/module/states/global/moduleStore'
+import Footer from '@/components/shared/containers/Footer'
 import Navbar from '@/components/shared/navigation/Navbar'
+import Option from '@/lib/options/option'
 
-export default function ModuleFooter() {
-  // module global state
-  const { module } = useModuleStore()
+import styles from './companiesFooter.module.css'
 
+export default function CompaniesFooter() {
   // options
   const options: Option[] = [
-    new Option(1, 'home'),
+    new Option(1, 'users'),
     new Option(2, 'teams'),
-    new Option(3, 'account'),
+    new Option(3, 'company'),
   ]
 
-  const routes: string[] = [`/${module}`, `/teams`, `/account`]
+  // routes
+  const routes: string[] = options.map((option) => {
+    return `/${option.getText().toLowerCase() !== 'company' ? `company/${option.getText().toLowerCase()}` : option.getText().toLowerCase()}`
+  })
 
   return (
     <Footer params={{ className: styles.secondary_footer }}>

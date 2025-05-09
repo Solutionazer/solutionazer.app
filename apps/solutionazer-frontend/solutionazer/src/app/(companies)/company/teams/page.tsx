@@ -16,8 +16,6 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import Canvas from '@/components/users/module/tools/editor/Canvas'
-
-export default function Editor() {
-  return <Canvas />
+export default function Teams() {
+  return <div></div>
 }

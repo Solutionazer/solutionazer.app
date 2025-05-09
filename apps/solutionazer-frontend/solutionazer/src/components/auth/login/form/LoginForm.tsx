@@ -19,11 +19,6 @@
 'use client'
 
 import ButtonType from '@/lib/auth/forms/enums/buttonType'
-import Button from '../../shared/form/components/Button'
-import Input from '../../shared/form/components/Input'
-import Form from '../../shared/form/Form'
-import Fieldset from '../../shared/form/components/containers/fieldset/Fieldset'
-import Label from '../../shared/form/components/Label'
 import { capitalize } from '@/lib/utils/textHandler'
 import FormData from '@/lib/auth/forms/formData'
 import useFormStore from '@/lib/auth/forms/states/global/formStore'
@@ -35,6 +30,11 @@ import { companyExists } from '@/lib/utils/users-management/companyHandler'
 import AuthUser from '@/lib/auth/authUser'
 import { Dispatch, SetStateAction, useState } from 'react'
 import Message from '@/components/shared/messages/Message'
+import Form from '@/components/shared/form/Form'
+import Fieldset from '@/components/shared/form/components/containers/fieldset/Fieldset'
+import Input from '@/components/shared/form/components/Input'
+import Label from '@/components/shared/form/components/Label'
+import Button from '@/components/shared/form/components/Button'
 
 interface LoginFormProps {
   params?: {

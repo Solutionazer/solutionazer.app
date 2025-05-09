@@ -51,8 +51,6 @@ export default function Route() {
       if (user) {
         const userUuid: string = user.getUuid() ?? ''
 
-        console.log(userUuid)
-
         const fetchedTeams: Team[] = (await getTeamsByUser(userUuid)).map(
           (team: {
             uuid: string
@@ -68,8 +66,6 @@ export default function Route() {
             })
           },
         )
-
-        console.log(fetchedTeams)
 
         setTeams(fetchedTeams)
       }

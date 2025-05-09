@@ -16,8 +16,32 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import Canvas from '@/components/users/module/tools/editor/Canvas'
+interface AdminProps {
+  uuid: string
+  fullName: string
+  email: string
+}
 
-export default function Editor() {
-  return <Canvas />
+export default class Admin {
+  private readonly uuid: string
+  private readonly fullName: string
+  private readonly email: string
+
+  constructor(private readonly props: AdminProps) {
+    this.uuid = props.uuid
+    this.fullName = props.fullName
+    this.email = props.email
+  }
+
+  public getUuid(): string {
+    return this.uuid
+  }
+
+  public getFullName(): string {
+    return this.fullName
+  }
+
+  public getEmail(): string {
+    return this.email
+  }
 }

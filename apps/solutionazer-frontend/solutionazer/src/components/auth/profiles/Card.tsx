@@ -19,11 +19,11 @@
 'use client'
 
 import Link from 'next/link'
-import Article from '../shared/containers/Article'
 
 import styles from './card.module.css'
 import useAuthStore from '@/lib/auth/states/global/authStore'
 import Company from '@/lib/auth/companies/company'
+import Article from '@/components/shared/containers/Article'
 
 interface CardProps {
   params: {
@@ -48,7 +48,7 @@ export default function Card(props: Readonly<CardProps>) {
 
   return (
     <Link
-      href={userFullName ? '/forms' : '/dashboard'}
+      href={userFullName ? '/forms' : '/company/users'}
       className={styles.card}
       onClick={handleLinkClick}
     >

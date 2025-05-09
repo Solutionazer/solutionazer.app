@@ -19,15 +19,16 @@
 'use client'
 
 import Option from '@/lib/options/option'
-import Input from '../../shared/form/components/Input'
+import Input from '../../../shared/form/components/Input'
 import { capitalize } from '@/lib/utils/textHandler'
 
 import styles from './moduleHeader.module.css'
-import Fieldset from '../../shared/form/components/containers/fieldset/Fieldset'
-import Label from '../../shared/form/components/Label'
+import Fieldset from '../../../shared/form/components/containers/fieldset/Fieldset'
+import Label from '../../../shared/form/components/Label'
 import ModuleOptions from '@/lib/module/record/moduleOptions'
 import Navbar from '@/components/shared/navigation/Navbar'
 import useSearch from '@/lib/module/states/global/searchStore'
+import Header from '@/components/shared/containers/Header'
 
 interface ModuleHeaderProps {
   params: {
@@ -63,7 +64,7 @@ export default function ModuleHeader(props: Readonly<ModuleHeaderProps>) {
   const typeSearch: string = 'search'
 
   return (
-    <header className={styles.header}>
+    <Header params={{ className: styles.header }}>
       <Fieldset>
         <Input
           params={{
@@ -79,6 +80,6 @@ export default function ModuleHeader(props: Readonly<ModuleHeaderProps>) {
         <Label params={{ htmlFor: typeSearch, text: capitalize(typeSearch) }} />
       </Fieldset>
       <Navbar params={{ options, routes }} />
-    </header>
+    </Header>
   )
 }

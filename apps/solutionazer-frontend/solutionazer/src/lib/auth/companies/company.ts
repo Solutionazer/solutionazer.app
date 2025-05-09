@@ -16,18 +16,23 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+import Admin from './admins/admin'
+
 interface CompanyProps {
   uuid: string
   name: string
+  admins?: Admin[]
 }
 
 export default class Company {
   private readonly uuid: string
   private readonly name: string
+  private readonly admins: Admin[] | undefined
 
   constructor(private readonly props: CompanyProps) {
     this.uuid = props.uuid
     this.name = props.name
+    this.admins = props.admins
   }
 
   public getUuid(): string {
@@ -36,5 +41,9 @@ export default class Company {
 
   public getName(): string {
     return this.name
+  }
+
+  public getAdmins(): Admin[] | undefined {
+    return this.admins
   }
 }

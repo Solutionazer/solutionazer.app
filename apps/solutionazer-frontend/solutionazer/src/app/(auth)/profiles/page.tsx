@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * This file is part of solutionazer.app.
  *
@@ -18,12 +19,13 @@
 
 'use client'
 
-import Card from '@/components/profiles/Card'
+import Card from '@/components/auth/profiles/Card'
 import Article from '@/components/shared/containers/Article'
 import Section from '@/components/shared/containers/Section'
 import MediumTitle from '@/components/shared/titles/MediumTitle'
 import SmallTitle from '@/components/shared/titles/SmallTitle'
 import Title from '@/components/shared/titles/Title'
+import Admin from '@/lib/auth/companies/admins/admin'
 import Company from '@/lib/auth/companies/company'
 import useAuthStore from '@/lib/auth/states/global/authStore'
 import { getCompaniesByUser } from '@/lib/utils/users-management/companyHandler'
@@ -41,10 +43,17 @@ export default function Profiles() {
     const fetchData = async () => {
       if (user?.getUuid()) {
         const data = (await getCompaniesByUser(user.getUuid())).map(
-          (company: { uuid: string; name: string }) => {
+          (company: { uuid: string; name: string; admins: Admin[] }) => {
             return new Company({
               uuid: company.uuid,
               name: company.name,
+              admins: company.admins.map((admin: any) => {
+                return new Admin({
+                  uuid: admin.uuid,
+                  fullName: admin.fullName,
+                  email: admin.email,
+                })
+              }),
             })
           },
         )

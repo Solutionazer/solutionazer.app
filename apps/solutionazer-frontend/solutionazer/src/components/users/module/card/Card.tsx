@@ -17,14 +17,14 @@
  */
 
 import Link from 'next/link'
-import Article from '../../shared/containers/Article'
-import MediumTitle from '../../shared/titles/MediumTitle'
 
 import styles from './card.module.css'
 import Button from '@/components/shared/form/components/Button'
 import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import useDataCollector from '@/lib/module/data-collectors/states/global/dataCollectorStore'
 import DataCollector from '@/lib/module/data-collectors/dataCollector'
+import Article from '@/components/shared/containers/Article'
+import MediumTitle from '@/components/shared/titles/MediumTitle'
 
 interface CardProps {
   params: {

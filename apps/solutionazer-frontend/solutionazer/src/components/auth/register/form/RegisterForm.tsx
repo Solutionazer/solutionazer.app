@@ -19,17 +19,11 @@
 'use client'
 
 import ButtonType from '@/lib/auth/forms/enums/buttonType'
-import Button from '../../shared/form/components/Button'
-import Fieldset from '../../shared/form/components/containers/fieldset/Fieldset'
-import Input from '../../shared/form/components/Input'
-import Form from '../../shared/form/Form'
-import Label from '../../shared/form/components/Label'
 import { capitalize } from '@/lib/utils/textHandler'
 import FormData from '@/lib/auth/forms/formData'
 import useFormStore from '@/lib/auth/forms/states/global/formStore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Select from '../../shared/form/components/Select'
 import Option from '@/lib/options/option'
 import UserType from '@/lib/auth/forms/enums/userType'
 import {
@@ -42,6 +36,12 @@ import { useEffect, useState } from 'react'
 import Message from '@/components/shared/messages/Message'
 import { registerCompany } from '@/lib/utils/users-management/companyHandler'
 import AuthUser from '@/lib/auth/authUser'
+import Form from '@/components/shared/form/Form'
+import Fieldset from '@/components/shared/form/components/containers/fieldset/Fieldset'
+import Input from '@/components/shared/form/components/Input'
+import Label from '@/components/shared/form/components/Label'
+import Select from '@/components/shared/form/components/Select'
+import Button from '@/components/shared/form/components/Button'
 
 export default function RegisterForm() {
   // query params
@@ -66,6 +66,9 @@ export default function RegisterForm() {
   // try to create an enterprise account before have an individual one?
   const [wasTryingToCreateEnterprise, setWasTryingToCreateEnterprise] =
     useState(false)
+
+  // skip button state
+  const [isSkipPressed, setIsSkipPressed] = useState<boolean>(false)
 
   // UI states
   const [showSkip, setShowSkip] = useState(false) // skip button
@@ -92,10 +95,8 @@ export default function RegisterForm() {
   // check individual user existence
   useEffect(() => {
     const checkUserExistence = async () => {
-      if (!isIndividual) {
+      if (!isIndividual && !user) {
         try {
-          console.log(formData.getEmail())
-
           await userExists(formData.getEmail())
 
           if (!userTypeByParams) {
@@ -105,18 +106,22 @@ export default function RegisterForm() {
           setInfoMessage(ifUserNotExists)
         }
       } else {
-        setInfoMessage(null)
+        if (infoMessage !== ifUserExists) {
+          setInfoMessage(null)
+        }
       }
     }
 
     checkUserExistence()
   }, [
+    user,
     userType,
     formData,
     ifUserExists,
     ifUserNotExists,
     isIndividual,
     userTypeByParams,
+    infoMessage,
   ])
 
   // 'onSubmit'
@@ -230,6 +235,16 @@ export default function RegisterForm() {
     })
   }
 
+  // 'onClick' | skip button
+  const handleSkip = () => {
+    setIsSkipPressed(true)
+
+    const path: string = '/forms'
+
+    router.prefetch(path)
+    router.push(path)
+  }
+
   // an input type
   const typePassword: string = 'password'
 
@@ -254,7 +269,7 @@ export default function RegisterForm() {
                   : (formData.getCompanyName() ?? ''),
                 onChange: handleInputValuesChange,
                 placeholder: ' ',
-                required: true,
+                required: !isSkipPressed,
                 disabled: isIndividual ? disableFullName : disableCompanyName,
               }}
             />
@@ -338,8 +353,9 @@ export default function RegisterForm() {
         {showSkip && (
           <Button
             params={{
-              type: ButtonType.Submit,
+              type: ButtonType.Button,
               text: 'Skip',
+              onClick: handleSkip,
             }}
           />
         )}

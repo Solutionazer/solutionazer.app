@@ -10,6 +10,7 @@ import useDataCollector from '@/lib/module/data-collectors/states/global/dataCol
 import { useEffect, useState } from 'react'
 import { updateFormTitle } from '@/lib/utils/data-collectors/formsHandler'
 import DataCollector from '@/lib/module/data-collectors/dataCollector'
+import Header from '@/components/shared/containers/Header'
 
 interface ToolsHeaderProps {
   params: {
@@ -73,7 +74,7 @@ export default function ToolsHeader(props: Readonly<ToolsHeaderProps>) {
   }
 
   return (
-    <header className={styles.header}>
+    <Header params={{ className: styles.header }}>
       <div>
         <Input
           params={{
@@ -92,6 +93,6 @@ export default function ToolsHeader(props: Readonly<ToolsHeaderProps>) {
         <Link href={`/${module}`}>←</Link>
       </div>
       <Navbar params={{ options, routes }} />
-    </header>
+    </Header>
   )
 }

@@ -16,13 +16,30 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import LoginClient from '@/components/auth/login/pages/LoginClient'
-import { Suspense } from 'react'
+'use client'
 
-export default function Login() {
+import styles from './moduleFooter.module.css'
+import { useModuleStore } from '@/lib/module/states/global/moduleStore'
+import Navbar from '@/components/shared/navigation/Navbar'
+import Option from '@/lib/options/option'
+import Footer from '@/components/shared/containers/Footer'
+
+export default function ModuleFooter() {
+  // module global state
+  const { module } = useModuleStore()
+
+  // options
+  const options: Option[] = [
+    new Option(1, 'home'),
+    new Option(2, 'teams'),
+    new Option(3, 'account'),
+  ]
+
+  const routes: string[] = [`/${module}`, `/teams`, `/account`]
+
   return (
-    <Suspense fallback={null}>
-      <LoginClient />
-    </Suspense>
+    <Footer params={{ className: styles.secondary_footer }}>
+      <Navbar params={{ options, routes }} />
+    </Footer>
   )
 }

@@ -16,8 +16,16 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import Canvas from '@/components/users/module/tools/editor/Canvas'
+interface HeaderProps {
+  params?: {
+    className: string
+  }
+  children: React.ReactNode
+}
 
-export default function Editor() {
-  return <Canvas />
+export default function Header({ children, params }: Readonly<HeaderProps>) {
+  // props
+  const className = params?.className
+
+  return <header className={className}>{children}</header>
 }

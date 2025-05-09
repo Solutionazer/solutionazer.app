@@ -19,7 +19,6 @@
 'use client'
 
 import { JSX, use, useEffect, useState } from 'react'
-import Card from '../../../components/module/card/Card'
 
 import useAuthStore from '@/lib/auth/states/global/authStore'
 import {
@@ -39,6 +38,7 @@ import Modal from '@/components/shared/containers/modal/Modal'
 import Article from '@/components/shared/containers/Article'
 import DataCollector from '@/lib/module/data-collectors/dataCollector'
 import useSearch from '@/lib/module/states/global/searchStore'
+import Card from '@/components/users/module/card/Card'
 
 interface ModuleProps {
   params: Promise<{

@@ -16,8 +16,20 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import Canvas from '@/components/users/module/tools/editor/Canvas'
+.companies_layout {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 
-export default function Editor() {
-  return <Canvas />
+  height: var(--max-percentage);
+
+  padding-bottom: 1.5rem;
+}
+
+.companies_layout_without_header {
+  display: grid;
+  grid-template-rows: 1fr auto;
+
+  height: var(--max-percentage);
+
+  padding-bottom: 1.5rem;
 }

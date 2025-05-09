@@ -61,3 +61,22 @@ export const getCompaniesByUser = async (uuid: string) => {
 
   return await res.json()
 }
+
+export const updateCompany = async (uuid: string, name: string) => {
+  const res = await fetch(`${baseUrl}/companies/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const deleteAdmin = async () => {}
