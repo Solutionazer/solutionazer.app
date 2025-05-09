@@ -41,8 +41,6 @@ export class TeamsService {
       relations: ['teams'],
     });
 
-    console.log(user.teams);
-
     const teams: Team[] = user.teams;
 
     return teams.map((team) => {

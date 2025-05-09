@@ -26,13 +26,18 @@ import {
 import { Company } from 'src/users-management/entities/company.entity';
 import { UsersService } from '../users/users.service';
 import { User } from 'src/users-management/entities/user.entity';
+import { RolesService } from '../roles/roles.service';
+import { Role } from 'src/users-management/entities/role.entity';
 
 @Injectable()
 export class CompaniesService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly usersService: UsersService,
+    private readonly rolesService: RolesService,
   ) {}
 
   async findAll() {
@@ -50,6 +55,7 @@ export class CompaniesService {
   async findAllByUserUuid(uuid: string) {
     return await this.companyRepository.find({
       where: { admins: { uuid } },
+      relations: ['admins'],
     });
   }
 
@@ -84,7 +90,21 @@ export class CompaniesService {
     if (data.admins?.length) {
       users = await Promise.all(
         data.admins.map(async (admin) => {
-          const user: User = await this.usersService.findOne(admin.uuid);
+          const user: User = await this.usersService.findOne(admin.uuid, {
+            relations: ['roles'],
+          });
+
+          const role: Role =
+            await this.rolesService.findOneByName('Company Admin');
+
+          if (
+            !user.roles.find((existingRole) => existingRole.uuid === role.uuid)
+          ) {
+            user.roles.push(role);
+
+            await this.userRepository.save(user);
+          }
+
           return user;
         }),
       );
@@ -99,18 +119,25 @@ export class CompaniesService {
 
   async update(uuid: string, changes: UpdateCompanyDto) {
     const company: Company = await this.findOne(uuid);
+    let users: User[] = [];
 
-    (
-      await Promise.all(
-        changes.admins?.map(async (admin) => {
+    if (changes.admins?.length) {
+      users = await Promise.all(
+        changes.admins.map(async (admin) => {
           const user: User = await this.usersService.findOne(admin.uuid);
-          return !!user;
-        }) ?? [],
-      )
-    ).every(Boolean);
+          return user;
+        }),
+      );
 
-    this.companyRepository.merge(company, changes);
-    return this.companyRepository.save(company);
+      company.admins = users;
+    }
+
+    const updatedCompany: Company = this.companyRepository.merge(
+      company,
+      changes,
+    );
+
+    return this.companyRepository.save(updatedCompany);
   }
 
   async remove(uuid: string) {

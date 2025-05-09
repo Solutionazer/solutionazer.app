@@ -99,25 +99,29 @@ export class UsersService {
             permissions: role.permissions.map((permission) => permission.name),
           })) ?? [],
         company:
-          user.companyRoles.map((companyRole) => ({
-            companyUuid: companyRole.company.uuid,
-            role: {
-              name: companyRole.role.name,
-              permissions: companyRole.role.permissions.map(
-                (permission) => permission.name,
-              ),
-            },
-          })) ?? [],
+          user.companyRoles
+            .filter((companyRole) => companyRole.company && companyRole.role)
+            .map((companyRole) => ({
+              companyUuid: companyRole.company.uuid,
+              role: {
+                name: companyRole.role.name,
+                permissions: companyRole.role.permissions.map(
+                  (permission) => permission.name,
+                ),
+              },
+            })) ?? [],
         team:
-          user.teamRoles.map((teamRole) => ({
-            teamUuid: teamRole.team.uuid,
-            role: {
-              name: teamRole.role.name,
-              permissions: teamRole.role.permissions.map(
-                (permission) => permission.name,
-              ),
-            },
-          })) ?? [],
+          user.teamRoles
+            .filter((teamRole) => teamRole.team && teamRole.role)
+            .map((teamRole) => ({
+              teamUuid: teamRole.team.uuid,
+              role: {
+                name: teamRole.role.name,
+                permissions: teamRole.role.permissions.map(
+                  (permission) => permission.name,
+                ),
+              },
+            })) ?? [],
       },
     };
   }
