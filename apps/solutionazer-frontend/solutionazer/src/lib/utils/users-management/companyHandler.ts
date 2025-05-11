@@ -16,18 +16,18 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+import Admin from '@/lib/auth/companies/admins/admin'
+import Member from '@/lib/auth/companies/members/member'
+
 const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
-export const registerCompany = async (
-  companyName: string,
-  loginEmail: string,
-) => {
+export const registerCompany = async (name: string, admins: object[]) => {
   const res = await fetch(`${baseUrl}/companies`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      companyName,
-      loginEmail,
+      name,
+      admins,
     }),
     credentials: 'include',
   })
@@ -39,9 +39,73 @@ export const registerCompany = async (
   return await res.json()
 }
 
-export const companyExists = async (email: string) => {
-  const res = await fetch(`${baseUrl}/companies/email/${email}`, {
+export const companyExists = async (userUuid: string) => {
+  const res = await fetch(`${baseUrl}/companies/check/${userUuid}`, {
     method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const getCompaniesByUser = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/companies/user/${uuid}`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateCompany = async (uuid: string, name: string) => {
+  const res = await fetch(`${baseUrl}/companies/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateAdmins = async (uuid: string, admins: Admin[]) => {
+  const res = await fetch(`${baseUrl}/companies/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      admins,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateMembers = async (uuid: string, members: Member[]) => {
+  const res = await fetch(`${baseUrl}/companies/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      members,
+    }),
     credentials: 'include',
   })
 

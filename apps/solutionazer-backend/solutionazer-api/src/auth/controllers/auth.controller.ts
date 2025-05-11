@@ -65,6 +65,6 @@ export class AuthController {
       sameSite: 'lax',
     });
 
-    return res.status(200).json({ message: 'Logged out' });
+    res.status(200).json({ message: 'Logged out' });
   }
 }

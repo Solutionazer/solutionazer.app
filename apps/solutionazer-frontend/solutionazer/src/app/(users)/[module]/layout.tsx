@@ -22,9 +22,10 @@ import { notFound, useParams, usePathname } from 'next/navigation'
 import { allowedModules } from '../../../lib/module/moduleData'
 
 import styles from './layout.module.css'
-import ModuleHeader from '../../../components/module/header/ModuleHeader'
+
 import { useModuleStore } from '@/lib/module/states/global/moduleStore'
 import { useEffect } from 'react'
+import ModuleHeader from '@/components/users/module/header/ModuleHeader'
 
 export default function ModuleLayout({
   children,

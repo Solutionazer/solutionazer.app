@@ -1,0 +1,24 @@
+.card {
+  --max-width: 10rem;
+
+  display: grid;
+  place-items: center;
+
+  max-width: var(--max-width);
+  width: var(--max-percentage);
+  aspect-ratio: 4/3;
+
+  padding: 1rem;
+  margin: 1rem;
+
+  background-color: var(--foreground-color);
+  color: var(--background-color);
+
+  text-decoration: none;
+
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+}

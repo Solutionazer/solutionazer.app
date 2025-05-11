@@ -16,7 +16,7 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import LoginClient from '@/components/login/pages/LoginClient'
+import LoginClient from '@/components/auth/login/pages/LoginClient'
 import { Suspense } from 'react'
 
 export default function Login() {

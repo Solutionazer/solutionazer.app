@@ -17,32 +17,18 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unsafe-call */
-import {
-  IsArray,
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { PartialType } from '@nestjs/mapped-types';
-import { User } from '../entities/user.entity';
-import { Type } from 'class-transformer';
+import { AdminDto } from './admin.dtos';
 
 export class CreateCompanyDto {
   @IsNotEmpty()
   @IsString()
-  readonly companyName: string;
-
-  @IsNotEmpty()
-  @IsEmail()
-  readonly loginEmail: string;
+  readonly name: string;
 
   @IsOptional()
   @IsArray()
-  @ValidateNested()
-  @Type(() => User)
-  readonly admins: User[];
+  readonly admins: AdminDto[];
 }
 
 export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {}

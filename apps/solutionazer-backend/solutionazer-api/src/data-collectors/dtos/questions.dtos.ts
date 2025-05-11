@@ -17,20 +17,52 @@
  */
 
 import { PartialType } from '@nestjs/mapped-types';
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class CreateQuestionDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   readonly text: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
   readonly required: boolean;
 
   @IsNotEmpty()
   @IsNumber()
   readonly order: number;
+
+  @IsNotEmpty()
+  @IsIn([
+    'welcome',
+    'legal',
+    'date',
+    'dropdown',
+    'email',
+    'file',
+    'multipleChoice',
+    'phone',
+    'picture',
+    'rating',
+    'scale',
+    'shortText',
+    'statement',
+    'website',
+    'yesNo',
+    'greetings',
+  ])
+  readonly type: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly dataCollectorUuid: string;
 }
 
 export class UpdateQuestionDto extends PartialType(CreateQuestionDto) {}

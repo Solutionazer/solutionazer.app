@@ -3,6 +3,10 @@ interface InputProps {
     type: string
     id: string
     value: string | undefined
+    minLength?: number
+    maxLength?: number
+    pattern?: string
+    title?: string
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
     onBlur?: () => void
     placeholder: string
@@ -12,8 +16,20 @@ interface InputProps {
 }
 
 export default function Input(props: Readonly<InputProps>) {
-  const { type, id, value, onChange, onBlur, placeholder, required, disabled } =
-    props.params
+  const {
+    type,
+    id,
+    value,
+    minLength,
+    maxLength,
+    pattern,
+    title,
+    onChange,
+    onBlur,
+    placeholder,
+    required,
+    disabled,
+  } = props.params
 
   const name = id
 
@@ -23,6 +39,10 @@ export default function Input(props: Readonly<InputProps>) {
       name={name}
       id={id}
       value={value}
+      minLength={minLength}
+      maxLength={maxLength}
+      pattern={pattern}
+      title={title}
       onChange={onChange}
       onBlur={onBlur}
       placeholder={placeholder}

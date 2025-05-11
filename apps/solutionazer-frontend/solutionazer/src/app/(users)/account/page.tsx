@@ -24,13 +24,13 @@ import Fieldset from '@/components/shared/form/components/containers/fieldset/Fi
 import Input from '@/components/shared/form/components/Input'
 import Label from '@/components/shared/form/components/Label'
 import Form from '@/components/shared/form/Form'
-import ButtonType from '@/lib/forms/enums/buttonType'
-import FormData from '@/lib/forms/formData'
-import useFormStore from '@/lib/forms/states/global/formStore'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
+import FormData from '@/lib/auth/forms/formData'
+import useFormStore from '@/lib/auth/forms/states/global/formStore'
 
 import styles from './page.module.css'
 import Select from '@/components/shared/form/components/Select'
-import UserType from '@/lib/forms/enums/userType'
+import UserType from '@/lib/auth/forms/enums/userType'
 import Option from '@/lib/options/option'
 import useAuthStore from '@/lib/auth/states/global/authStore'
 import React, { useEffect, useState } from 'react'
@@ -39,10 +39,11 @@ import Message from '@/components/shared/messages/Message'
 import { logout } from '@/lib/utils/auth/authHandler'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 
 export default function Account() {
   // auth global state
-  const { user } = useAuthStore()
+  const { user, setUser, company } = useAuthStore()
 
   // formData global state
   const { formData, setFormData, resetFormData } = useFormStore()
@@ -117,6 +118,7 @@ export default function Account() {
   const handleLogOut = async () => {
     try {
       await logout()
+      setUser(null)
       resetFormData()
 
       const path: string = '/login'
@@ -135,7 +137,12 @@ export default function Account() {
 
   return (
     <Article params={{ className: styles.article }}>
-      <div className={styles.logout_btn_container}>
+      <div className={styles.auth_btn_container}>
+        {company !== null && (
+          <Link href="/profiles" className={styles.profiles_btn}>
+            Profiles
+          </Link>
+        )}
         <Button
           params={{
             type: ButtonType.Button,

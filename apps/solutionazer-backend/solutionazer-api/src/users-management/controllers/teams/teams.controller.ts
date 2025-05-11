@@ -40,19 +40,17 @@ export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}
 
   @Permissions('team:readAllByCompany')
-  @Get(':companyUuid')
+  @Get('company/:uuid')
   @HttpCode(HttpStatus.OK)
-  findAllByCompanyUuid(
-    @Param('companyUuid', new ParseUUIDPipe()) companyUuid: string,
-  ) {
-    return this.teamsService.findAllByCompanyUuid(companyUuid);
+  findAllByCompanyUuid(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+    return this.teamsService.findAllByCompanyUuid(uuid);
   }
 
-  @Permissions('team:readOneByUser')
-  @Get(':userUuid')
+  @Permissions('team:readAllByUser')
+  @Get('user/:uuid')
   @HttpCode(HttpStatus.OK)
-  findOneByUserUuid(@Param('userUuid', new ParseUUIDPipe()) userUuid: string) {
-    return this.teamsService.findAllByUserUuid(userUuid);
+  findAllByUserUuid(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+    return this.teamsService.findAllByUserUuid(uuid);
   }
 
   @Permissions('team:create')

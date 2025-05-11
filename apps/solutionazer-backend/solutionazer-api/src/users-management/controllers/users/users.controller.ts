@@ -27,6 +27,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { Permissions } from 'src/auth/decorators/permissions.decorator';
 import { Public } from 'src/auth/decorators/public.decorator';
@@ -40,6 +41,35 @@ import { UsersService } from 'src/users-management/services/users/users.service'
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Permissions('user:search')
+  @Get('search')
+  @HttpCode(HttpStatus.OK)
+  searchUsers(
+    @Query('query') query: string,
+    @Query('exclude') exclude: string,
+  ) {
+    const excludedUuids = exclude ? exclude.split(',') : [];
+
+    return this.usersService.searchUsers(query, excludedUuids);
+  }
+
+  @Permissions('user:searchInCompany')
+  @Get('search-in-company')
+  @HttpCode(HttpStatus.OK)
+  searchUsersInCompany(
+    @Query('company', new ParseUUIDPipe()) companyUuid: string,
+    @Query('query') query: string,
+    @Query('exclude') exclude: string,
+  ) {
+    const excludedUuids = exclude ? exclude.split(',') : [];
+
+    return this.usersService.searchUsersInCompany(
+      companyUuid,
+      query,
+      excludedUuids,
+    );
+  }
 
   @Permissions('user:readAll')
   @Get()

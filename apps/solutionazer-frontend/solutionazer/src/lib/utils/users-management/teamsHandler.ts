@@ -18,9 +18,58 @@
 
 const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
-export const getTeamsByUser = async (userUuid: string) => {
-  const res = await fetch(`${baseUrl}/teams/${userUuid}`, {
+export const getTeamsByUser = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/teams/user/${uuid}`, {
     method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const getTeamsByCompany = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/teams/company/${uuid}`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const createFreelanceTeam = async (name: string, owner: string) => {
+  const res = await fetch(`${baseUrl}/teams`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      owner,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const createCompanyTeam = async (name: string, company: string) => {
+  const res = await fetch(`${baseUrl}/teams`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      company,
+    }),
     credentials: 'include',
   })
 

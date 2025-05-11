@@ -16,8 +16,7 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import ToolsFooter from '@/components/module/tools/footer/ToolsFooter'
-
+import ToolsFooter from '@/components/users/module/tools/footer/ToolsFooter'
 import styles from './layout.module.css'
 
 export default function EditorLayout({

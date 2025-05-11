@@ -2,6 +2,7 @@
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 1;
 
   width: var(--max-dvw);
   height: var(--max-percentage);
@@ -9,12 +10,16 @@
   background-color: var(--translucent-black);
 
   .modal {
+    --max-width: 768px;
+
     bottom: 0;
 
+    max-width: var(--max-width);
     width: var(--max-percentage);
     height: calc(var(--max-dvh) / 2);
 
     padding: 1rem;
+    margin: 0 auto;
 
     background-color: var(--background-color);
 
@@ -31,7 +36,7 @@
       place-items: center;
 
       width: var(--max-percentage);
-      aspect-ratio: 21/9;
+      aspect-ratio: 32/9;
 
       background-color: var(--foreground-color);
 
@@ -47,6 +52,30 @@
         color: var(--background-color);
 
         font-weight: 700;
+      }
+    }
+
+    & ul {
+      height: var(--max-percentage);
+
+      list-style: none;
+
+      overflow-y: scroll;
+
+      & li {
+        margin: 0 0.5rem 1rem 0;
+
+        & article {
+          padding: 1.5rem;
+
+          & h3 {
+            color: var(--title-color);
+          }
+
+          & p {
+            color: var(--background-color);
+          }
+        }
       }
     }
   }

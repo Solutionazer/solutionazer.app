@@ -33,11 +33,13 @@
   -ms-border-radius: 8px;
   -o-border-radius: 8px;
 
-  .logout_btn_container {
-    text-align: right;
+  .auth_btn_container {
+    display: flex;
+    justify-content: flex-end;
+    vertical-align: center;
 
-    .logout_btn {
-      padding: 0.5rem 1rem;
+    .logout_btn,
+    .profiles_btn {
       margin-right: 1rem;
 
       background-color: var(--background-color);
@@ -45,16 +47,25 @@
 
       font-weight: 700;
 
-      border: none;
       border-radius: 4px;
       -webkit-border-radius: 4px;
       -moz-border-radius: 4px;
       -ms-border-radius: 4px;
       -o-border-radius: 4px;
     }
+
+    .logout_btn {
+      padding: 0.6rem 1rem;
+      border: none;
+    }
+
+    .profiles_btn {
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+    }
   }
 
-  & .buttons_container {
+  .buttons_container {
     display: flex;
     gap: 0.85rem;
 

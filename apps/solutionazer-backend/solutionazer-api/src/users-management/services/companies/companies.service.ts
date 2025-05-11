@@ -26,62 +26,61 @@ import {
 import { Company } from 'src/users-management/entities/company.entity';
 import { UsersService } from '../users/users.service';
 import { User } from 'src/users-management/entities/user.entity';
+import { RolesService } from '../roles/roles.service';
+import { Role } from 'src/users-management/entities/role.entity';
 
 @Injectable()
 export class CompaniesService {
   constructor(
     @InjectRepository(Company)
     private readonly companyRepository: Repository<Company>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly usersService: UsersService,
+    private readonly rolesService: RolesService,
   ) {}
 
   async findAll() {
     const companies: Company[] | null = await this.companyRepository.find({
-      relations: ['admins'],
+      relations: ['admins', 'members'],
     });
 
-    return companies.map(({ uuid, companyName, loginEmail, admins }) => ({
+    return companies.map(({ uuid, name, admins, members }) => ({
       uuid,
-      companyName,
-      loginEmail,
+      name,
       admins,
+      members,
     }));
+  }
+
+  async findAllByUserUuid(uuid: string) {
+    return await this.companyRepository.find({
+      where: { admins: { uuid } },
+      relations: ['admins', 'members'],
+    });
   }
 
   async findOne(uuid: string) {
     const company: Company | null = await this.companyRepository.findOne({
       where: { uuid },
-      relations: ['admins'],
+      relations: ['admins', 'members'],
     });
 
     if (!company) {
       throw new NotFoundException(`Company = { uuid: ${uuid} } not found`);
     }
 
-    const { uuid: companyUuid, companyName, loginEmail, admins } = company;
+    const { uuid: companyUuid, name, admins } = company;
 
     return {
       uuid: companyUuid,
-      companyName,
-      loginEmail,
+      name,
       admins,
     } as Company;
   }
 
-  async findOneByLoginEmail(email: string) {
-    const company: Company | null = await this.companyRepository.findOne({
-      where: { loginEmail: email },
-    });
-
-    if (!company) {
-      throw new NotFoundException(`Company = { email: ${email} } not found`);
-    }
-
-    return company;
-  }
-
-  async checkEmail(email: string) {
-    const company: Company = await this.findOneByLoginEmail(email);
+  async checkUserUuid(uuid: string) {
+    const company: Company[] = await this.findAllByUserUuid(uuid);
 
     return company || true;
   }
@@ -92,7 +91,21 @@ export class CompaniesService {
     if (data.admins?.length) {
       users = await Promise.all(
         data.admins.map(async (admin) => {
-          const user: User = await this.usersService.findOne(admin.uuid);
+          const user: User = await this.usersService.findOne(admin.uuid, {
+            relations: ['roles'],
+          });
+
+          const role: Role =
+            await this.rolesService.findOneByName('Company Admin');
+
+          if (
+            !user.roles.find((existingRole) => existingRole.uuid === role.uuid)
+          ) {
+            user.roles.push(role);
+
+            await this.userRepository.save(user);
+          }
+
           return user;
         }),
       );
@@ -107,18 +120,36 @@ export class CompaniesService {
 
   async update(uuid: string, changes: UpdateCompanyDto) {
     const company: Company = await this.findOne(uuid);
+    let users: User[] = [];
 
-    (
-      await Promise.all(
-        changes.admins?.map(async (admin) => {
+    if (changes.admins?.length) {
+      users = await Promise.all(
+        changes.admins.map(async (admin) => {
           const user: User = await this.usersService.findOne(admin.uuid);
-          return !!user;
-        }) ?? [],
-      )
-    ).every(Boolean);
+          return user;
+        }),
+      );
 
-    this.companyRepository.merge(company, changes);
-    return this.companyRepository.save(company);
+      company.admins = users;
+    }
+
+    const updatedCompany: Company = this.companyRepository.merge(
+      company,
+      changes,
+    );
+
+    await this.companyRepository.save(updatedCompany);
+
+    const members = await this.userRepository.find({
+      where: { companiesAsMember: updatedCompany },
+    });
+
+    return {
+      uuid: updatedCompany.uuid,
+      name: updatedCompany.name,
+      admins: updatedCompany.admins,
+      members,
+    };
   }
 
   async remove(uuid: string) {

@@ -20,9 +20,9 @@
 
 import { usePathname } from 'next/navigation'
 import styles from './layout.module.css'
-import ModuleFooter from '@/components/module/footer/ModuleFooter'
-import ToolsHeader from '@/components/module/tools/header/ToolsHeader'
 import { useModuleStore } from '@/lib/module/states/global/moduleStore'
+import ModuleFooter from '@/components/users/module/footer/ModuleFooter'
+import ToolsHeader from '@/components/users/module/tools/header/ToolsHeader'
 
 export default function UsersLayout({
   children,

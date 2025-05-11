@@ -54,10 +54,13 @@ export class User {
   @JoinTable({ name: 'user_roles' })
   roles: Role[];
 
-  // companies where user be
-  @ManyToMany(() => Company)
-  @JoinTable({ name: 'user_companies' })
-  companies: Company[];
+  // companies where user be as admin
+  @ManyToMany(() => Company, (company) => company.admins)
+  companiesAsAdmin: Company[];
+
+  // companies where user be as member
+  @ManyToMany(() => Company, (company) => company.members)
+  companiesAsMember: Company[];
 
   // company roles
   @OneToMany(() => CompanyUserRole, (companyUserRole) => companyUserRole.user)

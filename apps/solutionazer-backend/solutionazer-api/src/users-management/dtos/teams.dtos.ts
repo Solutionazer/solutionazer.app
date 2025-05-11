@@ -24,6 +24,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -34,16 +35,15 @@ export class CreateTeamDto {
   readonly name: string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => User)
-  readonly owner: User;
+  @IsUUID()
+  readonly owner: string;
 
   @IsOptional()
   @ValidateNested()
   @Type(() => Company)
   readonly company: Company;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsArray()
   @ValidateNested()
   @Type(() => User)

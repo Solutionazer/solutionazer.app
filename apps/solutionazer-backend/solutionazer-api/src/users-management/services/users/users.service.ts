@@ -20,7 +20,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from '../../dtos/users.dtos';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, FindOneOptions, Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 import { RolesService } from '../roles/roles.service';
@@ -32,13 +32,69 @@ export class UsersService {
     private readonly rolesService: RolesService,
   ) {}
 
+  searchUsers(query: string, excludedUuids: string[] = []) {
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.uuid', 'user.fullName', 'user.email'])
+      .where(
+        new Brackets((queryBuilder) => {
+          queryBuilder
+            .where('user.fullName ILIKE :query', { query: `%${query}%` })
+            .orWhere('user.email ILIKE :query', { query: `%${query}%` });
+        }),
+      );
+
+    if (excludedUuids.length) {
+      queryBuilder.andWhere('user.uuid NOT IN (:...excludedUuids)', {
+        excludedUuids,
+      });
+    }
+
+    return queryBuilder.limit(10).getMany();
+  }
+
+  searchUsersInCompany(
+    companyUuid: string,
+    query: string,
+    excludedUuids: string[] = [],
+  ) {
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.uuid', 'user.fullName', 'user.email'])
+      .leftJoin('user.companiesAsMember', 'memberCompany')
+      .leftJoin('user.companiesAsAdmin', 'adminCompany')
+      .where(
+        new Brackets((queryBuilder) => {
+          queryBuilder
+            .where('memberCompany.uuid = :companyUuid', { companyUuid })
+            .orWhere('adminCompany.uuid = :companyUuid', { companyUuid });
+        }),
+      )
+      .andWhere(
+        new Brackets((queryBuilder) => {
+          queryBuilder
+            .where('user.fullName ILIKE :query', { query: `%${query}%` })
+            .orWhere('user.email ILIKE :query', { query: `%${query}%` });
+        }),
+      );
+
+    if (excludedUuids.length) {
+      queryBuilder.andWhere('user.uuid NOT IN (:...excludedUuids)', {
+        excludedUuids,
+      });
+    }
+
+    return queryBuilder.limit(10).getMany();
+  }
+
   findAll() {
     return this.userRepository.find();
   }
 
-  async findOne(uuid: string) {
+  async findOne(uuid: string, options?: FindOneOptions<User>) {
     const user: User | null = await this.userRepository.findOne({
       where: { uuid },
+      ...options,
     });
 
     if (!user) {
@@ -98,25 +154,29 @@ export class UsersService {
             permissions: role.permissions.map((permission) => permission.name),
           })) ?? [],
         company:
-          user.companyRoles.map((companyRole) => ({
-            companyUuid: companyRole.company.uuid,
-            role: {
-              name: companyRole.role.name,
-              permissions: companyRole.role.permissions.map(
-                (permission) => permission.name,
-              ),
-            },
-          })) ?? [],
+          user.companyRoles
+            .filter((companyRole) => companyRole.company && companyRole.role)
+            .map((companyRole) => ({
+              companyUuid: companyRole.company.uuid,
+              role: {
+                name: companyRole.role.name,
+                permissions: companyRole.role.permissions.map(
+                  (permission) => permission.name,
+                ),
+              },
+            })) ?? [],
         team:
-          user.teamRoles.map((teamRole) => ({
-            teamUuid: teamRole.team.uuid,
-            role: {
-              name: teamRole.role.name,
-              permissions: teamRole.role.permissions.map(
-                (permission) => permission.name,
-              ),
-            },
-          })) ?? [],
+          user.teamRoles
+            .filter((teamRole) => teamRole.team && teamRole.role)
+            .map((teamRole) => ({
+              teamUuid: teamRole.team.uuid,
+              role: {
+                name: teamRole.role.name,
+                permissions: teamRole.role.permissions.map(
+                  (permission) => permission.name,
+                ),
+              },
+            })) ?? [],
       },
     };
   }
