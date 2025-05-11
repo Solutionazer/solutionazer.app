@@ -22,15 +22,16 @@ import {
   IsIn,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
 } from 'class-validator';
 
 export class CreateQuestionDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   readonly text: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
   readonly required: boolean;
 
@@ -40,22 +41,22 @@ export class CreateQuestionDto {
 
   @IsNotEmpty()
   @IsIn([
-    'Welcome',
-    'Legal',
-    'Date',
-    'Dropdown',
-    'Email',
-    'File',
-    'Multiple Choice',
-    'Phone',
-    'Picture',
-    'Rating',
-    'Scale',
-    'Short Text',
-    'Statement',
-    'Website',
-    'Yes No',
-    'Greetings',
+    'welcome',
+    'legal',
+    'date',
+    'dropdown',
+    'email',
+    'file',
+    'multipleChoice',
+    'phone',
+    'picture',
+    'rating',
+    'scale',
+    'shortText',
+    'statement',
+    'website',
+    'yesNo',
+    'greetings',
   ])
   readonly type: string;
 

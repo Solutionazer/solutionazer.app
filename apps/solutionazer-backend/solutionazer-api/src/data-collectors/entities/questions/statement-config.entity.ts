@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class StatementConfig {
@@ -35,9 +35,9 @@ export class StatementConfig {
   @Column({ type: 'text', nullable: false, default: 'Info' })
   content: string;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.statementConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.statementConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

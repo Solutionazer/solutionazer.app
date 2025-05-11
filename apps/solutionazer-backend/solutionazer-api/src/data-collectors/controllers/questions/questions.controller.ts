@@ -46,6 +46,16 @@ export class QuestionsController {
     return this.questionsService.findAllTypes();
   }
 
+  @Permissions('question:readConfig')
+  @Get('config/:configType/:questionUuid')
+  @HttpCode(HttpStatus.OK)
+  findConfig(
+    @Param('configType') configType: string,
+    @Param('questionUuid', new ParseUUIDPipe()) questionUuid: string,
+  ) {
+    return this.questionsService.findConfig(configType, questionUuid);
+  }
+
   @Permissions('question:readAllByForm')
   @Get('form/:formUuid')
   @HttpCode(HttpStatus.OK)

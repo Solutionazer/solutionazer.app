@@ -93,9 +93,77 @@ export class QuestionsService {
     return this.questionTypeRepository.find();
   }
 
+  async findConfig(configType: string, questionUuid: string) {
+    switch (configType) {
+      case 'welcome':
+        return await this.welcomeScreenRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'legal':
+        return await this.legalConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'date':
+        return await this.dateConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'dropdown':
+        return await this.dropDownConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'email':
+        return await this.emailConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'file':
+        return await this.fileUploadConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'multipleChoice':
+        return await this.multipleChoiceConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'phone':
+        return await this.phoneNumberConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'picture':
+        return await this.pictureChoiceConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'rating':
+        return await this.ratingConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'scale':
+        return await this.scaleConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'shortText':
+        return await this.shortTextConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'statement':
+        return await this.statementConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'yesNo':
+        return await this.yesNoConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'greetings':
+        return await this.greetingsScreenConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      default:
+        throw new Error(`Unknown config type: ${configType}`);
+    }
+  }
+
   findAllByFormUuid(uuid: string) {
     return this.questionRepository
       .createQueryBuilder('question')
+      .leftJoinAndSelect('question.type', 'type')
       .leftJoinAndSelect('question.dataCollector', 'dataCollector')
       .where('dataCollector.uuid = :uuid', { uuid })
       .andWhere('dataCollector.type = :type', {
@@ -108,6 +176,7 @@ export class QuestionsService {
   findAllBySurveyUuid(uuid: string) {
     return this.questionRepository
       .createQueryBuilder('question')
+      .leftJoinAndSelect('question.type', 'type')
       .leftJoinAndSelect('question.dataCollector', 'dataCollector')
       .where('dataCollector.uuid = :uuid', { uuid })
       .andWhere('dataCollector.type = :type', {
@@ -120,6 +189,7 @@ export class QuestionsService {
   async findOne(uuid: string) {
     const question: Question | null = await this.questionRepository.findOne({
       where: { uuid },
+      relations: ['type'],
     });
 
     if (!question) {
@@ -168,115 +238,117 @@ export class QuestionsService {
     await this.questionResponseRepository.save(answer);
 
     switch (data.type) {
-      case 'Welcome': {
+      case 'welcome': {
         const welcomeScreenConfig = this.welcomeScreenRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.welcomeScreenRepository.save(welcomeScreenConfig);
         break;
       }
-      case 'Legal': {
+      case 'legal': {
         const legalConfig = this.legalConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.legalConfigRepository.save(legalConfig);
         break;
       }
-      case 'Date': {
+      case 'date': {
         const dateConfig = this.dateConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.dateConfigRepository.save(dateConfig);
         break;
       }
-      case 'Dropdown': {
+      case 'dropdown': {
         const dropDownConfig = this.dropDownConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.dropDownConfigRepository.save(dropDownConfig);
         break;
       }
-      case 'Email': {
+      case 'email': {
         const emailConfig = this.emailConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.emailConfigRepository.save(emailConfig);
         break;
       }
-      case 'File': {
+      case 'file': {
         const fileUploadConfig = this.fileUploadConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.fileUploadConfigRepository.save(fileUploadConfig);
         break;
       }
-      case 'Multiple Choice': {
+      case 'multipleChoice': {
         const multipleChoice = this.multipleChoiceConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.multipleChoiceConfigRepository.save(multipleChoice);
         break;
       }
-      case 'Phone': {
+      case 'phone': {
         const phoneNumberConfig = this.phoneNumberConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.phoneNumberConfigRepository.save(phoneNumberConfig);
         break;
       }
-      case 'Picture': {
+      case 'picture': {
         const pictureChoiceConfig = this.pictureChoiceConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.pictureChoiceConfigRepository.save(pictureChoiceConfig);
         break;
       }
-      case 'Rating': {
+      case 'rating': {
         const ratingConfig = this.ratingConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.ratingConfigRepository.save(ratingConfig);
         break;
       }
-      case 'Scale': {
+      case 'scale': {
         const scaleConfig = this.scaleConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.scaleConfigRepository.save(scaleConfig);
         break;
       }
-      case 'Short Text': {
+      case 'shortText': {
         const shortTextConfig = this.shortTextConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.shortTextConfigRepository.save(shortTextConfig);
         break;
       }
 
-      case 'Statement': {
+      case 'statement': {
         const statementConfig = this.statementConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.statementConfigRepository.save(statementConfig);
         break;
       }
-      case 'Website': {
+      case 'website': {
         const websiteConfig = this.websiteConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.websiteConfigRepository.save(websiteConfig);
         break;
       }
-      case 'Yes No': {
+      case 'yesNo': {
         const yesNoConfig = this.yesNoConfigRepository.create({
-          questionType: type,
+          question: savedQuestion,
         });
         await this.yesNoConfigRepository.save(yesNoConfig);
         break;
       }
-      case 'Greetings': {
+      case 'greetings': {
         const greetingsScreenConfig =
-          this.greetingsScreenConfigRepository.create({ questionType: type });
+          this.greetingsScreenConfigRepository.create({
+            question: savedQuestion,
+          });
         await this.greetingsScreenConfigRepository.save(greetingsScreenConfig);
         break;
       }
@@ -311,7 +383,219 @@ export class QuestionsService {
   }
 
   async remove(uuid: string) {
-    await this.findOne(uuid);
+    const question = await this.findOne(uuid);
+
+    await this.questionResponseRepository.delete({ question: { uuid } });
+
+    const questionTypeName = question.type.name;
+
+    switch (questionTypeName) {
+      case 'welcome': {
+        const welcomeScreenConfig = await this.welcomeScreenRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (welcomeScreenConfig) {
+          await this.welcomeScreenRepository.delete(welcomeScreenConfig.uuid);
+        }
+
+        break;
+      }
+
+      case 'legal': {
+        const legalConfig = await this.legalConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (legalConfig) {
+          await this.legalConfigRepository.delete(legalConfig.uuid);
+        }
+
+        break;
+      }
+      case 'date': {
+        const dateConfig = await this.dateConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (dateConfig) {
+          await this.dateConfigRepository.delete(dateConfig.uuid);
+        }
+
+        break;
+      }
+      case 'dropdown': {
+        const dropDownConfig = await this.dropDownConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (dropDownConfig) {
+          await this.dropDownConfigRepository.delete(dropDownConfig.uuid);
+        }
+
+        break;
+      }
+      case 'email': {
+        const emailConfig = await this.emailConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (emailConfig) {
+          await this.emailConfigRepository.delete(emailConfig.uuid);
+        }
+
+        break;
+      }
+      case 'file': {
+        const fileUploadConfig = await this.fileUploadConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (fileUploadConfig) {
+          await this.fileUploadConfigRepository.delete(fileUploadConfig.uuid);
+        }
+
+        break;
+      }
+      case 'multipleChoice': {
+        const multipleChoiceConfig =
+          await this.multipleChoiceConfigRepository.findOne({
+            where: { question: { uuid } },
+            relations: ['question'],
+          });
+
+        if (multipleChoiceConfig) {
+          await this.multipleChoiceConfigRepository.delete(
+            multipleChoiceConfig.uuid,
+          );
+        }
+
+        break;
+      }
+      case 'phone': {
+        const phoneNumberConfig =
+          await this.phoneNumberConfigRepository.findOne({
+            where: { question: { uuid } },
+            relations: ['question'],
+          });
+
+        if (phoneNumberConfig) {
+          await this.phoneNumberConfigRepository.delete(phoneNumberConfig.uuid);
+        }
+
+        break;
+      }
+      case 'picture': {
+        const pictureChoiceConfig =
+          await this.pictureChoiceConfigRepository.findOne({
+            where: { question: { uuid } },
+            relations: ['question'],
+          });
+
+        if (pictureChoiceConfig) {
+          await this.pictureChoiceConfigRepository.delete(
+            pictureChoiceConfig.uuid,
+          );
+        }
+
+        break;
+      }
+      case 'rating': {
+        const ratingConfig = await this.ratingConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (ratingConfig) {
+          await this.ratingConfigRepository.delete(ratingConfig.uuid);
+        }
+
+        break;
+      }
+      case 'scale': {
+        const scaleConfig = await this.scaleConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (scaleConfig) {
+          await this.scaleConfigRepository.delete(scaleConfig.uuid);
+        }
+
+        break;
+      }
+      case 'shortText': {
+        const shortTextConfig = await this.shortTextConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (shortTextConfig) {
+          await this.shortTextConfigRepository.delete(shortTextConfig.uuid);
+        }
+
+        break;
+      }
+
+      case 'statement': {
+        const statementConfig = await this.statementConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (statementConfig) {
+          await this.statementConfigRepository.delete(statementConfig.uuid);
+        }
+
+        break;
+      }
+      case 'website': {
+        const websiteConfig = await this.websiteConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (websiteConfig) {
+          await this.websiteConfigRepository.delete(websiteConfig.uuid);
+        }
+
+        break;
+      }
+      case 'yesNo': {
+        const yesNoConfig = await this.yesNoConfigRepository.findOne({
+          where: { question: { uuid } },
+          relations: ['question'],
+        });
+
+        if (yesNoConfig) {
+          await this.yesNoConfigRepository.delete(yesNoConfig.uuid);
+        }
+
+        break;
+      }
+      case 'greetings': {
+        const greetingsScreenConfig =
+          await this.greetingsScreenConfigRepository.findOne({
+            where: { question: { uuid } },
+            relations: ['question'],
+          });
+
+        if (greetingsScreenConfig) {
+          await this.greetingsScreenConfigRepository.delete(
+            greetingsScreenConfig.uuid,
+          );
+        }
+
+        break;
+      }
+    }
+
     return this.questionRepository.delete(uuid);
   }
 }

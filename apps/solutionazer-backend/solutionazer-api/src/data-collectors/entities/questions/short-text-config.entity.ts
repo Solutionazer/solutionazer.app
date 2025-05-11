@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class ShortTextConfig {
@@ -35,9 +35,9 @@ export class ShortTextConfig {
   @Column({ type: 'int', nullable: false, default: 100 })
   characterLimit: number;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.shortTextConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.shortTextConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

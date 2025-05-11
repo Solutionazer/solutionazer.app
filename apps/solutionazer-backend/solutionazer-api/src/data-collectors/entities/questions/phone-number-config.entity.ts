@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class PhoneNumberConfig {
@@ -35,12 +35,9 @@ export class PhoneNumberConfig {
   @Column({ type: 'varchar', length: 5, nullable: false, default: '+34' })
   countryCode: string;
 
-  // question type
-  @OneToOne(
-    () => QuestionType,
-    (questionType) => questionType.phoneNumberConfig,
-  )
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.phoneNumberConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

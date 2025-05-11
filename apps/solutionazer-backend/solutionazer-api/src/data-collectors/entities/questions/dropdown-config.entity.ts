@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class DropDownConfig {
@@ -43,9 +43,9 @@ export class DropDownConfig {
   @Column({ type: 'boolean', nullable: false, default: false })
   randomizeOptions: boolean;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.dropDownConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.dropDownConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

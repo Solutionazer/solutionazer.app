@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class WelcomeScreenConfig {
@@ -42,12 +42,9 @@ export class WelcomeScreenConfig {
   })
   description: string;
 
-  // question type
-  @OneToOne(
-    () => QuestionType,
-    (questionType) => questionType.welcomeScreenConfig,
-  )
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.welcomeScreenConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

@@ -24,16 +24,16 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class EmailConfig {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.emailConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.emailConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

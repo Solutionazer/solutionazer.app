@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class PictureChoiceConfig {
@@ -38,12 +38,9 @@ export class PictureChoiceConfig {
   @Column({ type: 'boolean', nullable: false, default: true })
   randomizeOptions: boolean;
 
-  // question type
-  @OneToOne(
-    () => QuestionType,
-    (questionType) => questionType.pictureChoiceConfig,
-  )
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.pictureChoiceConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

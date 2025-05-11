@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class YesNoConfig {
@@ -35,9 +35,9 @@ export class YesNoConfig {
   @Column({ type: 'boolean', nullable: false, default: false })
   defaultValue: boolean;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.yesNoConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.yesNoConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

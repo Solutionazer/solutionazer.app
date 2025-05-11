@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class MultipleChoiceConfig {
@@ -46,12 +46,9 @@ export class MultipleChoiceConfig {
   })
   options: string[];
 
-  // question type
-  @OneToOne(
-    () => QuestionType,
-    (questionType) => questionType.multipleChoiceConfig,
-  )
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.multipleChoiceConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class ScaleConfig {
@@ -49,9 +49,9 @@ export class ScaleConfig {
   })
   labels: string[];
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.scaleConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (questionType) => questionType.scaleConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class RatingConfig {
@@ -38,9 +38,9 @@ export class RatingConfig {
   @Column({ type: 'varchar', length: 20, nullable: false, default: 'star' })
   iconType: string;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.ratingConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.ratingConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

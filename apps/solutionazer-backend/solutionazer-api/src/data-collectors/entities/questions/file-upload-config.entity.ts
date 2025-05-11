@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class FileUploadConfig {
@@ -47,9 +47,9 @@ export class FileUploadConfig {
   })
   maxFileSize: number;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.fileUploadConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.fileUploadConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

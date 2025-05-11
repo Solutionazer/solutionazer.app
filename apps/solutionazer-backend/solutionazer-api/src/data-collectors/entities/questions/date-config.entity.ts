@@ -25,7 +25,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from '../question.entity';
 
 @Entity()
 export class DateConfig {
@@ -44,9 +44,9 @@ export class DateConfig {
   @Column({ type: 'date', nullable: true })
   maxDate: string;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.dateConfig)
-  questionType: QuestionType;
+  // question
+  @OneToOne(() => Question, (question) => question.dateConfig)
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })
