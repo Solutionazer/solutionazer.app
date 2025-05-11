@@ -27,3 +27,13 @@ export function splitCamelCaseAndCapitalize(text: string): string {
     .map((word) => capitalize(word))
     .join(' ')
 }
+
+export function toCamelCase(text: string): string {
+  return text
+    .toLowerCase()
+    .split(' ')
+    .map((word, index) =>
+      index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1),
+    )
+    .join('')
+}

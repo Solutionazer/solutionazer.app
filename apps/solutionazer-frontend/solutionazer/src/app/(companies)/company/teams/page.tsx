@@ -66,11 +66,13 @@ export default function Teams() {
   }, [company])
 
   // UI states
-  const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
+  const [infoMessage /*, setInfoMessage*/] = useState<string | null>(null) // messages
 
   // messages
+  /*
   const teamCreated: string = 'Team created successfully.'
   const teamCreationFailed: string = 'Failed to create team.'
+  */
 
   // modal state
   const [showModal, setShowModal] = useState<boolean>(false)

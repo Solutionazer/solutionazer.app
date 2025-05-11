@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * This file is part of solutionazer.app.
  *
@@ -22,7 +23,9 @@ import useDataCollector from '@/lib/module/data-collectors/states/global/dataCol
 import styles from './canvas.module.css'
 import Question from '@/lib/module/data-collectors/questions/question'
 import Input from '@/components/shared/form/components/Input'
-import Select from '@/components/shared/form/components/Select'
+import Article from '@/components/shared/containers/Article'
+import { useEffect, useState } from 'react'
+import { getConfig } from '@/lib/utils/data-collectors/questions/questionsHandler'
 
 export default function Canvas() {
   // dataCollector global state
@@ -36,156 +39,128 @@ export default function Canvas() {
     (question) => question.getUuid() === selectedQuestionUuid,
   )
 
+  // config states
+  const [questionConfig, setQuestionConfig] = useState<any | null>(null)
+
+  // load config
+  useEffect(() => {
+    const fetchQuestionsConfig = async () => {
+      if (selectedQuestion) {
+        const type = selectedQuestion.getType()?.getName()
+        const uuid = selectedQuestion.getUuid()
+
+        try {
+          const config = await getConfig(type ?? '', uuid ?? '')
+
+          setQuestionConfig(config)
+        } catch {}
+      }
+    }
+
+    fetchQuestionsConfig()
+  }, [selectedQuestion])
+
   // render input
   const renderInput = () => {
-    const type = selectedQuestion['props'].type
+    if (selectedQuestion) {
+      const type = selectedQuestion.getType()?.getName()
 
-    switch (type) {
-      case 'Welcome':
-        return (
-          <Input
-            params={{
-              type: 'text',
-              id: 'welcome_description',
-              value: '',
-              onChange: () => {},
-              placeholder: ' ',
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'Legal':
-        return (
-          <Input
-            params={{
-              type: 'text',
-              id: 'legal_text',
-              value: '',
-              onChange: () => {},
-              placeholder: ' ',
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'Date':
-        return (
-          <Input
-            params={{
-              type: 'date',
-              id: 'date',
-              value: '',
-              onChange: () => {},
-              placeholder: ' ',
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'Dropdown':
-        return (
-          <Select
-            params={{
-              id: 'dropdown',
-              options: [],
-              value: '',
-              onChange: () => {},
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'Email':
-        return (
-          <Input
-            params={{
-              type: 'email',
-              id: 'email',
-              value: '',
-              onChange: () => {},
-              placeholder: ' ',
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'File':
-        return (
-          <Input
-            params={{
-              type: 'file',
-              id: 'file',
-              value: '',
-              onChange: () => {},
-              placeholder: ' ',
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'Multiple Choice':
-        return (
-          <Input
-            params={{
-              type: 'checkbox',
-              id: 'multiple_choice',
-              value: '',
-              onChange: () => {},
-              placeholder: ' ',
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'Phone':
-        return (
-          <Input
-            params={{
-              type: 'phone',
-              id: 'phone',
-              value: '',
-              onChange: () => {},
-              placeholder: ' ',
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'Picture':
-        return (
-          <Input
-            params={{
-              type: 'image',
-              id: 'picture',
-              value: '',
-              onChange: () => {},
-              placeholder: ' ',
-              required: false,
-              disabled: false,
-            }}
-          />
-        )
-      case 'Rating':
-        break
-      case 'Scale':
-        break
-      case 'Short Text':
-        break
-      case 'Statement':
-        break
-      case 'Website':
-        break
-      case 'Yes No':
-        break
-      case 'Greetings':
-        break
+      console.log(type)
+      console.log(questionConfig)
+
+      switch (type) {
+        case 'welcome':
+          return (
+            <Input
+              params={{
+                type: 'text',
+                id: 'welcome_description',
+                value: questionConfig?.description ?? '',
+                onChange: () => {},
+                placeholder: '',
+                required: false,
+                disabled: false,
+              }}
+            />
+          )
+        case 'legal':
+          return (
+            <div>
+              <Input
+                params={{
+                  type: 'text',
+                  id: 'legal_text',
+                  value: questionConfig?.legalText ?? '',
+                  onChange: () => {},
+                  placeholder: '',
+                  required: false,
+                  disabled: false,
+                }}
+              />
+              <Input
+                params={{
+                  type: 'checkbox',
+                  id: 'legal_check',
+                  value: '',
+                  onChange: () => {},
+                  placeholder: '',
+                  required: questionConfig?.required ?? false,
+                  disabled: false,
+                }}
+              />
+            </div>
+          )
+        case 'date':
+          break
+        case 'dropdown':
+          break
+        case 'email':
+          break
+        case 'file':
+          break
+        case 'multipleChoice':
+          break
+        case 'phone':
+          break
+        case 'picture':
+          break
+        case 'rating':
+          break
+        case 'scale':
+          break
+        case 'shortText':
+          break
+        case 'statement':
+          break
+        case 'website':
+          break
+        case 'yesNo':
+          break
+        case 'greetings':
+          break
+      }
     }
   }
 
   return (
     <div className={styles.canvas}>
-      <p>{selectedQuestion?.getText()}</p>
+      <Article>
+        <Input
+          params={{
+            type: 'text',
+            id: 'question_text',
+            value:
+              selectedQuestion?.getType()?.getName() === 'welcome'
+                ? (questionConfig?.headline ?? '')
+                : (selectedQuestion?.getText() ?? ''),
+            onChange: () => {},
+            placeholder: '',
+            required: false,
+            disabled: false,
+          }}
+        />
+      </Article>
+      <Article>{selectedQuestion && renderInput()}</Article>
     </div>
   )
 }

@@ -60,6 +60,7 @@ export const getQuestionsBySurvey = async (formUuid: string) => {
 export const createQuestion = async (
   dataCollectorUuid: string,
   type: string,
+  order: number,
 ) => {
   const res = await fetch(`${baseUrl}/questions`, {
     method: 'POST',
@@ -67,9 +68,39 @@ export const createQuestion = async (
     body: JSON.stringify({
       dataCollectorUuid,
       type,
+      order,
     }),
     credentials: 'include',
   })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const deleteQuestion = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/questions/${uuid}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const getConfig = async (configType: string, questionUuid: string) => {
+  const res = await fetch(
+    `${baseUrl}/questions/config/${configType}/${questionUuid}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
+  )
 
   if (!res.ok) {
     throw new Error((await res.json()).message)

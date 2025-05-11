@@ -16,9 +16,13 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import DataCollector from '../../dataCollector'
 import { persist } from 'zustand/middleware'
+import Question from '../../questions/question'
+import QuestionType from '../../questions/questionType'
 
 interface DataCollectorState {
   dataCollector: DataCollector | null
@@ -43,7 +47,6 @@ const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> = create<
       name: 'dataCollector',
       onRehydrateStorage: () => (state) => {
         if (state?.dataCollector) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const plainDataCollector = state.dataCollector as any
           state.dataCollector = new DataCollector({
             uuid: plainDataCollector.uuid,
@@ -51,7 +54,19 @@ const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> = create<
             description: plainDataCollector.description,
             type: plainDataCollector.type,
             userUuid: plainDataCollector.userUuid,
-            questions: plainDataCollector.questions,
+            questions: plainDataCollector.questions.map((question: any) => {
+              return new Question({
+                uuid: question.uuid,
+                text: question.text,
+                required: question.required,
+                order: question.order,
+                type: new QuestionType({
+                  uuid: question.type.uuid,
+                  name: question.type.name,
+                  description: question.type.description,
+                }),
+              })
+            }),
             updatedAt: plainDataCollector.updatedAt,
             createdAt: plainDataCollector.createdAt,
           })

@@ -16,12 +16,14 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+import QuestionType from './questionType'
+
 interface QuestionProps {
   uuid?: string
   text: string
   required: boolean
   order: number
-  type?: string
+  type?: QuestionType
 }
 
 export default class Question {
@@ -29,7 +31,7 @@ export default class Question {
   private readonly text: string
   private readonly required: boolean
   private readonly order: number
-  private readonly type: string | undefined
+  private readonly type: QuestionType | undefined
 
   constructor(private readonly props: QuestionProps) {
     this.uuid = props.uuid
@@ -53,5 +55,9 @@ export default class Question {
 
   public getOrder(): number {
     return this.order
+  }
+
+  public getType(): QuestionType | undefined {
+    return this.type
   }
 }

@@ -40,7 +40,7 @@ export default function Route() {
   const [teams, setTeams] = useState<Team[]>([])
 
   // selected team state
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null)
+  const [selectedTeam /*, setSelectedTeam */] = useState<Team | null>(null)
 
   // freelance config state
   const [freelanceConfigOpen, setFreelanceConfigOpen] = useState<boolean>(false)

@@ -16,6 +16,8 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client'
 
 import Footer from '@/components/shared/containers/Footer'
@@ -28,6 +30,7 @@ import { useEffect, useState } from 'react'
 import Question from '@/lib/module/data-collectors/questions/question'
 import {
   createQuestion,
+  deleteQuestion,
   getAllQuestionTypes,
   getQuestionsByForm,
 } from '@/lib/utils/data-collectors/questions/questionsHandler'
@@ -36,7 +39,10 @@ import Modal from '@/components/shared/containers/modal/Modal'
 import SmallTitle from '@/components/shared/titles/SmallTitle'
 import Article from '@/components/shared/containers/Article'
 import QuestionType from '@/lib/module/data-collectors/questions/questionType'
-import { splitCamelCaseAndCapitalize } from '@/lib/utils/textHandler'
+import {
+  splitCamelCaseAndCapitalize,
+  toCamelCase,
+} from '@/lib/utils/textHandler'
 
 export default function ToolsFooter() {
   // dataCollector global state
@@ -58,12 +64,18 @@ export default function ToolsFooter() {
             text: string
             required: boolean
             order: number
+            type: any
           }) => {
             return new Question({
               uuid: question.uuid,
               text: question.text,
               required: question.required,
               order: question.order,
+              type: new QuestionType({
+                uuid: question.type.uuid,
+                name: question.type.name,
+                description: question.type.description,
+              }),
             })
           },
         )
@@ -158,9 +170,12 @@ export default function ToolsFooter() {
   // handle question creation
   const handleQuestionCreation = async (questionTypeName: string) => {
     if (dataCollector) {
+      const nextOrder: number = (dataCollector.getQuestions()?.length ?? 0) + 1
+
       const res = await createQuestion(
         dataCollector.getUuid() ?? '',
-        questionTypeName,
+        toCamelCase(questionTypeName),
+        nextOrder,
       )
 
       const newQuestion: Question = new Question({
@@ -168,7 +183,11 @@ export default function ToolsFooter() {
         text: res.text,
         required: res.required,
         order: res.order,
-        type: res.type,
+        type: new QuestionType({
+          uuid: res.type.uuid,
+          name: res.type.name,
+          description: res.type.description,
+        }),
       })
 
       const updatedQuestions = [
@@ -184,6 +203,24 @@ export default function ToolsFooter() {
       setDataCollector(updatedDataCollector)
       setSelectedQuestionUuid(newQuestion.getUuid() ?? '')
       setShowModal(false)
+    }
+  }
+
+  // handle question deletion
+  const handleQuestionDeletion = async (questionUuid: string) => {
+    if (dataCollector) {
+      await deleteQuestion(questionUuid)
+
+      const updatedQuestions = (dataCollector.getQuestions() ?? []).filter(
+        (question) => question.getUuid() !== questionUuid,
+      )
+
+      const updatedDataCollector = new DataCollector({
+        ...dataCollector['props'],
+        questions: updatedQuestions,
+      })
+
+      setDataCollector(updatedDataCollector)
     }
   }
 
@@ -215,15 +252,36 @@ export default function ToolsFooter() {
       )}
       <Footer params={{ className: styles.secondary_footer }}>
         <nav>
-          <ul>
+          <ul className={styles.questions_container}>
             {questions.map((question) => (
               <li key={question.getUuid()}>
                 <Article
                   params={{
-                    onClick: () =>
-                      handleQuestionClick(question.getUuid() ?? ''),
+                    className: styles.question_card,
                   }}
-                ></Article>
+                >
+                  <div className={styles.card_inner}>
+                    <Button
+                      params={{
+                        type: ButtonType.Button,
+                        text: 'X',
+                        onClick: () =>
+                          handleQuestionDeletion(question.getUuid() ?? ''),
+                        className: styles.delete_button,
+                      }}
+                    />
+                  </div>
+                  <button
+                    className={styles.order_button}
+                    onClick={() =>
+                      handleQuestionClick(question.getUuid() ?? '')
+                    }
+                  >
+                    <SmallTitle
+                      params={{ text: String(question.getOrder()) }}
+                    />
+                  </button>
+                </Article>
               </li>
             ))}
           </ul>
