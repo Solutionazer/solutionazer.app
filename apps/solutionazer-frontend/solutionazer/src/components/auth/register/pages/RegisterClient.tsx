@@ -16,13 +16,19 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import RegisterClient from '@/components/auth/register/pages/RegisterClient'
-import { Suspense } from 'react'
+import AuthForm from '@/components/shared/form/auth/AuthForm'
+import Title from '@/components/shared/titles/Title'
 
-export default function Register() {
+export default function RegisterClient() {
   return (
-    <Suspense fallback={null}>
-      <RegisterClient />
-    </Suspense>
+    <>
+      <Title
+        params={{
+          text: 'Register',
+          classNames: ['title'],
+        }}
+      />
+      <AuthForm params={{ context: 'register' }} />
+    </>
   )
 }
