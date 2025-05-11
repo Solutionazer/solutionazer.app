@@ -22,6 +22,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -29,6 +30,7 @@ import { DataCollector } from './data-collector.entity';
 import { Transition } from './transition.entity';
 import { Exclude } from 'class-transformer';
 import { QuestionType } from './question-type.entity';
+import { QuestionResponse } from './question-response.entity';
 
 @Entity()
 export class Question {
@@ -51,7 +53,7 @@ export class Question {
   @JoinColumn({ name: 'dataCollectorUuid' })
   dataCollector: DataCollector;
 
-  // questions
+  // question type
   @ManyToOne(() => QuestionType, { nullable: false })
   @JoinColumn({ name: 'questionTypeUuid' })
   type: QuestionType;
@@ -62,6 +64,10 @@ export class Question {
   })
   @JoinColumn({ name: 'transitionUuid' })
   transition: Transition;
+
+  // response
+  @OneToMany(() => QuestionResponse, (response) => response.question)
+  responses: QuestionResponse[];
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

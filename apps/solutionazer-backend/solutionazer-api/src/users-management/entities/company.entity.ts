@@ -40,9 +40,14 @@ export class Company {
   name: string;
 
   // admins
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, (user) => user.companiesAsAdmin)
   @JoinTable({ name: 'company_admins' })
   admins: User[];
+
+  // members
+  @ManyToMany(() => User, (user) => user.companiesAsMember)
+  @JoinTable({ name: 'company_members' })
+  members: User[];
 
   // user roles into company
   @OneToMany(

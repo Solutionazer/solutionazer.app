@@ -16,12 +16,30 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import {
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { QuestionType } from '../question-type.entity';
 
 @Entity()
 export class EmailConfig {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  //! validation pattern?
+  // question type
+  @OneToOne(() => QuestionType, (questionType) => questionType.emailConfig)
+  questionType: QuestionType;
+
+  @Exclude()
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  createdAt: Date;
+
+  @Exclude()
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
+  updatedAt: Date;
 }

@@ -23,6 +23,7 @@ import {
   UpdateQuestionDto,
 } from 'src/data-collectors/dtos/questions.dtos';
 import { DataCollector } from 'src/data-collectors/entities/data-collector.entity';
+import { QuestionResponse } from 'src/data-collectors/entities/question-response.entity';
 import { QuestionType } from 'src/data-collectors/entities/question-type.entity';
 import { Question } from 'src/data-collectors/entities/question.entity';
 import { DateConfig } from 'src/data-collectors/entities/questions/date-config.entity';
@@ -84,6 +85,8 @@ export class QuestionsService {
     private readonly yesNoConfigRepository: Repository<YesNoConfig>,
     @InjectRepository(GreetingsScreenConfig)
     private readonly greetingsScreenConfigRepository: Repository<GreetingsScreenConfig>,
+    @InjectRepository(QuestionResponse)
+    private readonly questionResponseRepository: Repository<QuestionResponse>,
   ) {}
 
   findAllTypes() {
@@ -159,40 +162,124 @@ export class QuestionsService {
 
     const savedQuestion = await this.questionRepository.save(question);
 
+    const answer = this.questionResponseRepository.create({
+      question: savedQuestion,
+    });
+    await this.questionResponseRepository.save(answer);
+
     switch (data.type) {
-      case 'welcome':
-        await this.welcomeScreenRepository.save({});
+      case 'Welcome': {
+        const welcomeScreenConfig = this.welcomeScreenRepository.create({
+          questionType: type,
+        });
+        await this.welcomeScreenRepository.save(welcomeScreenConfig);
         break;
-      case 'legal':
+      }
+      case 'Legal': {
+        const legalConfig = this.legalConfigRepository.create({
+          questionType: type,
+        });
+        await this.legalConfigRepository.save(legalConfig);
         break;
-      case 'data':
+      }
+      case 'Date': {
+        const dateConfig = this.dateConfigRepository.create({
+          questionType: type,
+        });
+        await this.dateConfigRepository.save(dateConfig);
         break;
-      case 'dropdown':
+      }
+      case 'Dropdown': {
+        const dropDownConfig = this.dropDownConfigRepository.create({
+          questionType: type,
+        });
+        await this.dropDownConfigRepository.save(dropDownConfig);
         break;
-      case 'email':
+      }
+      case 'Email': {
+        const emailConfig = this.emailConfigRepository.create({
+          questionType: type,
+        });
+        await this.emailConfigRepository.save(emailConfig);
         break;
-      case 'file':
+      }
+      case 'File': {
+        const fileUploadConfig = this.fileUploadConfigRepository.create({
+          questionType: type,
+        });
+        await this.fileUploadConfigRepository.save(fileUploadConfig);
         break;
-      case 'multipleChoice':
+      }
+      case 'Multiple Choice': {
+        const multipleChoice = this.multipleChoiceConfigRepository.create({
+          questionType: type,
+        });
+        await this.multipleChoiceConfigRepository.save(multipleChoice);
         break;
-      case 'phone':
+      }
+      case 'Phone': {
+        const phoneNumberConfig = this.phoneNumberConfigRepository.create({
+          questionType: type,
+        });
+        await this.phoneNumberConfigRepository.save(phoneNumberConfig);
         break;
-      case 'picture':
+      }
+      case 'Picture': {
+        const pictureChoiceConfig = this.pictureChoiceConfigRepository.create({
+          questionType: type,
+        });
+        await this.pictureChoiceConfigRepository.save(pictureChoiceConfig);
         break;
-      case 'rating':
+      }
+      case 'Rating': {
+        const ratingConfig = this.ratingConfigRepository.create({
+          questionType: type,
+        });
+        await this.ratingConfigRepository.save(ratingConfig);
         break;
-      case 'scale':
+      }
+      case 'Scale': {
+        const scaleConfig = this.scaleConfigRepository.create({
+          questionType: type,
+        });
+        await this.scaleConfigRepository.save(scaleConfig);
         break;
-      case 'short text':
+      }
+      case 'Short Text': {
+        const shortTextConfig = this.shortTextConfigRepository.create({
+          questionType: type,
+        });
+        await this.shortTextConfigRepository.save(shortTextConfig);
         break;
-      case 'statement':
+      }
+
+      case 'Statement': {
+        const statementConfig = this.statementConfigRepository.create({
+          questionType: type,
+        });
+        await this.statementConfigRepository.save(statementConfig);
         break;
-      case 'website':
+      }
+      case 'Website': {
+        const websiteConfig = this.websiteConfigRepository.create({
+          questionType: type,
+        });
+        await this.websiteConfigRepository.save(websiteConfig);
         break;
-      case 'yesNo':
+      }
+      case 'Yes No': {
+        const yesNoConfig = this.yesNoConfigRepository.create({
+          questionType: type,
+        });
+        await this.yesNoConfigRepository.save(yesNoConfig);
         break;
-      case 'greetings':
+      }
+      case 'Greetings': {
+        const greetingsScreenConfig =
+          this.greetingsScreenConfigRepository.create({ questionType: type });
+        await this.greetingsScreenConfigRepository.save(greetingsScreenConfig);
         break;
+      }
     }
 
     return savedQuestion;

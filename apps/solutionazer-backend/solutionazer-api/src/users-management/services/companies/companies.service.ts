@@ -42,27 +42,28 @@ export class CompaniesService {
 
   async findAll() {
     const companies: Company[] | null = await this.companyRepository.find({
-      relations: ['admins'],
+      relations: ['admins', 'members'],
     });
 
-    return companies.map(({ uuid, name, admins }) => ({
+    return companies.map(({ uuid, name, admins, members }) => ({
       uuid,
       name,
       admins,
+      members,
     }));
   }
 
   async findAllByUserUuid(uuid: string) {
     return await this.companyRepository.find({
       where: { admins: { uuid } },
-      relations: ['admins'],
+      relations: ['admins', 'members'],
     });
   }
 
   async findOne(uuid: string) {
     const company: Company | null = await this.companyRepository.findOne({
       where: { uuid },
-      relations: ['admins'],
+      relations: ['admins', 'members'],
     });
 
     if (!company) {
@@ -137,7 +138,18 @@ export class CompaniesService {
       changes,
     );
 
-    return this.companyRepository.save(updatedCompany);
+    await this.companyRepository.save(updatedCompany);
+
+    const members = await this.userRepository.find({
+      where: { companiesAsMember: updatedCompany },
+    });
+
+    return {
+      uuid: updatedCompany.uuid,
+      name: updatedCompany.name,
+      admins: updatedCompany.admins,
+      members,
+    };
   }
 
   async remove(uuid: string) {

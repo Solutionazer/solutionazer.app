@@ -46,7 +46,10 @@ export class TeamsService {
     return teams.map((team) => {
       const isOwner: boolean = team.owner.uuid === user.uuid;
       const isCompanyTeam: boolean = !!team.company;
-      const isUserInCompany: boolean = user.companies.some(
+      const isUserInCompanyAsMember: boolean = user.companiesAsMember.some(
+        (company) => company.uuid === team.company.uuid,
+      );
+      const isUserInCompanyAsAdmin: boolean = user.companiesAsAdmin.some(
         (company) => company.uuid === team.company.uuid,
       );
 
@@ -54,7 +57,10 @@ export class TeamsService {
 
       if (isOwner && !isCompanyTeam) {
         type = 'freelance-own';
-      } else if (isCompanyTeam && isUserInCompany) {
+      } else if (
+        isCompanyTeam &&
+        (isUserInCompanyAsMember || isUserInCompanyAsAdmin)
+      ) {
         type = 'company-own';
       } else {
         type = 'external';

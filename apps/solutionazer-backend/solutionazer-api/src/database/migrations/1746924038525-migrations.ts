@@ -1,0 +1,122 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class Migrations1746924038525 implements MigrationInterface {
+    name = 'Migrations1746924038525'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "dateConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_a3a1f011ad14917d3c1ba16453b" UNIQUE ("dateConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "dropDownConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_85def99857af24f56368d0254f7" UNIQUE ("dropDownConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "emailConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_f372369ba559e28e9a19dff3246" UNIQUE ("emailConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "fileUploadConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_1a990365e5cbe2b997365a767c1" UNIQUE ("fileUploadConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "greetingsScreenConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_d79fc199a5b9ed62b6bff6a3d87" UNIQUE ("greetingsScreenConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "legalConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_618a3f61159e704b7a8b589c34a" UNIQUE ("legalConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "longTextConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_cdab8754b9d15c76af4b544736b" UNIQUE ("longTextConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "multipleChoiceConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_d9e1b68e07b75d68320004838d6" UNIQUE ("multipleChoiceConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "phoneNumberConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_8f6defa4b240586d612f16d6826" UNIQUE ("phoneNumberConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "pictureChoiceConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_88dc5573f29e377842de445f02a" UNIQUE ("pictureChoiceConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "ratingConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_2dc548942e926ca97421f607f2e" UNIQUE ("ratingConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "scaleConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_b9ebe9b231c067c5006f2748944" UNIQUE ("scaleConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "shortTextConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_2830c471101a7b73eae8357698a" UNIQUE ("shortTextConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "statementConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_54b992c988fa8018026e5f5f7b4" UNIQUE ("statementConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "websiteConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_c9813f0b7e5cd0203d88286fcf6" UNIQUE ("websiteConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "welcomeScreenConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_6be5fa9b83a33c525e8190c1507" UNIQUE ("welcomeScreenConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "yesNoConfigUuid" uuid`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "UQ_265c3102d0adf55facc23760186" UNIQUE ("yesNoConfigUuid")`);
+        await queryRunner.query(`ALTER TABLE "drop_down_config" ALTER COLUMN "options" SET DEFAULT ARRAY[]::text[]`);
+        await queryRunner.query(`ALTER TABLE "file_upload_config" ALTER COLUMN "allowFileType" SET DEFAULT ARRAY['application/pdf','image/jpeg']::text[]`);
+        await queryRunner.query(`ALTER TABLE "multiple_choice_config" ALTER COLUMN "options" SET DEFAULT ARRAY[]::text[]`);
+        await queryRunner.query(`ALTER TABLE "scale_config" ALTER COLUMN "labels" SET DEFAULT ARRAY[]::text[]`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_a3a1f011ad14917d3c1ba16453b" FOREIGN KEY ("dateConfigUuid") REFERENCES "date_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_85def99857af24f56368d0254f7" FOREIGN KEY ("dropDownConfigUuid") REFERENCES "drop_down_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_f372369ba559e28e9a19dff3246" FOREIGN KEY ("emailConfigUuid") REFERENCES "email_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_1a990365e5cbe2b997365a767c1" FOREIGN KEY ("fileUploadConfigUuid") REFERENCES "file_upload_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_d79fc199a5b9ed62b6bff6a3d87" FOREIGN KEY ("greetingsScreenConfigUuid") REFERENCES "greetings_screen_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_618a3f61159e704b7a8b589c34a" FOREIGN KEY ("legalConfigUuid") REFERENCES "legal_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_cdab8754b9d15c76af4b544736b" FOREIGN KEY ("longTextConfigUuid") REFERENCES "long_text_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_d9e1b68e07b75d68320004838d6" FOREIGN KEY ("multipleChoiceConfigUuid") REFERENCES "multiple_choice_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_8f6defa4b240586d612f16d6826" FOREIGN KEY ("phoneNumberConfigUuid") REFERENCES "phone_number_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_88dc5573f29e377842de445f02a" FOREIGN KEY ("pictureChoiceConfigUuid") REFERENCES "picture_choice_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_2dc548942e926ca97421f607f2e" FOREIGN KEY ("ratingConfigUuid") REFERENCES "rating_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_b9ebe9b231c067c5006f2748944" FOREIGN KEY ("scaleConfigUuid") REFERENCES "scale_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_2830c471101a7b73eae8357698a" FOREIGN KEY ("shortTextConfigUuid") REFERENCES "short_text_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_54b992c988fa8018026e5f5f7b4" FOREIGN KEY ("statementConfigUuid") REFERENCES "statement_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_c9813f0b7e5cd0203d88286fcf6" FOREIGN KEY ("websiteConfigUuid") REFERENCES "website_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_6be5fa9b83a33c525e8190c1507" FOREIGN KEY ("welcomeScreenConfigUuid") REFERENCES "welcome_screen_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD CONSTRAINT "FK_265c3102d0adf55facc23760186" FOREIGN KEY ("yesNoConfigUuid") REFERENCES "yes_no_config"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_265c3102d0adf55facc23760186"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_6be5fa9b83a33c525e8190c1507"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_c9813f0b7e5cd0203d88286fcf6"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_54b992c988fa8018026e5f5f7b4"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_2830c471101a7b73eae8357698a"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_b9ebe9b231c067c5006f2748944"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_2dc548942e926ca97421f607f2e"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_88dc5573f29e377842de445f02a"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_8f6defa4b240586d612f16d6826"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_d9e1b68e07b75d68320004838d6"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_cdab8754b9d15c76af4b544736b"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_618a3f61159e704b7a8b589c34a"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_d79fc199a5b9ed62b6bff6a3d87"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_1a990365e5cbe2b997365a767c1"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_f372369ba559e28e9a19dff3246"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_85def99857af24f56368d0254f7"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "FK_a3a1f011ad14917d3c1ba16453b"`);
+        await queryRunner.query(`ALTER TABLE "scale_config" ALTER COLUMN "labels" SET DEFAULT ARRAY[]`);
+        await queryRunner.query(`ALTER TABLE "multiple_choice_config" ALTER COLUMN "options" SET DEFAULT ARRAY[]`);
+        await queryRunner.query(`ALTER TABLE "file_upload_config" ALTER COLUMN "allowFileType" SET DEFAULT ARRAY['application/pdf', 'image/jpeg'`);
+        await queryRunner.query(`ALTER TABLE "drop_down_config" ALTER COLUMN "options" SET DEFAULT ARRAY[]`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_265c3102d0adf55facc23760186"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "yesNoConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_6be5fa9b83a33c525e8190c1507"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "welcomeScreenConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_c9813f0b7e5cd0203d88286fcf6"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "websiteConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_54b992c988fa8018026e5f5f7b4"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "statementConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_2830c471101a7b73eae8357698a"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "shortTextConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_b9ebe9b231c067c5006f2748944"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "scaleConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_2dc548942e926ca97421f607f2e"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "ratingConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_88dc5573f29e377842de445f02a"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "pictureChoiceConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_8f6defa4b240586d612f16d6826"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "phoneNumberConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_d9e1b68e07b75d68320004838d6"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "multipleChoiceConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_cdab8754b9d15c76af4b544736b"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "longTextConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_618a3f61159e704b7a8b589c34a"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "legalConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_d79fc199a5b9ed62b6bff6a3d87"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "greetingsScreenConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_1a990365e5cbe2b997365a767c1"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "fileUploadConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_f372369ba559e28e9a19dff3246"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "emailConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_85def99857af24f56368d0254f7"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "dropDownConfigUuid"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP CONSTRAINT "UQ_a3a1f011ad14917d3c1ba16453b"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "dateConfigUuid"`);
+    }
+
+}

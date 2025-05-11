@@ -20,7 +20,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../../entities/user.entity';
 import { CreateUserDto, UpdateUserDto } from '../../dtos/users.dtos';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Repository } from 'typeorm';
+import { Brackets, FindOneOptions, Repository } from 'typeorm';
 
 import * as bcrypt from 'bcrypt';
 import { RolesService } from '../roles/roles.service';
@@ -31,6 +31,61 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly rolesService: RolesService,
   ) {}
+
+  searchUsers(query: string, excludedUuids: string[] = []) {
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.uuid', 'user.fullName', 'user.email'])
+      .where(
+        new Brackets((queryBuilder) => {
+          queryBuilder
+            .where('user.fullName ILIKE :query', { query: `%${query}%` })
+            .orWhere('user.email ILIKE :query', { query: `%${query}%` });
+        }),
+      );
+
+    if (excludedUuids.length) {
+      queryBuilder.andWhere('user.uuid NOT IN (:...excludedUuids)', {
+        excludedUuids,
+      });
+    }
+
+    return queryBuilder.limit(10).getMany();
+  }
+
+  searchUsersInCompany(
+    companyUuid: string,
+    query: string,
+    excludedUuids: string[] = [],
+  ) {
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .select(['user.uuid', 'user.fullName', 'user.email'])
+      .leftJoin('user.companiesAsMember', 'memberCompany')
+      .leftJoin('user.companiesAsAdmin', 'adminCompany')
+      .where(
+        new Brackets((queryBuilder) => {
+          queryBuilder
+            .where('memberCompany.uuid = :companyUuid', { companyUuid })
+            .orWhere('adminCompany.uuid = :companyUuid', { companyUuid });
+        }),
+      )
+      .andWhere(
+        new Brackets((queryBuilder) => {
+          queryBuilder
+            .where('user.fullName ILIKE :query', { query: `%${query}%` })
+            .orWhere('user.email ILIKE :query', { query: `%${query}%` });
+        }),
+      );
+
+    if (excludedUuids.length) {
+      queryBuilder.andWhere('user.uuid NOT IN (:...excludedUuids)', {
+        excludedUuids,
+      });
+    }
+
+    return queryBuilder.limit(10).getMany();
+  }
 
   findAll() {
     return this.userRepository.find();

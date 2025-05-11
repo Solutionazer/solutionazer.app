@@ -16,7 +16,16 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { QuestionType } from '../question-type.entity';
 
 @Entity()
 export class PictureChoiceConfig {
@@ -28,4 +37,19 @@ export class PictureChoiceConfig {
 
   @Column({ type: 'boolean', nullable: false, default: true })
   randomizeOptions: boolean;
+
+  // question type
+  @OneToOne(
+    () => QuestionType,
+    (questionType) => questionType.pictureChoiceConfig,
+  )
+  questionType: QuestionType;
+
+  @Exclude()
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  createdAt: Date;
+
+  @Exclude()
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
+  updatedAt: Date;
 }

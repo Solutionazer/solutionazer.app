@@ -16,7 +16,16 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { QuestionType } from '../question-type.entity';
 
 @Entity()
 export class LegalConfig {
@@ -32,4 +41,16 @@ export class LegalConfig {
 
   @Column({ type: 'boolean', nullable: false, default: true })
   required: boolean;
+
+  // question type
+  @OneToOne(() => QuestionType, (questionType) => questionType.legalConfig)
+  questionType: QuestionType;
+
+  @Exclude()
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  createdAt: Date;
+
+  @Exclude()
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
+  updatedAt: Date;
 }

@@ -16,31 +16,45 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToOne,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { QuestionType } from '../question-type.entity';
+import { Question } from './question.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
-export class RatingConfig {
+export class QuestionResponse {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column({ type: 'int', nullable: false, default: 5 })
-  maxRating: number;
+  @Column({ type: 'text', nullable: true })
+  textValue: string;
 
-  @Column({ type: 'varchar', length: 20, nullable: false, default: 'star' })
-  iconType: string;
+  @Column({ type: 'boolean', nullable: true })
+  booleanValue: boolean;
 
-  // question type
-  @OneToOne(() => QuestionType, (questionType) => questionType.ratingConfig)
-  questionType: QuestionType;
+  @Column({ type: 'int', nullable: true })
+  intValue: number;
+
+  @Column({ type: 'float', nullable: true })
+  floatValue: number;
+
+  @Column({ type: 'jsonb', nullable: true })
+  optionValues: string[];
+
+  @Column({ type: 'text', nullable: true })
+  fileUrl: string;
+
+  // question
+  @ManyToOne(() => Question, { nullable: false })
+  @JoinColumn({ name: 'questionUuid' })
+  question: Question;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })

@@ -16,7 +16,16 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Exclude } from 'class-transformer';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { QuestionType } from '../question-type.entity';
 
 @Entity()
 export class DateConfig {
@@ -29,5 +38,21 @@ export class DateConfig {
   @Column({ type: 'boolean', nullable: false, default: true })
   allowPastDates: boolean;
 
-  //! minDate & maxDate
+  @Column({ type: 'date', nullable: true })
+  minDate: string;
+
+  @Column({ type: 'date', nullable: true })
+  maxDate: string;
+
+  // question type
+  @OneToOne(() => QuestionType, (questionType) => questionType.dateConfig)
+  questionType: QuestionType;
+
+  @Exclude()
+  @CreateDateColumn({ type: 'timestamp with time zone' })
+  createdAt: Date;
+
+  @Exclude()
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
+  updatedAt: Date;
 }

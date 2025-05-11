@@ -51,6 +51,7 @@ import { PhoneNumberConfig } from './entities/questions/phone-number-config.enti
 import { PictureChoiceConfig } from './entities/questions/picture-choice-config.entity';
 import { GreetingsScreenConfig } from './entities/questions/greetings-screen-config.entity';
 import { WelcomeScreenConfig } from './entities/questions/welcome-screen-config.entity';
+import { QuestionResponse } from './entities/question-response.entity';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { WelcomeScreenConfig } from './entities/questions/welcome-screen-config.
       PictureChoiceConfig,
       GreetingsScreenConfig,
       WelcomeScreenConfig,
+      QuestionResponse,
       Stats,
       Transition,
     ]),

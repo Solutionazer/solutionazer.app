@@ -17,7 +17,13 @@
  */
 
 import { PartialType } from '@nestjs/mapped-types';
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsIn,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreateQuestionDto {
   @IsNotEmpty()
@@ -33,7 +39,24 @@ export class CreateQuestionDto {
   readonly order: number;
 
   @IsNotEmpty()
-  @IsString()
+  @IsIn([
+    'Welcome',
+    'Legal',
+    'Date',
+    'Dropdown',
+    'Email',
+    'File',
+    'Multiple Choice',
+    'Phone',
+    'Picture',
+    'Rating',
+    'Scale',
+    'Short Text',
+    'Statement',
+    'Website',
+    'Yes No',
+    'Greetings',
+  ])
   readonly type: string;
 
   @IsNotEmpty()
