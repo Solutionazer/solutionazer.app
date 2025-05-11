@@ -71,3 +71,39 @@ export const updateUser = async (
 
   return await res.json()
 }
+
+export const searchUsers = async (query: string, excludedUuids: string[]) => {
+  const res = await fetch(
+    `${baseUrl}/users/search?query=${query}&exclude=${excludedUuids.join(',')}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
+  )
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const searchUsersInCompany = async (
+  companyUuid: string,
+  query: string,
+  excludedUuids?: string[],
+) => {
+  const res = await fetch(
+    `${baseUrl}/users/search-in-company?company=${companyUuid}&query=${query}&exclude=${excludedUuids?.join(',')}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
+  )
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

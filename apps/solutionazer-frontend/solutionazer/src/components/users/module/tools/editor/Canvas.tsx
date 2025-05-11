@@ -22,6 +22,7 @@ import useDataCollector from '@/lib/module/data-collectors/states/global/dataCol
 import styles from './canvas.module.css'
 import Question from '@/lib/module/data-collectors/questions/question'
 import Input from '@/components/shared/form/components/Input'
+import Select from '@/components/shared/form/components/Select'
 
 export default function Canvas() {
   // dataCollector global state
@@ -45,25 +46,126 @@ export default function Canvas() {
           <Input
             params={{
               type: 'text',
+              id: 'welcome_description',
+              value: '',
+              onChange: () => {},
+              placeholder: ' ',
+              required: false,
+              disabled: false,
             }}
           />
         )
       case 'Legal':
-        break
+        return (
+          <Input
+            params={{
+              type: 'text',
+              id: 'legal_text',
+              value: '',
+              onChange: () => {},
+              placeholder: ' ',
+              required: false,
+              disabled: false,
+            }}
+          />
+        )
       case 'Date':
-        break
+        return (
+          <Input
+            params={{
+              type: 'date',
+              id: 'date',
+              value: '',
+              onChange: () => {},
+              placeholder: ' ',
+              required: false,
+              disabled: false,
+            }}
+          />
+        )
       case 'Dropdown':
-        break
+        return (
+          <Select
+            params={{
+              id: 'dropdown',
+              options: [],
+              value: '',
+              onChange: () => {},
+              required: false,
+              disabled: false,
+            }}
+          />
+        )
       case 'Email':
-        break
+        return (
+          <Input
+            params={{
+              type: 'email',
+              id: 'email',
+              value: '',
+              onChange: () => {},
+              placeholder: ' ',
+              required: false,
+              disabled: false,
+            }}
+          />
+        )
       case 'File':
-        break
+        return (
+          <Input
+            params={{
+              type: 'file',
+              id: 'file',
+              value: '',
+              onChange: () => {},
+              placeholder: ' ',
+              required: false,
+              disabled: false,
+            }}
+          />
+        )
       case 'Multiple Choice':
-        break
+        return (
+          <Input
+            params={{
+              type: 'checkbox',
+              id: 'multiple_choice',
+              value: '',
+              onChange: () => {},
+              placeholder: ' ',
+              required: false,
+              disabled: false,
+            }}
+          />
+        )
       case 'Phone':
-        break
+        return (
+          <Input
+            params={{
+              type: 'phone',
+              id: 'phone',
+              value: '',
+              onChange: () => {},
+              placeholder: ' ',
+              required: false,
+              disabled: false,
+            }}
+          />
+        )
       case 'Picture':
-        break
+        return (
+          <Input
+            params={{
+              type: 'image',
+              id: 'picture',
+              value: '',
+              onChange: () => {},
+              placeholder: ' ',
+              required: false,
+              disabled: false,
+            }}
+          />
+        )
       case 'Rating':
         break
       case 'Scale':

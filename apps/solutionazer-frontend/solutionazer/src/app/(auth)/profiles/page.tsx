@@ -27,6 +27,7 @@ import SmallTitle from '@/components/shared/titles/SmallTitle'
 import Title from '@/components/shared/titles/Title'
 import Admin from '@/lib/auth/companies/admins/admin'
 import Company from '@/lib/auth/companies/company'
+import Member from '@/lib/auth/companies/members/member'
 import useAuthStore from '@/lib/auth/states/global/authStore'
 import { getCompaniesByUser } from '@/lib/utils/users-management/companyHandler'
 import { useEffect, useState } from 'react'
@@ -43,7 +44,12 @@ export default function Profiles() {
     const fetchData = async () => {
       if (user?.getUuid()) {
         const data = (await getCompaniesByUser(user.getUuid())).map(
-          (company: { uuid: string; name: string; admins: Admin[] }) => {
+          (company: {
+            uuid: string
+            name: string
+            admins: Admin[]
+            members: Member[]
+          }) => {
             return new Company({
               uuid: company.uuid,
               name: company.name,
@@ -52,6 +58,13 @@ export default function Profiles() {
                   uuid: admin.uuid,
                   fullName: admin.fullName,
                   email: admin.email,
+                })
+              }),
+              members: company.members.map((member: any) => {
+                return new Member({
+                  uuid: member.uuid,
+                  fullName: member.fullName,
+                  email: member.email,
                 })
               }),
             })

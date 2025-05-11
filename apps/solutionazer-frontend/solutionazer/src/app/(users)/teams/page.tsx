@@ -30,7 +30,7 @@ import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import Article from '@/components/shared/containers/Article'
 import Team from '@/lib/teams/team'
 import MediumTitle from '@/components/shared/titles/MediumTitle'
-import Member from '@/lib/teams/members/member'
+import TeamMember from '@/lib/teams/members/team-member'
 
 export default function Route() {
   // auth global state
@@ -56,7 +56,7 @@ export default function Route() {
             uuid: string
             name: string
             type: string
-            members: Member[]
+            members: TeamMember[]
           }) => {
             return new Team({
               uuid: team.uuid,
@@ -135,7 +135,7 @@ export default function Route() {
                   {freelanceTeam.getMembers().length > 0 ? (
                     <ul>
                       {freelanceTeam.getMembers().map((member) => (
-                        <li key={member.getUuid()}>{member.getName()}</li>
+                        <li key={member.getUuid()}>{member.getFullName()}</li>
                       ))}
                     </ul>
                   ) : (

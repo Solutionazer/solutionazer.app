@@ -31,6 +31,19 @@ export const getTeamsByUser = async (uuid: string) => {
   return await res.json()
 }
 
+export const getTeamsByCompany = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/teams/company/${uuid}`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
 export const createFreelanceTeam = async (name: string, owner: string) => {
   const res = await fetch(`${baseUrl}/teams`, {
     method: 'POST',
@@ -38,6 +51,24 @@ export const createFreelanceTeam = async (name: string, owner: string) => {
     body: JSON.stringify({
       name,
       owner,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const createCompanyTeam = async (name: string, company: string) => {
+  const res = await fetch(`${baseUrl}/teams`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name,
+      company,
     }),
     credentials: 'include',
   })

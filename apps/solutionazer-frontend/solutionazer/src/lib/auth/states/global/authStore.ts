@@ -23,6 +23,7 @@ import AuthUser from '../../authUser'
 import { persist } from 'zustand/middleware'
 import Company from '../../companies/company'
 import Admin from '../../companies/admins/admin'
+import Member from '../../companies/members/member'
 
 interface AuthState {
   user: AuthUser | null
@@ -63,6 +64,13 @@ const useAuthStore: UseBoundStore<StoreApi<AuthState>> = create<
                 uuid: admin.uuid,
                 fullName: admin.fullName,
                 email: admin.email,
+              })
+            }),
+            members: plainCompany.members.map((member: any) => {
+              return new Member({
+                uuid: member.uuid,
+                fullName: member.fullName,
+                email: member.email,
               })
             }),
           })

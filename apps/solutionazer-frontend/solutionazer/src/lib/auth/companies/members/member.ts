@@ -16,42 +16,32 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import Admin from './admins/admin'
-import Member from './members/member'
-
-interface CompanyProps {
+interface MemberProps {
   uuid: string
-  name: string
-  admins?: Admin[]
-  members?: Member[]
+  fullName: string
+  email: string
 }
 
-export default class Company {
+export default class Member {
   private readonly uuid: string
-  private readonly name: string
-  private readonly admins: Admin[] | undefined
-  private readonly members: Member[] | undefined
+  private readonly fullName: string
+  private readonly email: string
 
-  constructor(private readonly props: CompanyProps) {
+  constructor(private readonly props: MemberProps) {
     this.uuid = props.uuid
-    this.name = props.name
-    this.admins = props.admins
-    this.members = props.members
+    this.fullName = props.fullName
+    this.email = props.email
   }
 
   public getUuid(): string {
     return this.uuid
   }
 
-  public getName(): string {
-    return this.name
+  public getFullName(): string {
+    return this.fullName
   }
 
-  public getAdmins(): Admin[] | undefined {
-    return this.admins
-  }
-
-  public getMembers(): Member[] | undefined {
-    return this.members
+  public getEmail(): string {
+    return this.email
   }
 }

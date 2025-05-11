@@ -1,17 +1,17 @@
-import Member from './members/member'
+import TeamMember from './members/team-member'
 
 interface TeamProps {
   uuid: string
   name: string
-  type: string
-  members: Member[]
+  type?: string
+  members: TeamMember[]
 }
 
 export default class Team {
   private readonly uuid: string
   private readonly name: string
-  private readonly type: string
-  private readonly members: Member[]
+  private readonly type: string | undefined
+  private readonly members: TeamMember[]
 
   constructor(private readonly props: TeamProps) {
     this.uuid = props.uuid
@@ -28,11 +28,11 @@ export default class Team {
     return this.name
   }
 
-  public getType(): string {
+  public getType(): string | undefined {
     return this.type
   }
 
-  public getMembers(): Member[] {
+  public getMembers(): TeamMember[] {
     return this.members
   }
 }

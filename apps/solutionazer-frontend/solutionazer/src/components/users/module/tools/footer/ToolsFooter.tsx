@@ -160,7 +160,7 @@ export default function ToolsFooter() {
     if (dataCollector) {
       const res = await createQuestion(
         dataCollector.getUuid() ?? '',
-        questionTypeName.toLowerCase(),
+        questionTypeName,
       )
 
       const newQuestion: Question = new Question({

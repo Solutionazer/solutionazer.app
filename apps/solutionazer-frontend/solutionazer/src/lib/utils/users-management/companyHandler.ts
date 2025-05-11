@@ -16,6 +16,9 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+import Admin from '@/lib/auth/companies/admins/admin'
+import Member from '@/lib/auth/companies/members/member'
+
 const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
 export const registerCompany = async (name: string, admins: object[]) => {
@@ -79,4 +82,36 @@ export const updateCompany = async (uuid: string, name: string) => {
   return await res.json()
 }
 
-export const deleteAdmin = async () => {}
+export const updateAdmins = async (uuid: string, admins: Admin[]) => {
+  const res = await fetch(`${baseUrl}/companies/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      admins,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateMembers = async (uuid: string, members: Member[]) => {
+  const res = await fetch(`${baseUrl}/companies/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      members,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

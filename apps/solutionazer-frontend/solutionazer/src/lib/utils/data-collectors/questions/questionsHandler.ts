@@ -68,6 +68,7 @@ export const createQuestion = async (
       dataCollectorUuid,
       type,
     }),
+    credentials: 'include',
   })
 
   if (!res.ok) {
