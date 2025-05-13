@@ -67,6 +67,7 @@ export class Question {
   // forms / surveys
   @ManyToOne(() => DataCollector, (dataCollector) => dataCollector.questions, {
     nullable: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'dataCollectorUuid' })
   dataCollector: DataCollector;

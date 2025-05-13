@@ -52,7 +52,7 @@ export class QuestionResponse {
   fileUrl: string;
 
   // question
-  @ManyToOne(() => Question, { nullable: false })
+  @ManyToOne(() => Question, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'questionUuid' })
   question: Question;
 

@@ -66,10 +66,13 @@ export class User {
   @OneToMany(() => CompanyUserRole, (companyUserRole) => companyUserRole.user)
   companyRoles: CompanyUserRole[];
 
-  // teams where user be
+  // team where user be as owner
+  @OneToMany(() => Team, (team) => team.owner)
+  teamAsOwner: Team;
+
+  // teams where user be as member
   @ManyToMany(() => Team, (team) => team.members)
-  @JoinTable({ name: 'user_teams' })
-  teams: Team[];
+  teamsAsMember: Team[];
 
   // team roles
   @OneToMany(() => TeamUserRole, (teamUserRole) => teamUserRole.user)
