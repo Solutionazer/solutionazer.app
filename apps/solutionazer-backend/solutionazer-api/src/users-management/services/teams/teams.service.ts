@@ -27,6 +27,7 @@ import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CompaniesService } from '../companies/companies.service';
 import { User } from 'src/users-management/entities/user.entity';
+import { Company } from 'src/users-management/entities/company.entity';
 
 @Injectable()
 export class TeamsService {
@@ -38,39 +39,20 @@ export class TeamsService {
 
   async findAllByUserUuid(uuid: string) {
     const user: User = await this.usersService.findOne(uuid, {
-      relations: ['teams'],
+      relations: [
+        'teamsAsMember',
+        'teamsAsMember.owner',
+        'teamsAsMember.company',
+      ],
     });
 
-    const teams: Team[] = user.teams;
+    return user.teamsAsMember.map((team) => {
+      const { uuid: teamUuid, name, owner, members, type } = team;
 
-    return teams.map((team) => {
-      const isOwner: boolean = team.owner.uuid === user.uuid;
-      const isCompanyTeam: boolean = !!team.company;
-      const isUserInCompanyAsMember: boolean = user.companiesAsMember.some(
-        (company) => company.uuid === team.company.uuid,
-      );
-      const isUserInCompanyAsAdmin: boolean = user.companiesAsAdmin.some(
-        (company) => company.uuid === team.company.uuid,
-      );
-
-      let type: 'freelance-own' | 'company-own' | 'external';
-
-      if (isOwner && !isCompanyTeam) {
-        type = 'freelance-own';
-      } else if (
-        isCompanyTeam &&
-        (isUserInCompanyAsMember || isUserInCompanyAsAdmin)
-      ) {
-        type = 'company-own';
-      } else {
-        type = 'external';
-      }
-
-      const { uuid, name, owner, members } = team;
       return {
-        uuid,
-        owner,
+        uuid: teamUuid,
         name,
+        owner,
         members,
         type,
       };
@@ -108,17 +90,31 @@ export class TeamsService {
   }
 
   async create(data: CreateTeamDto) {
-    const { owner: ownerUuid, ...rest } = data;
+    const { owner: ownerUuid, company, ...rest } = data;
 
     let owner: User | undefined;
     if (ownerUuid) {
       owner = await this.usersService.findOne(ownerUuid);
     }
 
+    let type: 'freelance-own' | 'company-own' = 'freelance-own';
+
+    let foundCompany: Company | undefined;
+    if (company) {
+      foundCompany = await this.companiesService.findOne(company.uuid);
+      if (foundCompany) {
+        type = 'company-own';
+      }
+    }
+
     const newTeam: Team = this.teamRepository.create({
       ...rest,
       owner,
+      members: owner ? [owner] : [],
+      company: foundCompany,
+      type,
     });
+
     return this.teamRepository.save(newTeam);
   }
 

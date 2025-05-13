@@ -26,7 +26,7 @@ import { DataCollector } from 'src/data-collectors/entities/data-collector.entit
 import DataCollectorType from 'src/data-collectors/enums/data-collector-type.enum';
 import { User } from 'src/users-management/entities/user.entity';
 import { UsersService } from 'src/users-management/services/users/users.service';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class SurveysService {
@@ -36,16 +36,27 @@ export class SurveysService {
     private readonly usersService: UsersService,
   ) {}
 
+  async publish(uuid: string) {
+    const survey: DataCollector = await this.findOne(uuid, {
+      relations: ['questions', 'questions.type'],
+    });
+
+    survey.isPublished = true;
+
+    return this.dataCollectorRepository.save(survey);
+  }
+
   findAllByUserUuid(uuid: string) {
     return this.dataCollectorRepository.find({
       where: { user: { uuid }, type: DataCollectorType.Survey },
     });
   }
 
-  async findOne(uuid: string) {
+  async findOne(uuid: string, options?: FindOneOptions<DataCollector>) {
     const survey: DataCollector | null =
       await this.dataCollectorRepository.findOne({
         where: { uuid, type: DataCollectorType.Survey },
+        ...options,
       });
 
     if (!survey) {

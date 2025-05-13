@@ -104,6 +104,7 @@ export default function Module(props: Readonly<ModuleProps>) {
               description: string
               type: string
               userUuid: string
+              isPublished: boolean
               updatedAt: string
               createdAt: string
             }) => {
@@ -113,6 +114,7 @@ export default function Module(props: Readonly<ModuleProps>) {
                 description: form.description,
                 type: form.type,
                 userUuid: form.userUuid,
+                isPublished: form.isPublished,
                 updatedAt: new Date(form.updatedAt),
                 createdAt: new Date(form.updatedAt),
               })
@@ -128,6 +130,7 @@ export default function Module(props: Readonly<ModuleProps>) {
               description: string
               type: string
               userUuid: string
+              isPublished: boolean
               updatedAt: string
               createdAt: string
             }) => {
@@ -137,6 +140,7 @@ export default function Module(props: Readonly<ModuleProps>) {
                 description: survey.description,
                 type: survey.type,
                 userUuid: survey.userUuid,
+                isPublished: survey.isPublished,
                 updatedAt: new Date(survey.updatedAt),
                 createdAt: new Date(survey.createdAt),
               })
@@ -255,6 +259,7 @@ export default function Module(props: Readonly<ModuleProps>) {
       description: string
       type: string
       userUuid: string
+      isPublished: boolean
       updatedAt: string
       createdAt: string
     }
@@ -268,6 +273,7 @@ export default function Module(props: Readonly<ModuleProps>) {
         description: newItem.description,
         type: newItem.type,
         userUuid: newItem.userUuid,
+        isPublished: newItem.isPublished,
         updatedAt: new Date(newItem.updatedAt),
         createdAt: new Date(newItem.createdAt),
       })
@@ -282,6 +288,7 @@ export default function Module(props: Readonly<ModuleProps>) {
         description: newItem.description,
         type: newItem.type,
         userUuid: newItem.userUuid,
+        isPublished: newItem.isPublished,
         updatedAt: new Date(newItem.updatedAt),
         createdAt: new Date(newItem.createdAt),
       })

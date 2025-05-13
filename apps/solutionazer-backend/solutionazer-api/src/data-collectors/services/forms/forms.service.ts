@@ -26,7 +26,7 @@ import { DataCollector } from 'src/data-collectors/entities/data-collector.entit
 import DataCollectorType from 'src/data-collectors/enums/data-collector-type.enum';
 import { User } from 'src/users-management/entities/user.entity';
 import { UsersService } from 'src/users-management/services/users/users.service';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 
 @Injectable()
 export class FormsService {
@@ -36,16 +36,43 @@ export class FormsService {
     private readonly usersService: UsersService,
   ) {}
 
+  async findPublicForm(uuid: string) {
+    const form: DataCollector = await this.findOne(uuid, {
+      relations: ['questions', 'questions.type'],
+    });
+
+    const { title, description, type, isPublished, questions } = form;
+
+    return {
+      title,
+      description,
+      type,
+      isPublished,
+      questions,
+    };
+  }
+
+  async publish(uuid: string) {
+    const form: DataCollector = await this.findOne(uuid, {
+      relations: ['questions', 'questions.type'],
+    });
+
+    form.isPublished = true;
+
+    return this.dataCollectorRepository.save(form);
+  }
+
   findAllByUserUuid(uuid: string) {
     return this.dataCollectorRepository.find({
       where: { user: { uuid }, type: DataCollectorType.Form },
     });
   }
 
-  async findOne(uuid: string) {
+  async findOne(uuid: string, options?: FindOneOptions<DataCollector>) {
     const form: DataCollector | null =
       await this.dataCollectorRepository.findOne({
-        where: { uuid },
+        where: { uuid, type: DataCollectorType.Form },
+        ...options,
       });
 
     if (!form) {

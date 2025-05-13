@@ -16,6 +16,8 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -133,6 +135,16 @@ export class CompaniesService {
       company.admins = users;
     }
 
+    if (changes.members?.length) {
+      const membersUsers = await Promise.all(
+        changes.members.map((member: any) =>
+          this.usersService.findOne(member.uuid),
+        ),
+      );
+
+      company.members = membersUsers;
+    }
+
     const updatedCompany: Company = this.companyRepository.merge(
       company,
       changes,
@@ -140,15 +152,11 @@ export class CompaniesService {
 
     await this.companyRepository.save(updatedCompany);
 
-    const members = await this.userRepository.find({
-      where: { companiesAsMember: updatedCompany },
-    });
-
     return {
       uuid: updatedCompany.uuid,
       name: updatedCompany.name,
       admins: updatedCompany.admins,
-      members,
+      members: updatedCompany.members,
     };
   }
 

@@ -25,6 +25,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
@@ -38,6 +39,13 @@ import { SurveysService } from 'src/data-collectors/services/surveys/surveys.ser
 @Controller('surveys')
 export class SurveysController {
   constructor(private readonly surveysService: SurveysService) {}
+
+  @Permissions('form:publish')
+  @Patch(':uuid')
+  @HttpCode(HttpStatus.OK)
+  publish(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+    return this.surveysService.publish(uuid);
+  }
 
   @Permissions('survey:readAllByUser')
   @Get(':userUuid')

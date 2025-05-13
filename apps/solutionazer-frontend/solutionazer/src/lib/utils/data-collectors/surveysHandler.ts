@@ -75,3 +75,16 @@ export const deleteSurvey = async (surveyUuid: string) => {
 
   return await res.json()
 }
+
+export const publishSurvey = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/surveys/${uuid}`, {
+    method: 'PATCH',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

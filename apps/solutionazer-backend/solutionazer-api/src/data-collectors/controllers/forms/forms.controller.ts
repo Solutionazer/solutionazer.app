@@ -25,10 +25,12 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Patch,
   Post,
   Put,
 } from '@nestjs/common';
 import { Permissions } from 'src/auth/decorators/permissions.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import {
   CreateDataCollectorDto,
   UpdateDataCollectorDto,
@@ -38,6 +40,20 @@ import { FormsService } from 'src/data-collectors/services/forms/forms.service';
 @Controller('forms')
 export class FormsController {
   constructor(private readonly formsService: FormsService) {}
+
+  @Public()
+  @Get('public/:uuid')
+  @HttpCode(HttpStatus.OK)
+  findPublicForm(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+    return this.formsService.findPublicForm(uuid);
+  }
+
+  @Permissions('form:publish')
+  @Patch(':uuid')
+  @HttpCode(HttpStatus.OK)
+  publish(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+    return this.formsService.publish(uuid);
+  }
 
   @Permissions('form:readAllByUser')
   @Get(':userUuid')

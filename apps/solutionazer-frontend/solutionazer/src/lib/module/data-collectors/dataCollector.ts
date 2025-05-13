@@ -25,6 +25,7 @@ interface DataCollectorProps {
   type?: string
   userUuid?: string
   questions?: Question[]
+  isPublished?: boolean
   updatedAt?: Date
   createdAt?: Date
 }
@@ -36,6 +37,7 @@ export default class DataCollector {
   private readonly type: string | undefined
   private readonly userUuid: string | undefined
   private readonly questions: Question[] | undefined
+  private readonly isPublished: boolean | undefined
   private readonly updatedAt: Date | undefined
   private readonly createdAt: Date | undefined
 
@@ -48,6 +50,7 @@ export default class DataCollector {
     this.questions = props.questions
     this.updatedAt = props.updatedAt
     this.createdAt = props.createdAt
+    this.isPublished = props.isPublished
   }
 
   public getUuid(): string | undefined {
@@ -72,6 +75,10 @@ export default class DataCollector {
 
   public getQuestions(): Question[] | undefined {
     return this.questions
+  }
+
+  public getIsPublished(): boolean | undefined {
+    return this.isPublished
   }
 
   public getUpdatedAt(): Date | undefined {

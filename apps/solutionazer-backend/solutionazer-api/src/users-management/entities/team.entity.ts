@@ -42,7 +42,7 @@ export class Team {
   name: string;
 
   // team owner
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, (user) => user.teamAsOwner, { nullable: true })
   @JoinColumn({ name: 'ownerUuid' })
   owner: User;
 
@@ -52,9 +52,13 @@ export class Team {
   company: Company;
 
   // team members
-  @ManyToMany(() => User, (user) => user.teams)
+  @ManyToMany(() => User, (user) => user.teamsAsMember)
   @JoinTable({ name: 'team_members' })
   members: User[];
+
+  // type
+  @Column({ type: 'varchar', length: 20, default: 'freelance-own' })
+  type: 'freelance-own' | 'company-own';
 
   // user roles into team
   @OneToMany(() => TeamUserRole, (teamUserRole) => teamUserRole.team)

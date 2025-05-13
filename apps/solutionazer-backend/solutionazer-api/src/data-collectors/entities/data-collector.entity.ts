@@ -67,6 +67,10 @@ export class DataCollector {
   @JoinColumn({ name: 'statsUuid' })
   stats: Stats;
 
+  // published?
+  @Column({ type: 'boolean', nullable: false, default: false })
+  isPublished: boolean;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: Date;
 

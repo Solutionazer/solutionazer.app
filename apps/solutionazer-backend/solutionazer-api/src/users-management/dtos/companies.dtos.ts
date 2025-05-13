@@ -29,6 +29,10 @@ export class CreateCompanyDto {
   @IsOptional()
   @IsArray()
   readonly admins: AdminDto[];
+
+  @IsOptional()
+  @IsArray()
+  readonly members: any[];
 }
 
 export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {}
