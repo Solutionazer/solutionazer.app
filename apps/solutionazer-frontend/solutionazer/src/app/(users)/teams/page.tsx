@@ -16,6 +16,8 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client'
 
 import useAuthStore from '@/lib/auth/states/global/authStore'
@@ -51,6 +53,10 @@ export default function Route() {
       if (user) {
         const userUuid: string = user.getUuid() ?? ''
 
+        console.log(userUuid)
+
+        console.log(await getTeamsByUser(userUuid))
+
         const fetchedTeams: Team[] = (await getTeamsByUser(userUuid)).map(
           (team: {
             uuid: string
@@ -58,6 +64,8 @@ export default function Route() {
             type: string
             members: TeamMember[]
           }) => {
+            console.log('TEAM' + team)
+
             return new Team({
               uuid: team.uuid,
               name: team.name,
@@ -66,6 +74,8 @@ export default function Route() {
             })
           },
         )
+
+        console.log(fetchedTeams)
 
         setTeams(fetchedTeams)
       }
@@ -85,16 +95,26 @@ export default function Route() {
       const owner: string = user?.getUuid() ?? ''
       const name: string = `${user?.getFullName()?.split(' ')[0]}'s Team`
 
-      const newTeamData = await createFreelanceTeam(name, owner)
+      await createFreelanceTeam(name, owner)
 
-      const newTeam: Team = new Team({
-        uuid: newTeamData.uuid,
-        name: newTeamData.name,
-        type: newTeamData.type,
-        members: newTeamData.members,
+      console.log(owner)
+
+      const updatedTeams = await getTeamsByUser(owner)
+
+      console.log(updatedTeams)
+
+      const mappedTeams: Team[] = updatedTeams.map((team: any) => {
+        return new Team({
+          uuid: team.uuid,
+          name: team.name,
+          type: team.type,
+          members: team.members,
+        })
       })
 
-      setTeams((prevTeams) => [...prevTeams, newTeam])
+      console.log(mappedTeams)
+
+      setTeams(mappedTeams)
     } catch {}
   }
 
@@ -132,7 +152,7 @@ export default function Route() {
 
               {freelanceTeam && (
                 <>
-                  {freelanceTeam.getMembers().length > 0 ? (
+                  {(freelanceTeam.getMembers() ?? []).length > 0 ? (
                     <ul>
                       {freelanceTeam.getMembers().map((member) => (
                         <li key={member.getUuid()}>{member.getFullName()}</li>

@@ -67,6 +67,7 @@ const useDataCollector: UseBoundStore<StoreApi<DataCollectorState>> = create<
                 }),
               })
             }),
+            isPublished: plainDataCollector.isPublished,
             updatedAt: plainDataCollector.updatedAt,
             createdAt: plainDataCollector.createdAt,
           })

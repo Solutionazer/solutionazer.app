@@ -75,3 +75,28 @@ export const deleteForm = async (formUuid: string) => {
 
   return await res.json()
 }
+
+export const publishForm = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/forms/${uuid}`, {
+    method: 'PATCH',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const getPublicForm = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/forms/public/${uuid}`, {
+    method: 'GET',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * This file is part of solutionazer.app.
  *
@@ -16,6 +15,8 @@
  *
  * Copyright (C) 2025 David Llamas Román
  */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 'use client'
 

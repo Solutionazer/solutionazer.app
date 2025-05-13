@@ -43,11 +43,19 @@ import {
   splitCamelCaseAndCapitalize,
   toCamelCase,
 } from '@/lib/utils/textHandler'
+import { publishForm } from '@/lib/utils/data-collectors/formsHandler'
+import { publishSurvey } from '@/lib/utils/data-collectors/surveysHandler'
+import Message from '@/components/shared/messages/Message'
+import Input from '@/components/shared/form/components/Input'
 
 export default function ToolsFooter() {
   // dataCollector global state
-  const { dataCollector, setDataCollector, setSelectedQuestionUuid } =
-    useDataCollector()
+  const {
+    dataCollector,
+    setDataCollector,
+    selectedQuestionUuid,
+    setSelectedQuestionUuid,
+  } = useDataCollector()
 
   //  has questions loading been done?
   const [hasLoadedQuestions, setHasLoadedQuestions] = useState(false)
@@ -105,14 +113,64 @@ export default function ToolsFooter() {
         }
 
         setHasLoadedQuestions(true)
+        setSelectedQuestionUuid('')
       }
     }
 
     fetchData()
-  }, [dataCollector, setDataCollector, hasLoadedQuestions])
+  }, [
+    dataCollector,
+    setDataCollector,
+    hasLoadedQuestions,
+    setSelectedQuestionUuid,
+  ])
+
+  // auto select the first question
+  useEffect(() => {
+    if (hasLoadedQuestions && dataCollector && !selectedQuestionUuid) {
+      const questions: Question[] = dataCollector.getQuestions() ?? []
+
+      if (questions.length > 0) {
+        setSelectedQuestionUuid(questions[0].getUuid() ?? '')
+      }
+    }
+  }, [
+    hasLoadedQuestions,
+    dataCollector,
+    selectedQuestionUuid,
+    setSelectedQuestionUuid,
+  ])
 
   // question types state
   const [questionTypes, setQuestionTypes] = useState<QuestionType[]>([])
+
+  // question types depending on dataCollector type
+  const FORM_TYPES: string[] = [
+    'Welcome',
+    'Legal',
+    'Date',
+    'Dropdown',
+    'Email',
+    'File',
+    'Phone',
+    'Picture',
+    'Short Text',
+    'Long Text',
+    'Statement',
+    'Website',
+    'Greetings',
+  ]
+
+  const SURVEY_TYPES = [
+    'Welcome',
+    'Multiple Choice',
+    'Yes No',
+    'Rating',
+    'Scale',
+    'Short Text',
+    'DropDown',
+    'Greetings',
+  ]
 
   // load question types
   useEffect(() => {
@@ -159,12 +217,18 @@ export default function ToolsFooter() {
   // questions
   const questions: Question[] = dataCollector?.getQuestions() ?? []
 
-  // modal state
+  // modals state
   const [showModal, setShowModal] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
 
-  // handle question creation
+  // handle modal visibility
   const handleModalVisibility = () => {
     setShowModal(true)
+  }
+
+  // handle share modal visibility
+  const handleShareModalVisibility = () => {
+    setShowShareModal(true)
   }
 
   // handle question creation
@@ -229,27 +293,247 @@ export default function ToolsFooter() {
     setSelectedQuestionUuid(questionUuid)
   }
 
+  // UI states
+  const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
+
+  // messages
+  const formPublished: string = 'Form published successfully!'
+  const formPublicationFailed: string =
+    'Failed to publish the form. Please try again later.'
+  const surveyPublished: string = 'Survey published successfully!'
+  const surveyPublicationFailed: string =
+    'Failed to publish the survey. Please try again later.'
+  const formAlreadyPublished: string = 'This form has already been published.'
+  const surveyAlreadyPublished: string = 'This form has already been published.'
+  const linkCopied: string = 'Link copied successfully!'
+  const linkCopyFailed: string = 'Failed to copy.'
+
+  // handle dataCollector publication
+  const handleDataCollectorPublication = async (
+    dataCollectorUuid: string,
+    dataCollectorType: string,
+    isPublished: boolean,
+  ) => {
+    if (dataCollectorType === 'form') {
+      if (!isPublished) {
+        try {
+          const publishedForm: any = await publishForm(dataCollectorUuid)
+
+          setDataCollector(
+            new DataCollector({
+              uuid: publishedForm.uuid,
+              title: publishedForm.title,
+              description: publishedForm.description,
+              type: publishedForm.type,
+              userUuid: publishedForm.userUuid,
+              questions: publishedForm.questions.map(
+                (question: {
+                  uuid: string
+                  text: string
+                  required: boolean
+                  order: number
+                  type: {
+                    uuid: string
+                    name: string
+                    description: string
+                  }
+                }) => {
+                  return new Question({
+                    uuid: question.uuid,
+                    text: question.text,
+                    required: question.required,
+                    order: question.order,
+                    type: new QuestionType({
+                      uuid: question.type.uuid,
+                      name: question.type.name,
+                      description: question.type.description,
+                    }),
+                  })
+                },
+              ),
+              isPublished: publishedForm.isPublished,
+              updatedAt: publishedForm.updatedAt,
+              createdAt: publishedForm.createdAt,
+            }),
+          )
+
+          setInfoMessage(formPublished)
+          setShowShareModal(false)
+        } catch {
+          setInfoMessage(formPublicationFailed)
+          setShowShareModal(false)
+        }
+      } else {
+        setInfoMessage(formAlreadyPublished)
+        setShowShareModal(false)
+      }
+    } else if (dataCollectorType === 'survey') {
+      if (!isPublished) {
+        try {
+          const publishedSurvey: any = await publishSurvey(dataCollectorUuid)
+
+          setDataCollector(
+            new DataCollector({
+              uuid: publishedSurvey.uuid,
+              title: publishedSurvey.title,
+              description: publishedSurvey.description,
+              type: publishedSurvey.type,
+              userUuid: publishedSurvey.userUuid,
+              questions: publishedSurvey.questions.map(
+                (question: {
+                  uuid: string
+                  text: string
+                  required: boolean
+                  order: number
+                  type: {
+                    uuid: string
+                    name: string
+                    description: string
+                  }
+                }) => {
+                  return new Question({
+                    uuid: question.uuid,
+                    text: question.text,
+                    required: question.required,
+                    order: question.order,
+                    type: new QuestionType({
+                      uuid: question.type.uuid,
+                      name: question.type.name,
+                      description: question.type.description,
+                    }),
+                  })
+                },
+              ),
+              isPublished: publishedSurvey.isPublished,
+              updatedAt: publishedSurvey.updatedAt,
+              createdAt: publishedSurvey.createdAt,
+            }),
+          )
+
+          setInfoMessage(surveyPublished)
+          setShowShareModal(false)
+        } catch {
+          setInfoMessage(surveyPublicationFailed)
+          setShowShareModal(false)
+        }
+      } else {
+        setInfoMessage(surveyAlreadyPublished)
+        setShowShareModal(false)
+      }
+    }
+  }
+
+  // handle copy link
+  const handleCopyLink = async () => {
+    const link = generatePublicLink()
+    try {
+      await navigator.clipboard.writeText(link)
+
+      setInfoMessage(linkCopied)
+      setShowShareModal(false)
+    } catch {
+      setInfoMessage(linkCopyFailed)
+      setShowShareModal(false)
+    }
+  }
+
+  // public link generation
+  const generatePublicLink = () => {
+    const uuid = dataCollector?.getUuid()
+
+    if (uuid) {
+      return `${process.env.NEXT_PUBLIC_FRONTEND_URL}/public/${uuid}`
+    }
+
+    return ''
+  }
+
   return (
     <>
       {showModal && (
         <Modal params={{ setShowModal }}>
           <ul>
-            {questionTypes.map((questionType: QuestionType) => (
-              <li key={questionType.getUuid()}>
-                <Article
-                  params={{
-                    onClick: () =>
-                      handleQuestionCreation(questionType.getName()),
-                  }}
-                >
-                  <SmallTitle params={{ text: questionType.getName() }} />
-                  <p>{questionType.getDescription()}</p>
-                </Article>
-              </li>
-            ))}
+            {questionTypes
+              .filter((questionType) => {
+                const formType: string =
+                  dataCollector?.getType() ??
+                  dataCollector?.['props'].type ??
+                  ''
+
+                if (formType === 'form') {
+                  return FORM_TYPES.includes(questionType.getName())
+                } else if (formType === 'survey') {
+                  return SURVEY_TYPES.includes(questionType.getName())
+                }
+
+                return false
+              })
+              .map((questionType: QuestionType) => (
+                <li key={questionType.getUuid()}>
+                  <Article
+                    params={{
+                      onClick: () =>
+                        handleQuestionCreation(questionType.getName()),
+                    }}
+                  >
+                    <SmallTitle params={{ text: questionType.getName() }} />
+                    <p>{questionType.getDescription()}</p>
+                  </Article>
+                </li>
+              ))}
           </ul>
         </Modal>
       )}
+      {showShareModal && (
+        <Modal params={{ setShowModal: setShowShareModal }}>
+          <Button
+            params={{
+              type: ButtonType.Button,
+              text: 'Publish',
+              onClick: () =>
+                handleDataCollectorPublication(
+                  dataCollector?.getUuid() ?? '',
+                  dataCollector?.getType() ?? '',
+                  dataCollector?.getIsPublished() ?? false,
+                ),
+              className: styles.publish_btn,
+            }}
+          />
+          {dataCollector?.getIsPublished() && (
+            <div className={styles.public_url_container}>
+              <Input
+                params={{
+                  type: 'url',
+                  id: 'public_link',
+                  value: generatePublicLink(),
+                  onChange: () => {},
+                  placeholder: '',
+                  required: false,
+                  disabled: true,
+                }}
+              />
+              <Button
+                params={{
+                  type: ButtonType.Button,
+                  text: 'Copy',
+                  onClick: handleCopyLink,
+                }}
+              />
+            </div>
+          )}
+        </Modal>
+      )}
+      <div className={styles.share_container}>
+        {infoMessage && <Message params={{ type: '', text: infoMessage }} />}
+        <Button
+          params={{
+            type: ButtonType.Button,
+            text: 'Share',
+            onClick: handleShareModalVisibility,
+            className: styles.share_btn,
+          }}
+        />
+      </div>
       <Footer params={{ className: styles.secondary_footer }}>
         <nav>
           <ul className={styles.questions_container}>
