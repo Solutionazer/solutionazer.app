@@ -1,0 +1,120 @@
+import { MigrationInterface, QueryRunner } from "typeorm";
+
+export class Migrations1746915435428 implements MigrationInterface {
+    name = 'Migrations1746915435428'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "question" DROP CONSTRAINT "FK_99af17e25ea9c1c9c8de04b3799"`);
+        await queryRunner.query(`ALTER TABLE "company_admins" DROP CONSTRAINT "FK_1548423a4d609161c72a495344a"`);
+        await queryRunner.query(`ALTER TABLE "company_members" DROP CONSTRAINT "company_members_user_fk"`);
+        await queryRunner.query(`ALTER TABLE "company_members" DROP CONSTRAINT "company_members_company_fk"`);
+        await queryRunner.query(`CREATE TABLE "question_response" ("uuid" uuid NOT NULL DEFAULT uuid_generate_v4(), "textValue" text, "booleanValue" boolean, "intValue" integer, "floatValue" double precision, "optionValues" jsonb, "fileUrl" text, "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "questionUuid" uuid NOT NULL, CONSTRAINT "PK_e4353ebf9ac3d68bce878e84c00" PRIMARY KEY ("uuid"))`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "question_type" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "yes_no_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "yes_no_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "welcome_screen_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "welcome_screen_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "website_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "website_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "statement_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "statement_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "short_text_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "short_text_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "scale_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "scale_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "rating_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "rating_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "picture_choice_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "picture_choice_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "phone_number_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "phone_number_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "multiple_choice_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "multiple_choice_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "long_text_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "long_text_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "legal_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "legal_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "greetings_screen_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "greetings_screen_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "file_upload_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "file_upload_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "email_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "email_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "drop_down_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "drop_down_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "date_config" ADD "minDate" date`);
+        await queryRunner.query(`ALTER TABLE "date_config" ADD "maxDate" date`);
+        await queryRunner.query(`ALTER TABLE "date_config" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "date_config" ADD "updatedAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "scale_config" ALTER COLUMN "labels" SET DEFAULT ARRAY[]::text[]`);
+        await queryRunner.query(`ALTER TABLE "multiple_choice_config" ALTER COLUMN "options" SET DEFAULT ARRAY[]::text[]`);
+        await queryRunner.query(`ALTER TABLE "file_upload_config" ALTER COLUMN "allowFileType" SET DEFAULT ARRAY['application/pdf','image/jpeg']::text[]`);
+        await queryRunner.query(`ALTER TABLE "drop_down_config" ALTER COLUMN "options" SET DEFAULT ARRAY[]::text[]`);
+        await queryRunner.query(`CREATE INDEX "IDX_73fd222782a9b19dc68251a72a" ON "company_members" ("companyUuid") `);
+        await queryRunner.query(`CREATE INDEX "IDX_c82edbad38396bf2f183056f35" ON "company_members" ("userUuid") `);
+        await queryRunner.query(`ALTER TABLE "question" ADD CONSTRAINT "FK_a011ac498de11978d95f37d578d" FOREIGN KEY ("dataCollectorUuid") REFERENCES "data_collector"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "question_response" ADD CONSTRAINT "FK_7d24bd2d14ce59affb59092a834" FOREIGN KEY ("questionUuid") REFERENCES "question"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "company_admins" ADD CONSTRAINT "FK_1548423a4d609161c72a495344a" FOREIGN KEY ("userUuid") REFERENCES "user"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "company_members" ADD CONSTRAINT "FK_73fd222782a9b19dc68251a72a7" FOREIGN KEY ("companyUuid") REFERENCES "company"("uuid") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "company_members" ADD CONSTRAINT "FK_c82edbad38396bf2f183056f35c" FOREIGN KEY ("userUuid") REFERENCES "user"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "company_members" DROP CONSTRAINT "FK_c82edbad38396bf2f183056f35c"`);
+        await queryRunner.query(`ALTER TABLE "company_members" DROP CONSTRAINT "FK_73fd222782a9b19dc68251a72a7"`);
+        await queryRunner.query(`ALTER TABLE "company_admins" DROP CONSTRAINT "FK_1548423a4d609161c72a495344a"`);
+        await queryRunner.query(`ALTER TABLE "question_response" DROP CONSTRAINT "FK_7d24bd2d14ce59affb59092a834"`);
+        await queryRunner.query(`ALTER TABLE "question" DROP CONSTRAINT "FK_a011ac498de11978d95f37d578d"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_c82edbad38396bf2f183056f35"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_73fd222782a9b19dc68251a72a"`);
+        await queryRunner.query(`ALTER TABLE "drop_down_config" ALTER COLUMN "options" SET DEFAULT ARRAY[]`);
+        await queryRunner.query(`ALTER TABLE "file_upload_config" ALTER COLUMN "allowFileType" SET DEFAULT ARRAY['application/pdf', 'image/jpeg'`);
+        await queryRunner.query(`ALTER TABLE "multiple_choice_config" ALTER COLUMN "options" SET DEFAULT ARRAY[]`);
+        await queryRunner.query(`ALTER TABLE "scale_config" ALTER COLUMN "labels" SET DEFAULT ARRAY[]`);
+        await queryRunner.query(`ALTER TABLE "date_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "date_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "date_config" DROP COLUMN "maxDate"`);
+        await queryRunner.query(`ALTER TABLE "date_config" DROP COLUMN "minDate"`);
+        await queryRunner.query(`ALTER TABLE "drop_down_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "drop_down_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "email_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "email_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "file_upload_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "file_upload_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "greetings_screen_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "greetings_screen_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "legal_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "legal_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "long_text_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "long_text_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "multiple_choice_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "multiple_choice_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "phone_number_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "phone_number_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "picture_choice_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "picture_choice_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "rating_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "rating_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "scale_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "scale_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "short_text_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "short_text_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "statement_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "statement_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "website_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "website_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "welcome_screen_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "welcome_screen_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "yes_no_config" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "yes_no_config" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "question_type" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`DROP TABLE "question_response"`);
+        await queryRunner.query(`ALTER TABLE "company_members" ADD CONSTRAINT "company_members_company_fk" FOREIGN KEY ("companyUuid") REFERENCES "company"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "company_members" ADD CONSTRAINT "company_members_user_fk" FOREIGN KEY ("userUuid") REFERENCES "user"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "company_admins" ADD CONSTRAINT "FK_1548423a4d609161c72a495344a" FOREIGN KEY ("userUuid") REFERENCES "user"("uuid") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "question" ADD CONSTRAINT "FK_99af17e25ea9c1c9c8de04b3799" FOREIGN KEY ("dataCollectorUuid") REFERENCES "data_collector"("uuid") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+    }
+
+}

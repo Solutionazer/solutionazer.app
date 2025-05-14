@@ -1,0 +1,32 @@
+{
+  "name": "@solutionazer-app/root",
+  "private": true,
+  "version": "1.0.6",
+  "description": "",
+  "keywords": [],
+  "author": "David Llamas Román",
+  "license": "GPL-3.0-only",
+  "type": "module",
+  "main": "index.js",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo build",
+    "prepare": "husky",
+    "release": "standard-version"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "@eslint/js": "^9.25.1",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.5.3",
+    "standard-version": "^9.5.0",
+    "turbo": "^2.5.2"
+  }
+}
