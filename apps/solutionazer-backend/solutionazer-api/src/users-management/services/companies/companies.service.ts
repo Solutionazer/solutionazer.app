@@ -72,19 +72,22 @@ export class CompaniesService {
       throw new NotFoundException(`Company = { uuid: ${uuid} } not found`);
     }
 
-    const { uuid: companyUuid, name, admins } = company;
+    const { uuid: companyUuid, name, admins, members } = company;
 
     return {
       uuid: companyUuid,
       name,
       admins,
+      members,
     } as Company;
   }
 
   async checkUserUuid(uuid: string) {
-    const company: Company[] = await this.findAllByUserUuid(uuid);
+    const companies: Company[] = await this.findAllByUserUuid(uuid);
 
-    return company || true;
+    return companies.some((company) =>
+      company.admins.some((admin) => admin.uuid === uuid),
+    );
   }
 
   async create(data: CreateCompanyDto) {

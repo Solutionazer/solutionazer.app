@@ -440,9 +440,10 @@ export default function ToolsFooter() {
   // public link generation
   const generatePublicLink = () => {
     const uuid = dataCollector?.getUuid()
+    const type = dataCollector?.getType()
 
     if (uuid) {
-      return `${process.env.NEXT_PUBLIC_FRONTEND_URL}/public/${uuid}`
+      return `${process.env.NEXT_PUBLIC_FRONTEND_URL}/public/${type}/${uuid}`
     }
 
     return ''

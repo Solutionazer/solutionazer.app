@@ -71,6 +71,8 @@ export default function Profiles() {
           },
         )
 
+        console.log(data)
+
         setCompanies(data)
       }
     }
