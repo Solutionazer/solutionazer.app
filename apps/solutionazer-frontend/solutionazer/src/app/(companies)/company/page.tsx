@@ -209,7 +209,7 @@ export default function CompanyPage() {
     'To remove an administrator, the company must have more than one.'
   const adminDeleted: string = 'Admin deleted successfully.'
   const adminDeletionFailed: string = 'Failed to delete admin.'
-  const adminAdded: string = 'Admin added successfully.'
+  const adminAdded: string = 'Admin added successfully!'
   const adminAddingFailed: string = 'Failed to add admin.'
 
   // modal state

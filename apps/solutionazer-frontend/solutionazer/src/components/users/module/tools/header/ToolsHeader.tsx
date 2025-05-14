@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react'
 import { updateFormTitle } from '@/lib/utils/data-collectors/formsHandler'
 import DataCollector from '@/lib/module/data-collectors/dataCollector'
 import Header from '@/components/shared/containers/Header'
+import { updateSurveyTitle } from '@/lib/utils/data-collectors/surveysHandler'
 
 interface ToolsHeaderProps {
   params: {
@@ -54,6 +55,7 @@ export default function ToolsHeader(props: Readonly<ToolsHeaderProps>) {
     setTitle(event.target.value)
   }
 
+  // blur
   const handleBlur = async () => {
     if (!dataCollector) return
 
@@ -61,7 +63,11 @@ export default function ToolsHeader(props: Readonly<ToolsHeaderProps>) {
 
     if (newTitle !== dataCollector.getTitle()) {
       try {
-        await updateFormTitle(dataCollector.getUuid() ?? '', newTitle)
+        if ((dataCollector.getType() ?? '') === 'form') {
+          await updateFormTitle(dataCollector.getUuid() ?? '', newTitle)
+        } else if ((dataCollector.getType() ?? '') === 'survey') {
+          await updateSurveyTitle(dataCollector.getUuid() ?? '', newTitle)
+        }
 
         const updatedDataCollector = new DataCollector({
           ...dataCollector,

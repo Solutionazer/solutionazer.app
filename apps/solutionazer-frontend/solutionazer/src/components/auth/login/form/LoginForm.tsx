@@ -91,15 +91,23 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
       )
 
       try {
-        await companyExists(res.user.uuid)
+        const isAdminCompany: boolean = await companyExists(res.user.uuid)
 
         if (!infoMessageFromLoginClient) {
-          resetFormData()
+          if (isAdminCompany) {
+            resetFormData()
 
-          const path: string = '/profiles'
+            const path: string = '/profiles'
 
-          router.prefetch(path)
-          router.push(path)
+            router.prefetch(path)
+            router.push(path)
+          } else {
+            resetFormData()
+
+            const path: string = '/forms'
+            router.prefetch(path)
+            router.push(path)
+          }
         } else {
           setInfoMessage(loggedInClickHere)
         }

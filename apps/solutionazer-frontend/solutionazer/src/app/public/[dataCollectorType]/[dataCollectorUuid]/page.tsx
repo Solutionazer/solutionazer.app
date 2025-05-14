@@ -29,6 +29,7 @@ import DataCollector from '@/lib/module/data-collectors/dataCollector'
 import Question from '@/lib/module/data-collectors/questions/question'
 import QuestionType from '@/lib/module/data-collectors/questions/questionType'
 import { getPublicForm } from '@/lib/utils/data-collectors/formsHandler'
+import { getPublicSurvey } from '@/lib/utils/data-collectors/surveysHandler'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
@@ -38,6 +39,7 @@ export default function PublicDataCollector() {
 
   // dataCollector uuid
   const uuid: string = urlParams.dataCollectorUuid as string
+  const type: string = urlParams.dataCollectorType as string
 
   // dataCollector state
   const [dataCollector, setDataCollector] = useState<DataCollector | null>(null)
@@ -47,9 +49,10 @@ export default function PublicDataCollector() {
     if (uuid) {
       const fetchData = async () => {
         try {
-          const dataCollectorData = await getPublicForm(uuid)
-
-          console.log(dataCollectorData)
+          const dataCollectorData =
+            type === 'form'
+              ? await getPublicForm(uuid)
+              : await getPublicSurvey(uuid)
 
           const dataCollector: DataCollector = new DataCollector({
             title: dataCollectorData.title,
