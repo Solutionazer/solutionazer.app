@@ -36,6 +36,22 @@ export class SurveysService {
     private readonly usersService: UsersService,
   ) {}
 
+  async findPublicSurvey(uuid: string) {
+    const survey: DataCollector = await this.findOne(uuid, {
+      relations: ['questions', 'questions.type'],
+    });
+
+    const { title, description, type, isPublished, questions } = survey;
+
+    return {
+      title,
+      description,
+      type,
+      isPublished,
+      questions,
+    };
+  }
+
   async publish(uuid: string) {
     const survey: DataCollector = await this.findOne(uuid, {
       relations: ['questions', 'questions.type'],
