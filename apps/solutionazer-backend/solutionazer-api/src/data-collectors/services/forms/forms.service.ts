@@ -27,6 +27,9 @@ import DataCollectorType from 'src/data-collectors/enums/data-collector-type.enu
 import { User } from 'src/users-management/entities/user.entity';
 import { UsersService } from 'src/users-management/services/users/users.service';
 import { FindOneOptions, Repository } from 'typeorm';
+import { StatsService } from '../stats/stats.service';
+import { Stats } from 'src/data-collectors/entities/stats.entity';
+import { CreateStatsDto } from 'src/data-collectors/dtos/stats.dtos';
 
 @Injectable()
 export class FormsService {
@@ -34,6 +37,7 @@ export class FormsService {
     @InjectRepository(DataCollector)
     private readonly dataCollectorRepository: Repository<DataCollector>,
     private readonly usersService: UsersService,
+    private readonly statsService: StatsService,
   ) {}
 
   async findPublicForm(uuid: string) {
@@ -86,11 +90,14 @@ export class FormsService {
     const { title, description, userUuid } = data;
     const user: User = await this.usersService.findOne(userUuid);
 
+    const stats: Stats = await this.statsService.create({} as CreateStatsDto);
+
     const newForm: DataCollector = this.dataCollectorRepository.create({
       title,
       description,
       type: DataCollectorType.Form,
       user,
+      stats,
     });
 
     return this.dataCollectorRepository.save(newForm);
@@ -104,7 +111,12 @@ export class FormsService {
   }
 
   async remove(uuid: string) {
-    await this.findOne(uuid);
+    const form: DataCollector = await this.findOne(uuid, {
+      relations: ['stats'],
+    });
+
+    await this.statsService.remove(form.stats.uuid);
+
     return this.dataCollectorRepository.delete(uuid);
   }
 }

@@ -30,16 +30,16 @@ export class Stats {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int', nullable: false, default: 0 })
   completedResponses: number;
 
-  @Column({ type: 'int', nullable: false })
+  @Column({ type: 'int', nullable: false, default: 0 })
   partialResponses: number;
 
-  @Column({ type: 'interval', nullable: false })
+  @Column({ type: 'interval', nullable: false, default: '00:00:00' })
   averageTime: string;
 
-  @Column({ type: 'double precision', nullable: false })
+  @Column({ type: 'double precision', nullable: false, default: 0.0 })
   completionRate: number;
 
   @Exclude()

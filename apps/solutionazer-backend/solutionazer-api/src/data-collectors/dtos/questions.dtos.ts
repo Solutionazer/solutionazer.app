@@ -57,6 +57,7 @@ export class CreateQuestionDto {
     'website',
     'yesNo',
     'greetings',
+    'longText',
   ])
   readonly type: string;
 
