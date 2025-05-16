@@ -51,7 +51,7 @@ export default function Route() {
   const [teams, setTeams] = useState<Team[]>([])
 
   // selected team state
-  const [selectedTeam /*, setSelectedTeam */] = useState<Team | null>(null)
+  const [selectedTeam /*, setSelectedTeam*/] = useState<Team | null>(null)
 
   // freelance config state
   const [freelanceConfigOpen, setFreelanceConfigOpen] = useState<boolean>(false)
@@ -221,7 +221,7 @@ export default function Route() {
   // 'onClick' | button '+' modal search results
   const handleAddingMembers = async (/*memberToAdd: TeamMember*/) => {
     if (freelanceTeam) {
-      // const updatedMembers = [...freelanceTeam.getMembers(), memberToAdd]
+      //const updatedMembers = [...freelanceTeam.getMembers(), memberToAdd]
 
       try {
         /*
@@ -229,9 +229,7 @@ export default function Route() {
           freelanceTeam?.getUuid(),
           updatedMembers,
         )
-          */
 
-        /*
         const updatedTeam: Team = new Team({
           uuid: updatedTeamData.uuid,
           name: updatedTeamData.name,
@@ -246,8 +244,7 @@ export default function Route() {
             },
           ),
         })
-          */
-
+*/
         setInfoMessage(memberAdded)
         setShowAddMemberModal(false)
         setSearchQuery('')
@@ -293,11 +290,7 @@ export default function Route() {
                 {freelanceTeam && (
                   <>
                     {(freelanceTeam.getMembers() ?? []).length > 0 ? (
-                      <ul>
-                        {freelanceTeam.getMembers().map((member) => (
-                          <li key={member.getUuid()}>{member.getFullName()}</li>
-                        ))}
-                      </ul>
+                      <p>{`Press 'config' to manage your freelance team.`}</p>
                     ) : (
                       <p>{`There aren't members in your freelance team.`}</p>
                     )}

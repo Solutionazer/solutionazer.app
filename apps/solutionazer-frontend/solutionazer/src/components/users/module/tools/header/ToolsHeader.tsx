@@ -1,3 +1,23 @@
+/**
+ * This file is part of solutionazer.app.
+ *
+ * solutionazer.app is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License only.
+ *
+ * solutionazer.app is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with solutionazer.app. If not, see <https://www.gnu.org/licenses/gpl-3.0.en.html>.
+ *
+ * Copyright (C) 2025 David Llamas Román
+ */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 'use client'
 
 import Input from '@/components/shared/form/components/Input'
@@ -26,16 +46,20 @@ export default function ToolsHeader(props: Readonly<ToolsHeaderProps>) {
   // dataCollector global state
   const { dataCollector, setDataCollector } = useDataCollector()
 
+  const dataCollectorAny: any = dataCollector
+
   // options
   const options: Option[] = [
     new Option(1, 'Editor'),
-    new Option(2, '.'),
-    new Option(3, '.'),
+    new Option(2, 'Data'),
+    new Option(3, 'Stats'),
   ]
 
   // routes
   const routes: string[] = options.map((option) => {
-    return `${module}/${option.getText().toLowerCase()}`
+    const text: string = option.getText().toLowerCase()
+
+    return `/${module}/${text}`
   })
 
   // title state
@@ -44,7 +68,16 @@ export default function ToolsHeader(props: Readonly<ToolsHeaderProps>) {
   // synchronize dataCollector title with local title
   useEffect(() => {
     if (dataCollector) {
-      setTitle(dataCollector.getTitle() ?? '')
+      const instance: DataCollector = new DataCollector({
+        uuid: dataCollectorAny.uuid,
+        title: dataCollectorAny.title,
+        description: dataCollectorAny.description,
+        type: dataCollectorAny.type,
+        isPublished: dataCollectorAny.isPublished,
+        createdAt: dataCollectorAny.createdAt,
+        updatedAt: dataCollectorAny.updatedAt,
+      })
+      setTitle(instance.getTitle() ?? '')
     }
   }, [dataCollector])
 
