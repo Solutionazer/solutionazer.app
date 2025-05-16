@@ -56,10 +56,12 @@ export default function ModuleLayout({
   // path
   const path: string = usePathname()
   const isEditorPath: boolean = path.endsWith('/editor')
+  const isDataPath: boolean = path.endsWith('/data')
+  const isStatsPath: boolean = path.endsWith('/stats')
 
   return (
     <>
-      {!isEditorPath ? (
+      {!isEditorPath && !isDataPath && !isStatsPath ? (
         <div className={styles.module_layout}>
           <ModuleHeader params={{ module }} />
           {children}

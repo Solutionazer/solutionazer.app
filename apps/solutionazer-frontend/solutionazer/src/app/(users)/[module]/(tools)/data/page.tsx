@@ -16,34 +16,4 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Exclude } from 'class-transformer';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { Question } from '../question.entity';
-
-@Entity()
-export class GreetingsScreenConfig {
-  @PrimaryGeneratedColumn('uuid')
-  uuid: string;
-
-  @Column({ type: 'text', nullable: false, default: 'Thanks for your time' })
-  message: string;
-
-  // question
-  @OneToOne(() => Question, (question) => question.greetingsScreenConfig)
-  question: Question;
-
-  @Exclude()
-  @CreateDateColumn({ type: 'timestamp with time zone' })
-  createdAt: Date;
-
-  @Exclude()
-  @UpdateDateColumn({ type: 'timestamp with time zone' })
-  updatedAt: Date;
-}
+export default function Data() {}

@@ -32,6 +32,7 @@ import { EmailConfig } from 'src/data-collectors/entities/questions/email-config
 import { FileUploadConfig } from 'src/data-collectors/entities/questions/file-upload-config.entity';
 import { GreetingsScreenConfig } from 'src/data-collectors/entities/questions/greetings-screen-config.entity';
 import { LegalConfig } from 'src/data-collectors/entities/questions/legal-config.entity';
+import { LongTextConfig } from 'src/data-collectors/entities/questions/long-text-config.entity';
 import { MultipleChoiceConfig } from 'src/data-collectors/entities/questions/multiple-choice-config.entity';
 import { PhoneNumberConfig } from 'src/data-collectors/entities/questions/phone-number-config.entity';
 import { PictureChoiceConfig } from 'src/data-collectors/entities/questions/picture-choice-config.entity';
@@ -87,6 +88,8 @@ export class QuestionsService {
     private readonly greetingsScreenConfigRepository: Repository<GreetingsScreenConfig>,
     @InjectRepository(QuestionResponse)
     private readonly questionResponseRepository: Repository<QuestionResponse>,
+    @InjectRepository(LongTextConfig)
+    private readonly longTextConfigRepository: Repository<LongTextConfig>,
   ) {}
 
   findAllTypes() {
@@ -147,12 +150,20 @@ export class QuestionsService {
         return await this.statementConfigRepository.findOne({
           where: { question: { uuid: questionUuid } },
         });
+      case 'website':
+        return await this.websiteConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
       case 'yesNo':
         return await this.yesNoConfigRepository.findOne({
           where: { question: { uuid: questionUuid } },
         });
       case 'greetings':
         return await this.greetingsScreenConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'longText':
+        return await this.longTextConfigRepository.findOne({
           where: { question: { uuid: questionUuid } },
         });
       default:
@@ -350,6 +361,13 @@ export class QuestionsService {
             question: savedQuestion,
           });
         await this.greetingsScreenConfigRepository.save(greetingsScreenConfig);
+        break;
+      }
+      case 'longText': {
+        const longTextConfig = this.longTextConfigRepository.create({
+          question: savedQuestion,
+        });
+        await this.longTextConfigRepository.save(longTextConfig);
         break;
       }
     }

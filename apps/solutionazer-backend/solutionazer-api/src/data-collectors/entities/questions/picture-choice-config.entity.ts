@@ -32,6 +32,14 @@ export class PictureChoiceConfig {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
+  @Column({
+    type: 'text',
+    array: true,
+    nullable: false,
+    default: () => 'ARRAY[]::text[]',
+  })
+  options: string[];
+
   @Column({ type: 'boolean', nullable: false, default: false })
   allowMultipleSelection: boolean;
 

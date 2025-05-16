@@ -17,22 +17,22 @@
  */
 
 import { PartialType } from '@nestjs/mapped-types';
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateStatsDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   readonly completedResponses: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   readonly partialResponses: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   readonly averageTime: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   readonly completionRate: number;
 }

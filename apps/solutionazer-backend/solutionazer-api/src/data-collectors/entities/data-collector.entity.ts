@@ -63,7 +63,7 @@ export class DataCollector {
   questions: Question[];
 
   // stats
-  @OneToOne(() => Stats, { nullable: true })
+  @OneToOne(() => Stats, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'statsUuid' })
   stats: Stats;
 
