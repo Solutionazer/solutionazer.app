@@ -17,6 +17,9 @@
  */
 
 .canvas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
   padding: 1rem;
   margin: 0.5rem;
 
@@ -29,4 +32,32 @@
   -moz-border-radius: 8px;
   -ms-border-radius: 8px;
   -o-border-radius: 8px;
+
+  @media (width <= 760px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  & article {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding: 1rem;
+
+    & input,
+    & textarea {
+      flex-grow: 1;
+    }
+
+    & input {
+      padding: 0.5rem;
+    }
+
+    & textarea {
+      height: var(--max-percentage);
+
+      padding: 0.5rem;
+    }
+  }
 }

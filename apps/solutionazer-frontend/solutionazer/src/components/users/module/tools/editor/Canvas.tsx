@@ -30,6 +30,10 @@ import {
   getConfig,
   getQuestionsByForm,
   getQuestionsBySurvey,
+  updateLegalConfig,
+  updateStatementConfig,
+  updateText,
+  updateWelcomeScreenConfig,
 } from '@/lib/utils/data-collectors/questions/questionsHandler'
 import Option from '@/lib/options/option'
 import Select from '@/components/shared/form/components/Select'
@@ -125,12 +129,14 @@ export default function Canvas() {
     if (type === 'welcome') {
       setQuestionText(questionConfig.headline ?? '')
       setWelcomeDescription(questionConfig.description ?? '')
+    } else if (type === 'legal') {
+      setQuestionText(selectedQuestion.getText())
+      setLegalText(questionConfig.legalText ?? '')
+    } else if (type === 'statement') {
+      setQuestionText(selectedQuestion.getText())
+      setStatementContent(questionConfig.content ?? '')
     } else {
       setQuestionText(selectedQuestion.getText())
-    }
-
-    if (type === 'legal') {
-      setLegalText(questionConfig.legalText ?? '')
     }
   }, [questionConfig, selectedQuestion])
 
@@ -187,6 +193,133 @@ export default function Canvas() {
 
   // longText state
   const [longText, setLongText] = useState<string>('')
+
+  // update welcomeScreenConfig
+  useEffect(() => {
+    if (
+      !selectedQuestion ||
+      selectedQuestion.getType()?.getName() !== 'welcome'
+    )
+      return
+
+    const uuid: string = questionConfig?.uuid ?? ''
+    const initialHeadline: string = questionConfig?.headline ?? ''
+    const initialDescription: string = questionConfig?.description ?? ''
+
+    const timeout = setTimeout(() => {
+      if (
+        questionText !== initialHeadline ||
+        welcomeDescription !== initialDescription
+      ) {
+        updateWelcomeScreenConfig(uuid, questionText, welcomeDescription)
+          .then(() => console.log('Welcome config updated'))
+          .catch((error) =>
+            console.error('Error updating welcome config: ' + error),
+          )
+      }
+    }, 500)
+
+    return () => clearTimeout(timeout)
+  }, [
+    questionText,
+    welcomeDescription,
+    selectedQuestion,
+    questionConfig?.uuid,
+    questionConfig?.headline,
+    questionConfig?.description,
+  ])
+
+  // update legalText
+  useEffect(() => {
+    if (!selectedQuestion || selectedQuestion.getType()?.getName() !== 'legal')
+      return
+    if (!questionConfig) return
+
+    const uuid: string = questionConfig?.uuid ?? ''
+    const initialLegalText: string = questionConfig.legalText ?? ''
+
+    const timeout = setTimeout(() => {
+      if (legalText !== initialLegalText) {
+        updateLegalConfig(uuid, legalText)
+          .then(() => console.log('Legal config updated'))
+          .catch((error) => console.error(error))
+      }
+    }, 500)
+
+    return () => clearTimeout(timeout)
+  }, [legalText, selectedQuestion, questionConfig])
+
+  // update statementContent
+  useEffect(() => {
+    if (
+      !selectedQuestion ||
+      selectedQuestion.getType()?.getName() !== 'statement'
+    )
+      return
+    if (!questionConfig) return
+
+    const uuid: string = questionConfig?.uuid ?? ''
+    const initialContent: string = questionConfig?.content ?? ''
+
+    const timeout = setTimeout(() => {
+      if (statementContent !== initialContent) {
+        updateStatementConfig(uuid, statementContent)
+          .then(() => console.log('Statement config updated'))
+          .catch((error) => console.error(error))
+      }
+    }, 500)
+
+    return () => clearTimeout(timeout)
+  }, [statementContent, selectedQuestion, questionConfig])
+
+  // hasInitialized state
+  const [hasInitialized, setHasInitialized] = useState<boolean>(false)
+
+  // update inputs
+  useEffect(() => {
+    if (!selectedQuestion || !questionText) return
+
+    if (!hasInitialized) {
+      setHasInitialized(true)
+
+      const isNewWelcome: boolean =
+        selectedQuestion.getType()?.getName() === 'welcome'
+
+      if (isNewWelcome) {
+        const uuid: string = selectedQuestion.getUuid() ?? ''
+        const originalText: string = questionConfig?.headline ?? ''
+
+        if (questionText !== originalText) {
+          updateText(uuid, questionText)
+            .then(() => console.log('Forced welcome text update'))
+            .catch((error) => console.log('Error updating text: ' + error))
+        }
+      }
+
+      return
+    }
+
+    const uuid: string = selectedQuestion.getUuid() ?? ''
+    const type: string = selectedQuestion.getType()?.getName() ?? ''
+
+    let defaultText: string = selectedQuestion.getText()
+
+    if (type === 'welcome') {
+      defaultText = questionConfig?.headline ?? ''
+    } else if (type === 'legal') {
+      defaultText = questionConfig?.legalText ?? ''
+    }
+
+    if (questionText === defaultText) return
+
+    const timeout = setTimeout(() => {
+      updateText(uuid ?? '', questionText)
+        .then(() => console.log('Text updated successfully'))
+        .catch((error) => console.error('Error updating text: ' + error))
+    }, 500)
+
+    return () => clearTimeout(timeout)
+  }, [questionText, selectedQuestion])
 
   // render input
   const renderInput = () => {
@@ -577,19 +710,21 @@ export default function Canvas() {
   return (
     <div className={styles.canvas}>
       <Article>
-        <Input
-          params={{
-            type: 'text',
-            id: 'question_text',
-            value: questionText,
-            onChange: (event) => {
-              setQuestionText(event.target.value)
-            },
-            placeholder: '',
-            required: false,
-            disabled: false,
-          }}
-        />
+        {selectedQuestion && (
+          <Input
+            params={{
+              type: 'text',
+              id: 'question_text',
+              value: questionText,
+              onChange: (event) => {
+                setQuestionText(event.target.value)
+              },
+              placeholder: '',
+              required: false,
+              disabled: false,
+            }}
+          />
+        )}
       </Article>
       <Article>{selectedQuestion && renderInput()}</Article>
     </div>

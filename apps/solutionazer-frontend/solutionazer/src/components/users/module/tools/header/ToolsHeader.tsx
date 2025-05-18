@@ -32,6 +32,7 @@ import { updateFormTitle } from '@/lib/utils/data-collectors/formsHandler'
 import DataCollector from '@/lib/module/data-collectors/dataCollector'
 import Header from '@/components/shared/containers/Header'
 import { updateSurveyTitle } from '@/lib/utils/data-collectors/surveysHandler'
+import Image from 'next/image'
 
 interface ToolsHeaderProps {
   params: {
@@ -129,7 +130,14 @@ export default function ToolsHeader(props: Readonly<ToolsHeaderProps>) {
             disabled: false,
           }}
         />
-        <Link href={`/${module}`}>←</Link>
+        <Link href={`/${module}`}>
+          <Image
+            src="/icons/white_back.svg"
+            alt="back button"
+            width={18}
+            height={18}
+          />
+        </Link>
       </div>
       <Navbar params={{ options, routes }} />
     </Header>
