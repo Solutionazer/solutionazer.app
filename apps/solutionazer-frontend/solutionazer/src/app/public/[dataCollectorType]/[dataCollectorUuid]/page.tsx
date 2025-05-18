@@ -33,6 +33,9 @@ import { getPublicSurvey } from '@/lib/utils/data-collectors/surveysHandler'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+import styles from './page.module.css'
+import { getConfig } from '@/lib/utils/data-collectors/questions/questionsHandler'
+
 export default function PublicDataCollector() {
   // router
   const urlParams = useParams()
@@ -59,19 +62,21 @@ export default function PublicDataCollector() {
             description: dataCollectorData.description,
             type: dataCollectorData.type,
             isPublished: dataCollectorData.isPublished,
-            questions: dataCollectorData.questions.map((question: any) => {
-              return new Question({
-                uuid: question.uuid,
-                text: question.text,
-                required: question.required,
-                order: question.order,
-                type: new QuestionType({
-                  uuid: question.type.uuid,
-                  name: question.type.name,
-                  description: question.type.description,
-                }),
+            questions: dataCollectorData.questions
+              .map((question: any) => {
+                return new Question({
+                  uuid: question.uuid,
+                  text: question.text,
+                  required: question.required,
+                  order: question.order,
+                  type: new QuestionType({
+                    uuid: question.type.uuid,
+                    name: question.type.name,
+                    description: question.type.description,
+                  }),
+                })
               })
-            }),
+              .sort((a: any, b: any) => a.getOrder() - b.getOrder()),
           })
 
           setDataCollector(dataCollector)
@@ -110,10 +115,44 @@ export default function PublicDataCollector() {
     }
   }
 
+  // config states
+  const [, /*questionConfig*/ setQuestionConfig] = useState<any | null>(null)
+
+  // load config
+  useEffect(() => {
+    const fetchQuestionsConfig = async () => {
+      if (dataCollector) {
+        const currentQuestion =
+          dataCollector.getQuestions()?.[currentQuestionIndex]
+
+        const type: string = currentQuestion?.getType()?.getName() ?? ''
+        const uuid: string = currentQuestion?.getUuid() ?? ''
+
+        try {
+          const config = await getConfig(type ?? '', uuid ?? '')
+
+          setQuestionConfig(config)
+        } catch {
+          setQuestionConfig(null)
+        }
+      }
+    }
+
+    fetchQuestionsConfig()
+  }, [dataCollector, currentQuestionIndex])
+
+  // render inputs
+  /*
+  const renderInput = (questionType: string) => {
+    switch (questionType) {
+    }
+  }
+  */
+
   return (
-    <Section>
+    <Section params={{ className: styles.container }}>
       {!showQuestions ? (
-        <>
+        <div className={styles.thumbnail}>
           <Title
             params={{ text: dataCollector?.getTitle() ?? '', classNames: [] }}
           />
@@ -130,11 +169,11 @@ export default function PublicDataCollector() {
               onClick: handleAnswerClick,
             }}
           />
-        </>
+        </div>
       ) : (
         <>
           {dataCollector && (dataCollector.getQuestions() ?? []).length > 0 && (
-            <>
+            <div className={styles.question_container}>
               <Title
                 params={{
                   text: (dataCollector.getQuestions() ?? [])[
@@ -159,7 +198,7 @@ export default function PublicDataCollector() {
                   }}
                 />
               </div>
-            </>
+            </div>
           )}
         </>
       )}

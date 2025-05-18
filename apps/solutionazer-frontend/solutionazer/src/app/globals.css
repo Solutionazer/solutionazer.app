@@ -16,6 +16,12 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* fonts */
+@font-face {
+  font-family: 'Montserrat';
+  src: url('../../public/fonts/Montserrat-VariableFont_wght.ttf');
+}
+
 /* variables */
 :root {
   /* max-measures */
@@ -46,16 +52,12 @@
   inherits: true;
 }
 
-@property --text-color {
-  syntax: '<color>';
-  inherits: true;
-}
-
 /* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: 'Montserrat';
 }
 
 /* COLOR SCHEME */
@@ -64,7 +66,6 @@
   --background-color: var(--black, #000);
   --foreground-color: var(--white, #fff);
   --title-color: var(--orange, #ff1400);
-  --text-color: var(--white, #fff);
 }
 
 /* light */
@@ -72,7 +73,6 @@
   --background-color: var(--white, #fff);
   --foreground-color: var(--black, #000);
   --title-color: var(--orange, #ff1400);
-  --text-color: var(--black, #000);
 }
 
 /* BODY */
@@ -86,7 +86,7 @@
   padding: 1rem;
 
   background-color: var(--background-color);
-  color: var(--text-color);
+  color: var(--foreground-color);
 
   .main {
     --max-width: 1200px;
@@ -104,12 +104,14 @@
   }
 
   .footer {
-    color: var(--text-color);
+    color: var(--foreground-color);
 
     text-align: center;
 
+    font-size: 0.8rem;
+
     & a {
-      color: var(--text-color);
+      color: var(--foreground-color);
 
       font-weight: 700;
       font-style: italic;

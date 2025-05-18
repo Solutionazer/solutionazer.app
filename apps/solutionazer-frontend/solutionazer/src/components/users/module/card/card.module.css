@@ -34,16 +34,16 @@
       display: grid;
       place-items: center;
 
-      width: 25px;
+      width: 30px;
       aspect-ratio: 1/1;
 
-      background-color: var(--background-color);
-      color: var(--text-color);
+      background-color: var(--foreground-color);
+      color: var(--title-color);
 
       font-weight: 700;
       text-decoration: none;
 
-      border: 2px solid var(--foreground-color);
+      border: 2px solid var(--title-color);
       border-radius: 50%;
       -webkit-border-radius: 50%;
       -moz-border-radius: 50%;
@@ -53,13 +53,13 @@
   }
 
   .card {
-    aspect-ratio: 21/9;
-
     padding: 1rem;
+
+    background-color: var(--foreground-color);
 
     text-decoration: none;
 
-    border: 2px solid var(--foreground-color);
+    border: 2px solid var(--title-color);
     border-radius: 8px;
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
@@ -69,7 +69,7 @@
     .info {
       padding: 1rem;
 
-      background-color: var(--foreground-color);
+      background-color: var(--background-color);
 
       border-radius: 4px;
       -webkit-border-radius: 4px;
@@ -91,7 +91,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
 
-        color: var(--text-color);
+        color: var(--foreground-color);
       }
     }
   }

@@ -55,7 +55,10 @@
     }
 
     .logout_btn {
-      padding: 0.6rem 1rem;
+      display: grid;
+      place-items: center;
+
+      padding: 0.6rem;
       border: none;
     }
 

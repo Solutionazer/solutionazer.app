@@ -98,12 +98,84 @@ export const getConfig = async (configType: string, questionUuid: string) => {
     `${baseUrl}/questions/config/${configType}/${questionUuid}`,
     {
       method: 'GET',
-      credentials: 'include',
     },
   )
 
   if (!res.ok) {
     throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateText = async (uuid: string, text: string) => {
+  const res = await fetch(`${baseUrl}/questions/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      text,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateWelcomeScreenConfig = async (
+  uuid: string,
+  headline: string,
+  description: string,
+) => {
+  const res = await fetch(`${baseUrl}/questions/welcome/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      headline,
+      description,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateLegalConfig = async (uuid: string, legalText: string) => {
+  const res = await fetch(`${baseUrl}/questions/legal/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      legalText,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateStatementConfig = async (uuid: string, content: string) => {
+  const res = await fetch(`${baseUrl}/questions/statement/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      content,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error(await res.json())
   }
 
   return await res.json()

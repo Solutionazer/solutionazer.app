@@ -400,6 +400,52 @@ export class QuestionsService {
     return this.questionRepository.save(question);
   }
 
+  async updateWelcomeScreenConfig(
+    uuid: string,
+    changes: { headline: string; description: string },
+  ) {
+    const welcomeScreenConfig: WelcomeScreenConfig | null =
+      await this.welcomeScreenRepository.findOne({ where: { uuid } });
+
+    if (!welcomeScreenConfig) {
+      throw new NotFoundException(`WelcomeScreeConfig = { uuid: ${uuid} }`);
+    }
+
+    this.welcomeScreenRepository.merge(welcomeScreenConfig, changes);
+
+    return this.welcomeScreenRepository.save(welcomeScreenConfig);
+  }
+
+  async updateLegalConfig(uuid: string, changes: { legalText: string }) {
+    const legalConfig: LegalConfig | null =
+      await this.legalConfigRepository.findOne({
+        where: { uuid },
+      });
+
+    if (!legalConfig) {
+      throw new NotFoundException(`LegalConfig = { uuid: ${uuid} }`);
+    }
+
+    this.legalConfigRepository.merge(legalConfig, changes);
+
+    return this.legalConfigRepository.save(legalConfig);
+  }
+
+  async updateStatementConfig(uuid: string, changes: { content: string }) {
+    const statementConfig: StatementConfig | null =
+      await this.statementConfigRepository.findOne({
+        where: { uuid },
+      });
+
+    if (!statementConfig) {
+      throw new NotFoundException(`StatementConfig = { uuid: ${uuid} }`);
+    }
+
+    this.statementConfigRepository.merge(statementConfig, changes);
+
+    return this.statementConfigRepository.save(statementConfig);
+  }
+
   async remove(uuid: string) {
     const question = await this.findOne(uuid);
 
