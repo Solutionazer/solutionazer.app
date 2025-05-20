@@ -59,6 +59,9 @@
           flex-grow: 1;
           flex-shrink: 0;
 
+          display: grid;
+          place-items: center;
+
           padding: 0.5rem;
 
           color: var(--text-color);

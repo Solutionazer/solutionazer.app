@@ -34,6 +34,7 @@ import {
   CreateQuestionDto,
   UpdateQuestionDto,
 } from 'src/data-collectors/dtos/questions.dtos';
+import { SubmitAnswerDto } from 'src/data-collectors/dtos/submit-answer.dtos';
 import { QuestionsService } from 'src/data-collectors/services/questions/questions.service';
 
 @Controller('questions')
@@ -118,6 +119,33 @@ export class QuestionsController {
     @Body() payload: { content: string },
   ) {
     return this.questionsService.updateStatementConfig(uuid, payload);
+  }
+
+  @Permissions('question:update')
+  @Put('greetings/:uuid')
+  @HttpCode(HttpStatus.OK)
+  updateGreetingsScreenConfig(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+    @Body() payload: { message: string },
+  ) {
+    return this.questionsService.updateGreetingsScreenConfig(uuid, payload);
+  }
+
+  @Permissions('question:update')
+  @Put('website/:uuid')
+  @HttpCode(HttpStatus.OK)
+  updateWebsiteConfig(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+    @Body() payload: { url: string },
+  ) {
+    return this.questionsService.updateWebsiteConfig(uuid, payload);
+  }
+
+  @Public()
+  @Post('submit-answer')
+  @HttpCode(HttpStatus.CREATED)
+  submitAnswer(@Body() data: SubmitAnswerDto) {
+    return this.questionsService.submitAnswer(data);
   }
 
   @Permissions('question:delete')

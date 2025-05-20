@@ -51,6 +51,12 @@ export class QuestionResponse {
   @Column({ type: 'text', nullable: true })
   fileUrl: string;
 
+  @Column({ type: 'date', nullable: true })
+  dateValue: Date;
+
+  @Column({ type: 'uuid', nullable: false })
+  sessionUuid: string;
+
   // question
   @ManyToOne(() => Question, { nullable: false, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'questionUuid' })

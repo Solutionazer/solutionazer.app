@@ -20,6 +20,12 @@ export default function Button(props: Readonly<ButtonProps>) {
   const isLogOut: boolean = text === 'Log Out'
   const isShare: boolean = text === 'Share'
   const isAdd: boolean = text === '+'
+  const isBack: boolean = text === '←'
+  const isReset: boolean = text === 'Reset'
+  const isSave: boolean = text === 'Save'
+  const isAddMembers: boolean = text === 'Add members'
+  const isCopy: boolean = text === 'Copy'
+  const isShowPassword: boolean = text === 'Show Password'
 
   const renderIcon = (text: string) => {
     switch (text) {
@@ -36,7 +42,7 @@ export default function Button(props: Readonly<ButtonProps>) {
         return (
           <Image
             src="/icons/white_add.svg"
-            alt="add button"
+            alt="create button"
             width={36}
             height={36}
           />
@@ -77,6 +83,60 @@ export default function Button(props: Readonly<ButtonProps>) {
             height={22}
           />
         )
+      case '←':
+        return (
+          <Image
+            src="/icons/white_back.svg"
+            alt="back button"
+            width={18}
+            height={18}
+          />
+        )
+      case 'Reset':
+        return (
+          <Image
+            src="/icons/black_reset.svg"
+            alt="reset button"
+            width={22}
+            height={22}
+          />
+        )
+      case 'Save':
+        return (
+          <Image
+            src="/icons/black_save.svg"
+            alt="save button"
+            width={22}
+            height={22}
+          />
+        )
+      case 'Add members':
+        return (
+          <Image
+            src="/icons/white_add.svg"
+            alt="add members button"
+            width={36}
+            height={36}
+          />
+        )
+      case 'Copy':
+        return (
+          <Image
+            src="/icons/white_copy.svg"
+            alt="copy link button"
+            width={22}
+            height={22}
+          />
+        )
+      case 'Show Password':
+        return (
+          <Image
+            src="/icons/black_eye.svg"
+            alt="show password button"
+            width={22}
+            height={22}
+          />
+        )
     }
   }
 
@@ -87,7 +147,18 @@ export default function Button(props: Readonly<ButtonProps>) {
       onClick={onClick}
       disabled={disabled}
     >
-      {!isX && !isCreate && !isConfig && !isLogOut && !isShare && !isAdd
+      {!isX &&
+      !isCreate &&
+      !isConfig &&
+      !isLogOut &&
+      !isShare &&
+      !isAdd &&
+      !isBack &&
+      !isReset &&
+      !isSave &&
+      !isAddMembers &&
+      !isCopy &&
+      !isShowPassword
         ? text
         : renderIcon(text)}
     </button>

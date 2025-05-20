@@ -16,18 +16,17 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-const ModuleOptions: Record<string, string[]> = {
-  forms: ['Forms', 'Surveys', 'Interviews', 'Glossaries', 'Document Anl.'],
-  surveys: ['Surveys', 'Forms', 'Interviews', 'Glossaries', 'Document Anl.'],
-  interviews: ['Interviews', 'Forms', 'Surveys', 'Glossaries', 'Document Anl.'],
-  glossaries: ['Glossaries', 'Forms', 'Surveys', 'Interviews', 'Document Anl.'],
-  'document-analysis': [
-    'Document Anl.',
-    'Forms',
-    'Surveys',
-    'Interviews',
-    'Glossaries',
-  ],
-}
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-export default ModuleOptions
+export class SubmitAnswerDto {
+  @IsNotEmpty()
+  @IsString()
+  questionUuid: string;
+
+  @IsOptional()
+  value: string | number | boolean | string[];
+
+  @IsNotEmpty()
+  @IsString()
+  sessionUuid: string;
+}

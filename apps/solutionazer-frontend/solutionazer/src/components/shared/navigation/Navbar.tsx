@@ -19,6 +19,7 @@
 import Link from 'next/link'
 
 import Option from '@/lib/options/option'
+import Image from 'next/image'
 
 interface NavbarProps {
   params: {
@@ -30,14 +31,78 @@ interface NavbarProps {
 export default function Navbar(props: Readonly<NavbarProps>) {
   const { options, routes } = props.params
 
+  const renderIcon = (text: string) => {
+    switch (text) {
+      case 'account':
+        return (
+          <Image
+            src="/icons/black_account.svg"
+            alt="account button"
+            width={26}
+            height={26}
+          />
+        )
+      case 'teams':
+        return (
+          <Image
+            src="/icons/black_teams.svg"
+            alt="teams button"
+            width={26}
+            height={26}
+          />
+        )
+      case 'home':
+        return (
+          <Image
+            src="/icons/black_home.svg"
+            alt="home button"
+            width={26}
+            height={26}
+          />
+        )
+      case 'users':
+        return (
+          <Image
+            src="/icons/black_users.svg"
+            alt="users button"
+            width={26}
+            height={26}
+          />
+        )
+      case 'company':
+        return (
+          <Image
+            src="/icons/black_company.svg"
+            alt="company button"
+            width={26}
+            height={26}
+          />
+        )
+    }
+  }
+
   return (
     <nav>
       <ul>
-        {options.map((option) => (
-          <li key={option.getId()}>
-            <Link href={routes[option.getId() - 1]}>{option.getText()}</Link>
-          </li>
-        ))}
+        {options.map((option) => {
+          const text: string = option.getText()
+
+          const isAccount: boolean = text === 'account'
+          const isTeams: boolean = text === 'teams'
+          const isHome: boolean = text === 'home'
+          const isUsers: boolean = text === 'users'
+          const isCompany: boolean = text === 'company'
+
+          return (
+            <li key={option.getId()}>
+              <Link href={routes[option.getId() - 1]}>
+                {!isAccount && !isTeams && !isHome && !isUsers && !isCompany
+                  ? text
+                  : renderIcon(text)}
+              </Link>
+            </li>
+          )
+        })}
       </ul>
     </nav>
   )
