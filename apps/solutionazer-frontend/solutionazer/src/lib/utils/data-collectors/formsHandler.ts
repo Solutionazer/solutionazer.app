@@ -63,6 +63,24 @@ export const updateFormTitle = async (formUuid: string, title: string) => {
   return await res.json()
 }
 
+export const updateFormDescription = async (
+  formUuid: string,
+  description: string,
+) => {
+  const res = await fetch(`${baseUrl}/forms/${formUuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
 export const deleteForm = async (formUuid: string) => {
   const res = await fetch(`${baseUrl}/forms/${formUuid}`, {
     method: 'DELETE',

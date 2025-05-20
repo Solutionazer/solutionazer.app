@@ -27,6 +27,8 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
+import styles from './loginClient.module.css'
+
 export default function LoginClient() {
   // query params
   const params = useSearchParams()
@@ -79,7 +81,7 @@ export default function LoginClient() {
         params={{ context, isPasswordEmpty, setIsPasswordEmpty, infoMessage }}
       />
       {!context && (
-        <p>
+        <p className={styles.text}>
           {`Do you want to create an 'Enterprise' account?`}
           <Link href="/register?userType=enterprise" onClick={handleLinkClick}>
             Click here

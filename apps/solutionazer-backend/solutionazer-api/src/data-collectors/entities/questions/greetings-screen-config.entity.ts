@@ -35,9 +35,6 @@ export class GreetingsScreenConfig {
   @Column({ type: 'text', nullable: false, default: 'Thanks for your time' })
   message: string;
 
-  @Column({ type: 'text', nullable: false, default: '' })
-  redirectUrl: string;
-
   // question
   @OneToOne(() => Question, (question) => question.greetingsScreenConfig)
   question: Question;

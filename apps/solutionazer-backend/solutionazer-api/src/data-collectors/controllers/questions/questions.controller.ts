@@ -29,10 +29,12 @@ import {
   Put,
 } from '@nestjs/common';
 import { Permissions } from 'src/auth/decorators/permissions.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import {
   CreateQuestionDto,
   UpdateQuestionDto,
 } from 'src/data-collectors/dtos/questions.dtos';
+import { SubmitAnswerDto } from 'src/data-collectors/dtos/submit-answer.dtos';
 import { QuestionsService } from 'src/data-collectors/services/questions/questions.service';
 
 @Controller('questions')
@@ -46,7 +48,7 @@ export class QuestionsController {
     return this.questionsService.findAllTypes();
   }
 
-  @Permissions('question:readConfig')
+  @Public()
   @Get('config/:configType/:questionUuid')
   @HttpCode(HttpStatus.OK)
   findConfig(
@@ -72,12 +74,14 @@ export class QuestionsController {
     return this.questionsService.findAllBySurveyUuid(surveyUuid);
   }
 
+  @Permissions('question:create')
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() payload: CreateQuestionDto) {
     return this.questionsService.create(payload);
   }
 
+  @Permissions('question:update')
   @Put(':uuid')
   @HttpCode(HttpStatus.OK)
   update(
@@ -87,6 +91,64 @@ export class QuestionsController {
     return this.questionsService.update(uuid, payload);
   }
 
+  @Permissions('question:update')
+  @Put('welcome/:uuid')
+  @HttpCode(HttpStatus.OK)
+  updateWelcomeScreenConfig(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+    @Body() payload: { headline: string; description: string },
+  ) {
+    return this.questionsService.updateWelcomeScreenConfig(uuid, payload);
+  }
+
+  @Permissions('question:update')
+  @Put('legal/:uuid')
+  @HttpCode(HttpStatus.OK)
+  updateLegalConfig(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+    @Body() payload: { legalText: string },
+  ) {
+    return this.questionsService.updateLegalConfig(uuid, payload);
+  }
+
+  @Permissions('question:update')
+  @Put('statement/:uuid')
+  @HttpCode(HttpStatus.OK)
+  updateStatementConfig(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+    @Body() payload: { content: string },
+  ) {
+    return this.questionsService.updateStatementConfig(uuid, payload);
+  }
+
+  @Permissions('question:update')
+  @Put('greetings/:uuid')
+  @HttpCode(HttpStatus.OK)
+  updateGreetingsScreenConfig(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+    @Body() payload: { message: string },
+  ) {
+    return this.questionsService.updateGreetingsScreenConfig(uuid, payload);
+  }
+
+  @Permissions('question:update')
+  @Put('website/:uuid')
+  @HttpCode(HttpStatus.OK)
+  updateWebsiteConfig(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+    @Body() payload: { url: string },
+  ) {
+    return this.questionsService.updateWebsiteConfig(uuid, payload);
+  }
+
+  @Public()
+  @Post('submit-answer')
+  @HttpCode(HttpStatus.CREATED)
+  submitAnswer(@Body() data: SubmitAnswerDto) {
+    return this.questionsService.submitAnswer(data);
+  }
+
+  @Permissions('question:delete')
   @Delete(':uuid')
   @HttpCode(HttpStatus.OK)
   delete(@Param('uuid', new ParseUUIDPipe()) uuid: string) {

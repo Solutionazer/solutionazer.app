@@ -45,6 +45,7 @@ import Modal from '@/components/shared/containers/modal/Modal'
 import { searchUsers } from '@/lib/utils/users-management/usersHandler'
 import SmallTitle from '@/components/shared/titles/SmallTitle'
 import Member from '@/lib/auth/companies/members/member'
+import Image from 'next/image'
 
 export default function CompanyPage() {
   // auth global state
@@ -209,7 +210,7 @@ export default function CompanyPage() {
     'To remove an administrator, the company must have more than one.'
   const adminDeleted: string = 'Admin deleted successfully.'
   const adminDeletionFailed: string = 'Failed to delete admin.'
-  const adminAdded: string = 'Admin added successfully.'
+  const adminAdded: string = 'Admin added successfully!'
   const adminAddingFailed: string = 'Failed to add admin.'
 
   // modal state
@@ -315,7 +316,12 @@ export default function CompanyPage() {
       <Article params={{ className: styles.article }}>
         <div className={styles.auth_btn_container}>
           <Link href="/profiles" className={styles.profiles_btn}>
-            Profiles
+            <Image
+              src="/icons/black_profiles.svg"
+              alt="profiles button"
+              width={22}
+              height={22}
+            />
           </Link>
         </div>
         <MediumTitle params={{ text: 'Company Data', classNames: [] }} />

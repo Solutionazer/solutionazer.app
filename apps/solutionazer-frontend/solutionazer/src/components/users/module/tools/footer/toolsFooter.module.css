@@ -68,7 +68,10 @@
   }
 
   & button {
-    padding: 0.5rem 2rem;
+    display: grid;
+    place-items: center;
+
+    padding: 0.25rem 1.5rem;
 
     background-color: var(--background-color);
     color: var(--foreground-color);
@@ -82,7 +85,9 @@
   }
 
   .questions_container {
-    max-width: 60dvw;
+    --max-width: 645px;
+
+    max-width: var(--max-width);
     width: var(--max-percentage);
 
     overflow-x: scroll;
@@ -104,8 +109,8 @@
         display: grid;
         place-items: center;
 
-        width: 25px;
-        height: 25px;
+        width: 30px;
+        height: 30px;
 
         padding: 0.25rem;
 
@@ -120,9 +125,9 @@
         -o-border-radius: 50%;
       }
 
-      .order_button {
-        width: 5rem;
-        aspect-ratio: 1/1;
+      .question_button {
+        width: 10rem;
+        aspect-ratio: 16/9;
 
         background-color: var(--foreground-color);
         color: var(--background-color);
@@ -154,9 +159,12 @@
     position: relative;
     bottom: -10px;
 
+    display: grid;
+    place-items: center;
+
     width: 5rem;
 
-    padding: 1rem;
+    padding: 0.5rem;
 
     background-color: var(--foreground-color);
     color: var(--background-color);

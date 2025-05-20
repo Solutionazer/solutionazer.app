@@ -18,6 +18,7 @@
 
 import { Exclude } from 'class-transformer';
 import {
+  Column,
   CreateDateColumn,
   Entity,
   OneToOne,
@@ -30,6 +31,13 @@ import { Question } from '../question.entity';
 export class WebsiteConfig {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
+
+  @Column({
+    type: 'text',
+    nullable: false,
+    default: 'https://staging.solutionazer.app',
+  })
+  url: string;
 
   // question
   @OneToOne(() => Question, (question) => question.websiteConfig)

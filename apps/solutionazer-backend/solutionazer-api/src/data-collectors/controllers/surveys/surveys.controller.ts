@@ -30,6 +30,7 @@ import {
   Put,
 } from '@nestjs/common';
 import { Permissions } from 'src/auth/decorators/permissions.decorator';
+import { Public } from 'src/auth/decorators/public.decorator';
 import {
   CreateDataCollectorDto,
   UpdateDataCollectorDto,
@@ -39,6 +40,13 @@ import { SurveysService } from 'src/data-collectors/services/surveys/surveys.ser
 @Controller('surveys')
 export class SurveysController {
   constructor(private readonly surveysService: SurveysService) {}
+
+  @Public()
+  @Get('public/:uuid')
+  @HttpCode(HttpStatus.OK)
+  findPublicSurvey(@Param('uuid', new ParseUUIDPipe()) uuid: string) {
+    return this.surveysService.findPublicSurvey(uuid);
+  }
 
   @Permissions('form:publish')
   @Patch(':uuid')

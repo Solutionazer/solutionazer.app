@@ -43,16 +43,18 @@ export class TeamsService {
         'teamsAsMember',
         'teamsAsMember.owner',
         'teamsAsMember.company',
+        'teamsAsMember.members',
       ],
     });
 
     return user.teamsAsMember.map((team) => {
-      const { uuid: teamUuid, name, owner, members, type } = team;
+      const { uuid: teamUuid, name, owner, company, members, type } = team;
 
       return {
         uuid: teamUuid,
         name,
         owner,
+        company,
         members,
         type,
       };

@@ -33,6 +33,7 @@ import {
   deleteQuestion,
   getAllQuestionTypes,
   getQuestionsByForm,
+  getQuestionsBySurvey,
 } from '@/lib/utils/data-collectors/questions/questionsHandler'
 import DataCollector from '@/lib/module/data-collectors/dataCollector'
 import Modal from '@/components/shared/containers/modal/Modal'
@@ -64,8 +65,24 @@ export default function ToolsFooter() {
   useEffect(() => {
     const fetchData = async () => {
       if (dataCollector && !hasLoadedQuestions) {
+        const dataCollectorAny: any = dataCollector
+
+        const instance: DataCollector = new DataCollector({
+          uuid: dataCollectorAny.uuid,
+          title: dataCollectorAny.title,
+          description: dataCollectorAny.description,
+          type: dataCollectorAny.type,
+          isPublished: dataCollectorAny.isPublished,
+          createdAt: dataCollectorAny.createdAt,
+          updatedAt: dataCollectorAny.updatedAt,
+        })
+
+        const type: string = instance.getType() ?? ''
+
         const fetchedQuestions: Question[] = (
-          await getQuestionsByForm(dataCollector?.getUuid() ?? '')
+          type === 'form'
+            ? await getQuestionsByForm(instance.getUuid() ?? '')
+            : await getQuestionsBySurvey(instance.getUuid() ?? '')
         ).map(
           (question: {
             uuid: string
@@ -88,7 +105,7 @@ export default function ToolsFooter() {
           },
         )
 
-        const currentQuestions: Question[] = dataCollector.getQuestions() ?? []
+        const currentQuestions: Question[] = instance.getQuestions() ?? []
 
         const areDifferent: boolean =
           currentQuestions.length !== fetchedQuestions.length ||
@@ -127,8 +144,23 @@ export default function ToolsFooter() {
 
   // auto select the first question
   useEffect(() => {
+    console.log('hasLoadedQuestions: ' + hasLoadedQuestions)
+
     if (hasLoadedQuestions && dataCollector && !selectedQuestionUuid) {
-      const questions: Question[] = dataCollector.getQuestions() ?? []
+      const dataCollectorAny: any = dataCollector
+
+      const instance: DataCollector = new DataCollector({
+        uuid: dataCollectorAny.uuid,
+        title: dataCollectorAny.title,
+        description: dataCollectorAny.description,
+        type: dataCollectorAny.type,
+        isPublished: dataCollectorAny.isPublished,
+        questions: dataCollectorAny.questions,
+        createdAt: dataCollectorAny.createdAt,
+        updatedAt: dataCollectorAny.updatedAt,
+      })
+
+      const questions: Question[] = instance.getQuestions() ?? []
 
       if (questions.length > 0) {
         setSelectedQuestionUuid(questions[0].getUuid() ?? '')
@@ -215,7 +247,38 @@ export default function ToolsFooter() {
   }, [])
 
   // questions
-  const questions: Question[] = dataCollector?.getQuestions() ?? []
+  const [questions, setQuestions] = useState<Question[]>([])
+
+  // load questions
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      if (!dataCollector) return
+
+      const dataCollectorAny: any = dataCollector
+
+      const instance: DataCollector = new DataCollector({
+        uuid: dataCollectorAny.uuid,
+        title: dataCollectorAny.title,
+        description: dataCollectorAny.description,
+        type: dataCollectorAny.type,
+        isPublished: dataCollectorAny.isPublished,
+        createdAt: dataCollectorAny.createdAt,
+        updatedAt: dataCollectorAny.updatedAt,
+      })
+
+      const uuid: string = instance.getUuid() ?? ''
+      const type: string = instance.getType() ?? ''
+
+      const fetchedQuestions =
+        type === 'form'
+          ? await getQuestionsByForm(uuid)
+          : await getQuestionsBySurvey(uuid)
+
+      setQuestions(fetchedQuestions)
+    }
+
+    fetchQuestions()
+  }, [dataCollector])
 
   // modals state
   const [showModal, setShowModal] = useState(false)
@@ -259,7 +322,7 @@ export default function ToolsFooter() {
         newQuestion,
       ]
 
-      const updatedDataCollector = new DataCollector({
+      const updatedDataCollector: DataCollector = new DataCollector({
         ...dataCollector['props'],
         questions: updatedQuestions,
       })
@@ -440,9 +503,10 @@ export default function ToolsFooter() {
   // public link generation
   const generatePublicLink = () => {
     const uuid = dataCollector?.getUuid()
+    const type = dataCollector?.getType()
 
     if (uuid) {
-      return `${process.env.NEXT_PUBLIC_FRONTEND_URL}/public/${uuid}`
+      return `${process.env.NEXT_PUBLIC_FRONTEND_URL}/public/${type}/${uuid}`
     }
 
     return ''
@@ -537,8 +601,8 @@ export default function ToolsFooter() {
       <Footer params={{ className: styles.secondary_footer }}>
         <nav>
           <ul className={styles.questions_container}>
-            {questions.map((question) => (
-              <li key={question.getUuid()}>
+            {questions.map((question: any) => (
+              <li key={question.uuid}>
                 <Article
                   params={{
                     className: styles.question_card,
@@ -550,19 +614,21 @@ export default function ToolsFooter() {
                         type: ButtonType.Button,
                         text: 'X',
                         onClick: () =>
-                          handleQuestionDeletion(question.getUuid() ?? ''),
+                          handleQuestionDeletion(question.uuid ?? ''),
                         className: styles.delete_button,
                       }}
                     />
                   </div>
                   <button
-                    className={styles.order_button}
-                    onClick={() =>
-                      handleQuestionClick(question.getUuid() ?? '')
-                    }
+                    className={styles.question_button}
+                    onClick={() => handleQuestionClick(question.uuid ?? '')}
                   >
                     <SmallTitle
-                      params={{ text: String(question.getOrder()) }}
+                      params={{
+                        text: splitCamelCaseAndCapitalize(
+                          String(question.type.name),
+                        ),
+                      }}
                     />
                   </button>
                 </Article>

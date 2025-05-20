@@ -40,6 +40,9 @@
 
     .logout_btn,
     .profiles_btn {
+      display: grid;
+      place-items: center;
+
       margin-right: 1rem;
 
       background-color: var(--background-color);
@@ -55,12 +58,12 @@
     }
 
     .logout_btn {
-      padding: 0.6rem 1rem;
+      padding: 0.6rem;
       border: none;
     }
 
     .profiles_btn {
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 0.6rem;
       text-decoration: none;
     }
   }
@@ -70,5 +73,10 @@
     gap: 0.85rem;
 
     margin-bottom: 1rem;
+
+    & button {
+      display: grid;
+      place-items: center;
+    }
   }
 }

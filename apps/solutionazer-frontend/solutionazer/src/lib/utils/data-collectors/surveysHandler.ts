@@ -63,6 +63,39 @@ export const updateSurvey = async (surveyUuid: string) => {
   return await res.json()
 }
 
+export const updateSurveyTitle = async (surveyUuid: string, title: string) => {
+  const res = await fetch(`${baseUrl}/surveys/${surveyUuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateSurveyDescription = async (
+  surveyUuid: string,
+  description: string,
+) => {
+  const res = await fetch(`${baseUrl}/surveys/${surveyUuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ description }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
 export const deleteSurvey = async (surveyUuid: string) => {
   const res = await fetch(`${baseUrl}/surveys/${surveyUuid}`, {
     method: 'DELETE',
@@ -80,6 +113,18 @@ export const publishSurvey = async (uuid: string) => {
   const res = await fetch(`${baseUrl}/surveys/${uuid}`, {
     method: 'PATCH',
     credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const getPublicSurvey = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/surveys/public/${uuid}`, {
+    method: 'GET',
   })
 
   if (!res.ok) {

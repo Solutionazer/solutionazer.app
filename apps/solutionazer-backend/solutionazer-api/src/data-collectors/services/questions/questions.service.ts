@@ -16,12 +16,19 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   CreateQuestionDto,
   UpdateQuestionDto,
 } from 'src/data-collectors/dtos/questions.dtos';
+import { SubmitAnswerDto } from 'src/data-collectors/dtos/submit-answer.dtos';
 import { DataCollector } from 'src/data-collectors/entities/data-collector.entity';
 import { QuestionResponse } from 'src/data-collectors/entities/question-response.entity';
 import { QuestionType } from 'src/data-collectors/entities/question-type.entity';
@@ -32,6 +39,7 @@ import { EmailConfig } from 'src/data-collectors/entities/questions/email-config
 import { FileUploadConfig } from 'src/data-collectors/entities/questions/file-upload-config.entity';
 import { GreetingsScreenConfig } from 'src/data-collectors/entities/questions/greetings-screen-config.entity';
 import { LegalConfig } from 'src/data-collectors/entities/questions/legal-config.entity';
+import { LongTextConfig } from 'src/data-collectors/entities/questions/long-text-config.entity';
 import { MultipleChoiceConfig } from 'src/data-collectors/entities/questions/multiple-choice-config.entity';
 import { PhoneNumberConfig } from 'src/data-collectors/entities/questions/phone-number-config.entity';
 import { PictureChoiceConfig } from 'src/data-collectors/entities/questions/picture-choice-config.entity';
@@ -87,6 +95,8 @@ export class QuestionsService {
     private readonly greetingsScreenConfigRepository: Repository<GreetingsScreenConfig>,
     @InjectRepository(QuestionResponse)
     private readonly questionResponseRepository: Repository<QuestionResponse>,
+    @InjectRepository(LongTextConfig)
+    private readonly longTextConfigRepository: Repository<LongTextConfig>,
   ) {}
 
   findAllTypes() {
@@ -147,12 +157,20 @@ export class QuestionsService {
         return await this.statementConfigRepository.findOne({
           where: { question: { uuid: questionUuid } },
         });
+      case 'website':
+        return await this.websiteConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
       case 'yesNo':
         return await this.yesNoConfigRepository.findOne({
           where: { question: { uuid: questionUuid } },
         });
       case 'greetings':
         return await this.greetingsScreenConfigRepository.findOne({
+          where: { question: { uuid: questionUuid } },
+        });
+      case 'longText':
+        return await this.longTextConfigRepository.findOne({
           where: { question: { uuid: questionUuid } },
         });
       default:
@@ -231,11 +249,6 @@ export class QuestionsService {
     });
 
     const savedQuestion = await this.questionRepository.save(question);
-
-    const answer = this.questionResponseRepository.create({
-      question: savedQuestion,
-    });
-    await this.questionResponseRepository.save(answer);
 
     switch (data.type) {
       case 'welcome': {
@@ -352,6 +365,13 @@ export class QuestionsService {
         await this.greetingsScreenConfigRepository.save(greetingsScreenConfig);
         break;
       }
+      case 'longText': {
+        const longTextConfig = this.longTextConfigRepository.create({
+          question: savedQuestion,
+        });
+        await this.longTextConfigRepository.save(longTextConfig);
+        break;
+      }
     }
 
     return savedQuestion;
@@ -380,6 +400,215 @@ export class QuestionsService {
     });
 
     return this.questionRepository.save(question);
+  }
+
+  async updateWelcomeScreenConfig(
+    uuid: string,
+    changes: { headline: string; description: string },
+  ) {
+    const welcomeScreenConfig: WelcomeScreenConfig | null =
+      await this.welcomeScreenRepository.findOne({ where: { uuid } });
+
+    if (!welcomeScreenConfig) {
+      throw new NotFoundException(`WelcomeScreeConfig = { uuid: ${uuid} }`);
+    }
+
+    this.welcomeScreenRepository.merge(welcomeScreenConfig, changes);
+
+    return this.welcomeScreenRepository.save(welcomeScreenConfig);
+  }
+
+  async updateLegalConfig(uuid: string, changes: { legalText: string }) {
+    const legalConfig: LegalConfig | null =
+      await this.legalConfigRepository.findOne({
+        where: { uuid },
+      });
+
+    if (!legalConfig) {
+      throw new NotFoundException(`LegalConfig = { uuid: ${uuid} }`);
+    }
+
+    this.legalConfigRepository.merge(legalConfig, changes);
+
+    return this.legalConfigRepository.save(legalConfig);
+  }
+
+  async updateStatementConfig(uuid: string, changes: { content: string }) {
+    const statementConfig: StatementConfig | null =
+      await this.statementConfigRepository.findOne({
+        where: { uuid },
+      });
+
+    if (!statementConfig) {
+      throw new NotFoundException(`StatementConfig = { uuid: ${uuid} }`);
+    }
+
+    this.statementConfigRepository.merge(statementConfig, changes);
+
+    return this.statementConfigRepository.save(statementConfig);
+  }
+
+  async updateGreetingsScreenConfig(
+    uuid: string,
+    changes: { message: string },
+  ) {
+    const greetingsScreenConfig: GreetingsScreenConfig | null =
+      await this.greetingsScreenConfigRepository.findOne({
+        where: { uuid },
+      });
+
+    if (!greetingsScreenConfig) {
+      throw new NotFoundException(`GreetingsScreenConfig = { uuid: ${uuid} }`);
+    }
+
+    this.greetingsScreenConfigRepository.merge(greetingsScreenConfig, changes);
+
+    return this.greetingsScreenConfigRepository.save(greetingsScreenConfig);
+  }
+
+  async updateWebsiteConfig(uuid: string, changes: { url: string }) {
+    const websiteConfig: WebsiteConfig | null =
+      await this.websiteConfigRepository.findOne({
+        where: { uuid },
+      });
+
+    if (!websiteConfig) {
+      throw new NotFoundException(`WebsiteConfig = { uuid: ${uuid} }`);
+    }
+
+    this.websiteConfigRepository.merge(websiteConfig, changes);
+
+    return this.websiteConfigRepository.save(websiteConfig);
+  }
+
+  async submitAnswer(data: SubmitAnswerDto) {
+    const question: Question = await this.findOne(data.questionUuid);
+
+    const questionType = question.type.name;
+
+    let validValue: any;
+
+    switch (questionType) {
+      case 'yesNo': {
+        if (typeof data.value !== 'boolean') {
+          throw new BadRequestException('Expected boolean');
+        }
+
+        validValue = data.value;
+        break;
+      }
+      case 'legal': {
+        if (data.value !== true) {
+          throw new BadRequestException('Legal consent must be accepted');
+        }
+
+        validValue = data.value;
+        break;
+      }
+      case 'date': {
+        const parsedDate = new Date(String(data.value));
+
+        if (isNaN(parsedDate.getTime())) {
+          throw new BadRequestException(
+            'Expected valid date string (YYYY-MM-DD)',
+          );
+        }
+
+        validValue = parsedDate;
+        break;
+      }
+      case 'email': {
+        if (
+          typeof data.value !== 'string' ||
+          !/^\S+@\S+\.\S+$/.test(data.value)
+        ) {
+          throw new BadRequestException('Expected valid email');
+        }
+
+        validValue = data.value;
+        break;
+      }
+      case 'phone': {
+        if (typeof data.value !== 'string') {
+          throw new BadRequestException('Expected valid phone number');
+        }
+
+        validValue = data.value;
+        break;
+      }
+      case 'shortText':
+      case 'longText': {
+        if (typeof data.value !== 'string') {
+          throw new BadRequestException('Expected string');
+        }
+
+        validValue = data.value;
+        break;
+      }
+      case 'rating': {
+        if (typeof data.value !== 'number') {
+          throw new BadRequestException('Expected number');
+        }
+
+        validValue = data.value;
+        break;
+      }
+      default:
+        throw new BadRequestException('Unsupported question type');
+    }
+
+    const existingAnswer = await this.questionResponseRepository.findOne({
+      where: {
+        question: { uuid: question.uuid },
+        sessionUuid: data.sessionUuid,
+      },
+      relations: ['question'],
+    });
+
+    if (existingAnswer) {
+      throw new NotFoundException(`Already answered this question`);
+    }
+
+    const response = this.questionResponseRepository.create({
+      question,
+      sessionUuid: data.sessionUuid,
+    });
+
+    switch (questionType) {
+      case 'yesNo': {
+        response.booleanValue = validValue;
+        break;
+      }
+      case 'legal': {
+        response.booleanValue = validValue;
+        break;
+      }
+      case 'date': {
+        response.dateValue = validValue;
+        break;
+      }
+      case 'email': {
+        response.textValue = validValue;
+        break;
+      }
+      case 'phone': {
+        response.textValue = validValue;
+        break;
+      }
+      case 'shortText':
+      case 'longText': {
+        response.textValue = validValue;
+        break;
+      }
+      case 'rating': {
+        response.intValue = validValue;
+        break;
+      }
+    }
+
+    await this.questionResponseRepository.save(response);
+
+    return { success: true };
   }
 
   async remove(uuid: string) {
