@@ -16,38 +16,17 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { Exclude } from 'class-transformer';
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { Question } from '../question.entity';
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-@Entity()
-export class WebsiteConfig {
-  @PrimaryGeneratedColumn('uuid')
-  uuid: string;
+export class SubmitAnswerDto {
+  @IsNotEmpty()
+  @IsString()
+  questionUuid: string;
 
-  @Column({
-    type: 'text',
-    nullable: false,
-    default: 'https://staging.solutionazer.app',
-  })
-  url: string;
+  @IsOptional()
+  value: string | number | boolean | string[];
 
-  // question
-  @OneToOne(() => Question, (question) => question.websiteConfig)
-  question: Question;
-
-  @Exclude()
-  @CreateDateColumn({ type: 'timestamp with time zone' })
-  createdAt: Date;
-
-  @Exclude()
-  @UpdateDateColumn({ type: 'timestamp with time zone' })
-  updatedAt: Date;
+  @IsNotEmpty()
+  @IsString()
+  sessionUuid: string;
 }
