@@ -34,7 +34,7 @@
       display: grid;
       place-items: center;
 
-      width: 25px;
+      width: 30px;
       aspect-ratio: 1/1;
 
       background-color: var(--foreground-color);

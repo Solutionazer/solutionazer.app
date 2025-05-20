@@ -32,6 +32,8 @@ import useAuthStore from '@/lib/auth/states/global/authStore'
 import { getCompaniesByUser } from '@/lib/utils/users-management/companyHandler'
 import { useEffect, useState } from 'react'
 
+import styles from './page.module.css'
+
 export default function Profiles() {
   // auth global state
   const { user } = useAuthStore()
@@ -81,23 +83,27 @@ export default function Profiles() {
   }, [user])
 
   return (
-    <>
+    <div className={styles.profiles_content}>
       <Title params={{ text: 'Profiles', classNames: ['title'] }} />
       <Section>
         <MediumTitle
           params={{ text: 'How do you want to log in?', classNames: [] }}
         />
-        <Article params={{ className: '' }}>
+        <Article params={{ className: styles.card_container }}>
           <SmallTitle params={{ text: 'User' }} />
-          <Card params={{ userFullName: user?.getFullName() }} />
+          <div>
+            <Card params={{ userFullName: user?.getFullName() }} />
+          </div>
         </Article>
-        <Article params={{ className: '' }}>
+        <Article params={{ className: styles.card_container }}>
           <SmallTitle params={{ text: 'Companies' }} />
-          {companies.map((company) => (
-            <Card key={company.getUuid()} params={{ company }} />
-          ))}
+          <div>
+            {companies.map((company) => (
+              <Card key={company.getUuid()} params={{ company }} />
+            ))}
+          </div>
         </Article>
       </Section>
-    </>
+    </div>
   )
 }

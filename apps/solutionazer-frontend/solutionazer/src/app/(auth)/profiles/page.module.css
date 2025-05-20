@@ -1,0 +1,31 @@
+.profiles_content {
+  --max-width: 768px;
+
+  max-width: var(--max-width);
+  width: var(--max-percentage);
+
+  margin: 0 auto;
+
+  & h2 {
+    text-align: center;
+  }
+
+  & h3 {
+    padding: 2rem 2rem 0.5rem 2rem;
+
+    color: var(--title-color);
+
+    text-align: center;
+  }
+
+  .card_container {
+    padding-bottom: 0.5rem;
+
+    & div {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+  }
+}

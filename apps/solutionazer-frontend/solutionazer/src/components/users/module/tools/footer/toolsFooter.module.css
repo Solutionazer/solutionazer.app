@@ -125,9 +125,9 @@
         -o-border-radius: 50%;
       }
 
-      .order_button {
-        width: 5rem;
-        aspect-ratio: 1/1;
+      .question_button {
+        width: 10rem;
+        aspect-ratio: 16/9;
 
         background-color: var(--foreground-color);
         color: var(--background-color);

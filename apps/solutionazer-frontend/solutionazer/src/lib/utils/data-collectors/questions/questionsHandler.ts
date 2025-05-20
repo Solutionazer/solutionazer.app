@@ -180,3 +180,63 @@ export const updateStatementConfig = async (uuid: string, content: string) => {
 
   return await res.json()
 }
+
+export const updateGreetingsScreenConfig = async (
+  uuid: string,
+  message: string,
+) => {
+  const res = await fetch(`${baseUrl}/questions/greetings/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const updateWebsiteConfig = async (uuid: string, url: string) => {
+  const res = await fetch(`${baseUrl}/questions/website/${uuid}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      url,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const submitAnswer = async (
+  questionUuid: string,
+  value: string | number | boolean | string[],
+  sessionUuid: string,
+) => {
+  const res = await fetch(`${baseUrl}/questions/submit-answer`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      questionUuid,
+      sessionUuid,
+      value,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

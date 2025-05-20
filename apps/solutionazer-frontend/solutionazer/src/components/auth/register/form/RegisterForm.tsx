@@ -43,6 +43,8 @@ import Label from '@/components/shared/form/components/Label'
 import Select from '@/components/shared/form/components/Select'
 import Button from '@/components/shared/form/components/Button'
 
+import styles from './registerForm.module.css'
+
 export default function RegisterForm() {
   // query params
   const params = useSearchParams()
@@ -245,6 +247,13 @@ export default function RegisterForm() {
     router.push(path)
   }
 
+  // show password state
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
   // an input type
   const typePassword: string = 'password'
 
@@ -283,23 +292,32 @@ export default function RegisterForm() {
           {isIndividual && (
             <>
               <Fieldset>
-                <Input
-                  params={{
-                    type: typePassword,
-                    id: typePassword,
-                    value: formData.getPassword() ?? '',
-                    minLength: 8,
-                    maxLength: 32,
-                    pattern:
-                      '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).*$',
-                    title:
-                      'Password must be 8–32 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
-                    onChange: handleInputValuesChange,
-                    placeholder: ' ',
-                    required: true,
-                    disabled: false,
-                  }}
-                />
+                <Fieldset params={{ className: styles.password_input }}>
+                  <Input
+                    params={{
+                      type: showPassword ? 'text' : typePassword,
+                      id: typePassword,
+                      value: formData.getPassword() ?? '',
+                      minLength: 8,
+                      maxLength: 32,
+                      pattern:
+                        '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{8,32}$',
+                      title:
+                        'Password must be 8–32 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&).',
+                      onChange: handleInputValuesChange,
+                      placeholder: ' ',
+                      required: true,
+                      disabled: false,
+                    }}
+                  />
+                  <Button
+                    params={{
+                      type: ButtonType.Button,
+                      text: 'Show Password',
+                      onClick: togglePasswordVisibility,
+                    }}
+                  />
+                </Fieldset>
                 <Label
                   params={{
                     htmlFor: typePassword,
@@ -308,17 +326,26 @@ export default function RegisterForm() {
                 />
               </Fieldset>
               <Fieldset>
-                <Input
-                  params={{
-                    type: typePassword,
-                    id: 'confirm_password',
-                    value: formData.getPasswordToConfirm() ?? '',
-                    onChange: handleInputValuesChange,
-                    placeholder: ' ',
-                    required: true,
-                    disabled: false,
-                  }}
-                />
+                <Fieldset params={{ className: styles.password_input }}>
+                  <Input
+                    params={{
+                      type: showPassword ? 'text' : typePassword,
+                      id: 'confirm_password',
+                      value: formData.getPasswordToConfirm() ?? '',
+                      onChange: handleInputValuesChange,
+                      placeholder: ' ',
+                      required: true,
+                      disabled: false,
+                    }}
+                  />
+                  <Button
+                    params={{
+                      type: ButtonType.Button,
+                      text: 'Show Password',
+                      onClick: togglePasswordVisibility,
+                    }}
+                  />
+                </Fieldset>
                 <Label
                   params={{
                     htmlFor: 'confirm_password',

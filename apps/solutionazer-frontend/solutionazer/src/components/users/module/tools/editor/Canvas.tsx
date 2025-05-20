@@ -30,9 +30,11 @@ import {
   getConfig,
   getQuestionsByForm,
   getQuestionsBySurvey,
+  updateGreetingsScreenConfig,
   updateLegalConfig,
   updateStatementConfig,
   updateText,
+  updateWebsiteConfig,
   updateWelcomeScreenConfig,
 } from '@/lib/utils/data-collectors/questions/questionsHandler'
 import Option from '@/lib/options/option'
@@ -135,6 +137,12 @@ export default function Canvas() {
     } else if (type === 'statement') {
       setQuestionText(selectedQuestion.getText())
       setStatementContent(questionConfig.content ?? '')
+    } else if (type === 'greetings') {
+      setQuestionText(selectedQuestion.getText())
+      setGreetingsMessage(questionConfig.message ?? '')
+    } else if (type === 'website') {
+      setQuestionText(selectedQuestion.getText())
+      setWebsiteUrl(questionConfig.url ?? '')
     } else {
       setQuestionText(selectedQuestion.getText())
     }
@@ -185,11 +193,6 @@ export default function Canvas() {
   const [greetingsMessage, setGreetingsMessage] = useState<string>(
     questionConfig?.message ?? '',
   )
-  /*
-  const [greetingsRedirect, setGreetingsRedirect] = useState<string>(
-    questionConfig?.redirectUrl,
-  )
-  */
 
   // longText state
   const [longText, setLongText] = useState<string>('')
@@ -271,6 +274,52 @@ export default function Canvas() {
 
     return () => clearTimeout(timeout)
   }, [statementContent, selectedQuestion, questionConfig])
+
+  // update greetingsMessage
+  useEffect(() => {
+    if (
+      !selectedQuestion ||
+      selectedQuestion.getType()?.getName() !== 'greetings'
+    )
+      return
+    if (!questionConfig) return
+
+    const uuid: string = questionConfig?.uuid ?? ''
+    const initialMessage: string = questionConfig?.message ?? ''
+
+    const timeout = setTimeout(() => {
+      if (greetingsMessage !== initialMessage) {
+        updateGreetingsScreenConfig(uuid, greetingsMessage)
+          .then(() => console.log('Greetings config updated'))
+          .catch((error) => console.error(error))
+      }
+    }, 500)
+
+    return () => clearTimeout(timeout)
+  }, [greetingsMessage, selectedQuestion, questionConfig])
+
+  // update websiteUrl
+  useEffect(() => {
+    if (
+      !selectedQuestion ||
+      selectedQuestion.getType()?.getName() !== 'website'
+    )
+      return
+    if (!questionConfig) return
+
+    const uuid: string = questionConfig?.uuid ?? ''
+    const initialUrl: string = questionConfig?.url ?? ''
+
+    const timeout = setTimeout(() => {
+      if (websiteUrl !== initialUrl) {
+        updateWebsiteConfig(uuid, websiteUrl)
+          .then(() => console.log('Website config updated'))
+          .catch((error) => console.error(error))
+      }
+    })
+
+    return () => clearTimeout(timeout)
+  }, [websiteUrl, selectedQuestion, questionConfig])
 
   // hasInitialized state
   const [hasInitialized, setHasInitialized] = useState<boolean>(false)
@@ -391,7 +440,7 @@ export default function Canvas() {
                 onChange: () => {},
                 placeholder: '',
                 required: false,
-                disabled: false,
+                disabled: true,
               }}
             />
           )
@@ -432,7 +481,7 @@ export default function Canvas() {
                 onChange: () => {},
                 placeholder: '',
                 required: false,
-                disabled: false,
+                disabled: true,
               }}
             />
           )
@@ -515,7 +564,7 @@ export default function Canvas() {
                   onChange: () => {},
                   placeholder: '',
                   required: false,
-                  disabled: false,
+                  disabled: true,
                 }}
               />
             </div>
@@ -639,7 +688,7 @@ export default function Canvas() {
                   },
                   placeholder: '',
                   required: false,
-                  disabled: false,
+                  disabled: true,
                 }}
               />
               <p>{`${shortText.length} / ${characterLimit}`}</p>
@@ -698,6 +747,7 @@ export default function Canvas() {
                     setLongText(event.target.value)
                   }
                 }}
+                disabled
               ></textarea>
               <p>{`${longText.length} / ${characterLimit}`}</p>
             </div>

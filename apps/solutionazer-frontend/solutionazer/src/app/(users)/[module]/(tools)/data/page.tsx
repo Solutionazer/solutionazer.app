@@ -16,4 +16,6 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-export default function Data() {}
+export default function Data() {
+  return <textarea></textarea>
+}

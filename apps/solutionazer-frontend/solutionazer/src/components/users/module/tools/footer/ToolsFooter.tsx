@@ -620,10 +620,16 @@ export default function ToolsFooter() {
                     />
                   </div>
                   <button
-                    className={styles.order_button}
+                    className={styles.question_button}
                     onClick={() => handleQuestionClick(question.uuid ?? '')}
                   >
-                    <SmallTitle params={{ text: String(question.order) }} />
+                    <SmallTitle
+                      params={{
+                        text: splitCamelCaseAndCapitalize(
+                          String(question.type.name),
+                        ),
+                      }}
+                    />
                   </button>
                 </Article>
               </li>

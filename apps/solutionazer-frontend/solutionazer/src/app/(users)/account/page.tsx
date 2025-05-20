@@ -40,6 +40,7 @@ import { logout } from '@/lib/utils/auth/authHandler'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 
 export default function Account() {
   // auth global state
@@ -140,7 +141,12 @@ export default function Account() {
       <div className={styles.auth_btn_container}>
         {company !== null && (
           <Link href="/profiles" className={styles.profiles_btn}>
-            Profiles
+            <Image
+              src="/icons/black_profiles.svg"
+              alt="profiles button"
+              width={22}
+              height={22}
+            />
           </Link>
         )}
         <Button
