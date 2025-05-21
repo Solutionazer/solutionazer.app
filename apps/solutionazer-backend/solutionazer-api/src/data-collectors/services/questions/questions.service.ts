@@ -23,7 +23,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import {
   CreateQuestionDto,
   UpdateQuestionDto,
@@ -50,7 +50,8 @@ import { StatementConfig } from 'src/data-collectors/entities/questions/statemen
 import { WebsiteConfig } from 'src/data-collectors/entities/questions/website-config.entity';
 import { WelcomeScreenConfig } from 'src/data-collectors/entities/questions/welcome-screen-config.entity';
 import { YesNoConfig } from 'src/data-collectors/entities/questions/yes-no-config.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { StatsService } from '../stats/stats.service';
 
 @Injectable()
 export class QuestionsService {
@@ -97,6 +98,9 @@ export class QuestionsService {
     private readonly questionResponseRepository: Repository<QuestionResponse>,
     @InjectRepository(LongTextConfig)
     private readonly longTextConfigRepository: Repository<LongTextConfig>,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
+    private readonly statsService: StatsService,
   ) {}
 
   findAllTypes() {
@@ -207,7 +211,7 @@ export class QuestionsService {
   async findOne(uuid: string) {
     const question: Question | null = await this.questionRepository.findOne({
       where: { uuid },
-      relations: ['type'],
+      relations: ['type', 'dataCollector', 'dataCollector.stats'],
     });
 
     if (!question) {
@@ -482,133 +486,222 @@ export class QuestionsService {
   }
 
   async submitAnswer(data: SubmitAnswerDto) {
-    const question: Question = await this.findOne(data.questionUuid);
+    return await this.dataSource.transaction(async (manager) => {
+      const responseRepo = manager.getRepository(QuestionResponse);
 
-    const questionType = question.type.name;
+      const question: Question = await this.findOne(data.questionUuid);
 
-    let validValue: any;
+      const questionType = question.type.name;
 
-    switch (questionType) {
-      case 'yesNo': {
-        if (typeof data.value !== 'boolean') {
-          throw new BadRequestException('Expected boolean');
+      let validValue: any;
+
+      switch (questionType) {
+        case 'yesNo': {
+          if (typeof data.value !== 'boolean') {
+            throw new BadRequestException('Expected boolean');
+          }
+
+          validValue = data.value;
+          break;
         }
+        case 'legal': {
+          if (data.value !== true) {
+            throw new BadRequestException('Legal consent must be accepted');
+          }
 
-        validValue = data.value;
-        break;
-      }
-      case 'legal': {
-        if (data.value !== true) {
-          throw new BadRequestException('Legal consent must be accepted');
+          validValue = data.value;
+          break;
         }
+        case 'date': {
+          const parsedDate = new Date(String(data.value));
 
-        validValue = data.value;
-        break;
-      }
-      case 'date': {
-        const parsedDate = new Date(String(data.value));
+          if (isNaN(parsedDate.getTime())) {
+            throw new BadRequestException(
+              'Expected valid date string (YYYY-MM-DD)',
+            );
+          }
 
-        if (isNaN(parsedDate.getTime())) {
-          throw new BadRequestException(
-            'Expected valid date string (YYYY-MM-DD)',
-          );
+          validValue = parsedDate;
+          break;
         }
+        case 'email': {
+          if (
+            typeof data.value !== 'string' ||
+            !/^\S+@\S+\.\S+$/.test(data.value)
+          ) {
+            throw new BadRequestException('Expected valid email');
+          }
 
-        validValue = parsedDate;
-        break;
-      }
-      case 'email': {
-        if (
-          typeof data.value !== 'string' ||
-          !/^\S+@\S+\.\S+$/.test(data.value)
-        ) {
-          throw new BadRequestException('Expected valid email');
+          validValue = data.value;
+          break;
         }
+        case 'phone': {
+          if (typeof data.value !== 'string') {
+            throw new BadRequestException('Expected valid phone number');
+          }
 
-        validValue = data.value;
-        break;
-      }
-      case 'phone': {
-        if (typeof data.value !== 'string') {
-          throw new BadRequestException('Expected valid phone number');
+          validValue = data.value;
+          break;
         }
+        case 'shortText':
+        case 'longText': {
+          if (typeof data.value !== 'string') {
+            throw new BadRequestException('Expected string');
+          }
 
-        validValue = data.value;
-        break;
-      }
-      case 'shortText':
-      case 'longText': {
-        if (typeof data.value !== 'string') {
-          throw new BadRequestException('Expected string');
+          validValue = data.value;
+          break;
         }
+        case 'rating': {
+          if (typeof data.value !== 'number') {
+            throw new BadRequestException('Expected number');
+          }
 
-        validValue = data.value;
-        break;
-      }
-      case 'rating': {
-        if (typeof data.value !== 'number') {
-          throw new BadRequestException('Expected number');
+          validValue = data.value;
+          break;
         }
-
-        validValue = data.value;
-        break;
+        default:
+          throw new BadRequestException('Unsupported question type');
       }
-      default:
-        throw new BadRequestException('Unsupported question type');
-    }
 
-    const existingAnswer = await this.questionResponseRepository.findOne({
-      where: {
-        question: { uuid: question.uuid },
+      const existingAnswer = await responseRepo.findOne({
+        where: {
+          question: { uuid: question.uuid },
+          sessionUuid: data.sessionUuid,
+        },
+        relations: ['question'],
+      });
+
+      if (existingAnswer) {
+        throw new NotFoundException(`Already answered this question`);
+      }
+
+      const response = responseRepo.create({
+        question,
         sessionUuid: data.sessionUuid,
+      });
+
+      switch (questionType) {
+        case 'yesNo': {
+          response.booleanValue = validValue;
+          break;
+        }
+        case 'legal': {
+          response.booleanValue = validValue;
+          break;
+        }
+        case 'date': {
+          response.dateValue = validValue;
+          break;
+        }
+        case 'email': {
+          response.textValue = validValue;
+          break;
+        }
+        case 'phone': {
+          response.textValue = validValue;
+          break;
+        }
+        case 'shortText':
+        case 'longText': {
+          response.textValue = validValue;
+          break;
+        }
+        case 'rating': {
+          response.intValue = validValue;
+          break;
+        }
+      }
+
+      await responseRepo.save(response);
+
+      const completedResponses = await responseRepo.count({
+        where: { sessionUuid: data.sessionUuid },
+      });
+
+      const totalQuestions = 10;
+
+      const completionRate = Math.min(
+        (completedResponses / totalQuestions) * 100,
+        100,
+      );
+
+      const partialResponses = totalQuestions - completedResponses;
+
+      const statsChanges = {
+        completedResponses,
+        partialResponses,
+        completionRate: parseFloat(completionRate.toFixed(2)),
+      };
+
+      const stats = question.dataCollector?.stats;
+
+      if (!stats) {
+        throw new NotFoundException(
+          `Stats not found for this question's form / survey`,
+        );
+      }
+
+      await this.statsService.update(stats.uuid, statsChanges);
+
+      return { success: true };
+    });
+  }
+
+  findAllAnswers() {
+    return this.questionResponseRepository.find();
+  }
+
+  async findAnswersGroupedBySessionUuid() {
+    const responses = await this.questionResponseRepository.find({
+      relations: ['question', 'question.type'],
+    });
+
+    if (responses.length === 0) {
+      throw new NotFoundException(`No answers found`);
+    }
+
+    const grouped = responses.reduce(
+      (accumulator, response) => {
+        const uuid = response.sessionUuid;
+
+        if (!accumulator[uuid]) {
+          accumulator[uuid] = [];
+        }
+
+        accumulator[uuid].push({
+          questionUuid: response.question.uuid,
+          questionText: response.question.text,
+          questionType: response.question.type.name,
+          answer: this.extractAnswerValue(response),
+        });
+
+        return accumulator;
       },
-      relations: ['question'],
-    });
+      {} as Record<string, any[]>,
+    );
 
-    if (existingAnswer) {
-      throw new NotFoundException(`Already answered this question`);
+    return grouped;
+  }
+
+  private extractAnswerValue(response: QuestionResponse) {
+    if (response.booleanValue !== null && response.booleanValue !== undefined) {
+      return response.booleanValue;
     }
 
-    const response = this.questionResponseRepository.create({
-      question,
-      sessionUuid: data.sessionUuid,
-    });
-
-    switch (questionType) {
-      case 'yesNo': {
-        response.booleanValue = validValue;
-        break;
-      }
-      case 'legal': {
-        response.booleanValue = validValue;
-        break;
-      }
-      case 'date': {
-        response.dateValue = validValue;
-        break;
-      }
-      case 'email': {
-        response.textValue = validValue;
-        break;
-      }
-      case 'phone': {
-        response.textValue = validValue;
-        break;
-      }
-      case 'shortText':
-      case 'longText': {
-        response.textValue = validValue;
-        break;
-      }
-      case 'rating': {
-        response.intValue = validValue;
-        break;
-      }
+    if (response.textValue !== null && response.textValue !== undefined) {
+      return response.textValue;
     }
 
-    await this.questionResponseRepository.save(response);
+    if (response.intValue !== null && response.intValue !== undefined) {
+      return response.intValue;
+    }
 
-    return { success: true };
+    if (response.dateValue !== null && response.dateValue !== undefined) {
+      return response.dateValue;
+    }
+
+    return null;
   }
 
   async remove(uuid: string) {

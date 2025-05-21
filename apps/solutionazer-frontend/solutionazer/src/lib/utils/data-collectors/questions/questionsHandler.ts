@@ -240,3 +240,16 @@ export const submitAnswer = async (
 
   return await res.json()
 }
+
+export const getAnswers = async () => {
+  const res = await fetch(`${baseUrl}/questions/answers`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

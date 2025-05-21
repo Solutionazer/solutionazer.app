@@ -32,13 +32,12 @@ export class StatsService {
     private readonly statsRepository: Repository<Stats>,
   ) {}
 
-  findAllByFormUuid(uuid: string) {}
-
-  findAllBySurveyUuid(uuid: string) {}
-
   async findOne(uuid: string) {
     const stats: Stats | null = await this.statsRepository.findOne({
-      where: { uuid },
+      where: {
+        dataCollector: { uuid },
+      },
+      relations: ['dataCollector'],
     });
 
     if (!stats) {
@@ -54,14 +53,27 @@ export class StatsService {
   }
 
   async update(uuid: string, changes: UpdateStatsDto) {
-    const stats: Stats = await this.findOne(uuid);
+    const stats = await this.statsRepository.findOne({
+      where: { uuid },
+    });
+
+    if (!stats) {
+      throw new NotFoundException(`Stats = { uuid: ${uuid} } not found`);
+    }
 
     this.statsRepository.merge(stats, changes);
     return this.statsRepository.save(stats);
   }
 
   async remove(uuid: string) {
-    await this.findOne(uuid);
+    const stats = await this.statsRepository.findOne({
+      where: { uuid },
+    });
+
+    if (!stats) {
+      throw new NotFoundException(`Stats = { uuid: ${uuid} } not found`);
+    }
+
     return this.statsRepository.delete(uuid);
   }
 }

@@ -28,6 +28,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { Permissions } from 'src/auth/decorators/permissions.decorator';
 import {
   CreateStatsDto,
   UpdateStatsDto,
@@ -38,26 +39,23 @@ import { StatsService } from 'src/data-collectors/services/stats/stats.service';
 export class StatsController {
   constructor(private readonly statsService: StatsService) {}
 
-  @Get(':formUuid')
+  @Permissions('stats:readOneByDataCollector')
+  @Get(':dataCollectorUuid')
   @HttpCode(HttpStatus.OK)
-  findAllByFormUuid(@Param('formUuid', new ParseUUIDPipe()) formUuid: string) {
-    return this.statsService.findAllByFormUuid(formUuid);
-  }
-
-  @Get(':surveyUuid')
-  @HttpCode(HttpStatus.OK)
-  findAllBySurveyUuid(
-    @Param('surveyUuid', new ParseUUIDPipe()) surveyUuid: string,
+  findOne(
+    @Param('dataCollectorUuid', new ParseUUIDPipe()) dataCollectorUuid: string,
   ) {
-    return this.statsService.findAllBySurveyUuid(surveyUuid);
+    return this.statsService.findOne(dataCollectorUuid);
   }
 
+  @Permissions('stats:create')
   @Post()
   @HttpCode(HttpStatus.CREATED)
   create(@Body() payload: CreateStatsDto) {
     return this.statsService.create(payload);
   }
 
+  @Permissions('stats:update')
   @Put(':uuid')
   @HttpCode(HttpStatus.OK)
   update(
@@ -67,6 +65,7 @@ export class StatsController {
     return this.statsService.update(uuid, payload);
   }
 
+  @Permissions('stats:delete')
   @Delete(':uuid')
   @HttpCode(HttpStatus.OK)
   delete(@Param('uuid', new ParseUUIDPipe()) uuid: string) {

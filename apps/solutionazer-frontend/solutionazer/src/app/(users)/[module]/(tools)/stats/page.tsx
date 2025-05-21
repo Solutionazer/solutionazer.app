@@ -16,4 +16,77 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-export default function Stats() {}
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
+'use client'
+
+import Article from '@/components/shared/containers/Article'
+import useDataCollector from '@/lib/module/data-collectors/states/global/dataCollectorStore'
+import { getStats } from '@/lib/utils/data-collectors/stats/statsHandler'
+import { useEffect, useState } from 'react'
+
+import styles from './page.module.css'
+//import { getAnswers } from '@/lib/utils/data-collectors/questions/questionsHandler'
+
+export default function Stats() {
+  // dataCollector global state
+  const { dataCollector } = useDataCollector()
+
+  // stats state
+  const [stats, setStats] = useState<any>(null)
+
+  // answers state
+  // const [answers, setAnswers] = useState<any[]>([])
+
+  // fetch data
+  useEffect(() => {
+    const fetchData = async () => {
+      if (dataCollector) {
+        const uuid: string = dataCollector.getUuid() ?? ''
+
+        try {
+          const statsResponse = await getStats(uuid)
+          // const answersResponse = await getAnswers()
+
+          setStats(statsResponse)
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    }
+
+    fetchData()
+  }, [dataCollector])
+
+  console.log(stats?.averageTime)
+
+  return (
+    <Article
+      params={{
+        className: styles.stats_container,
+      }}
+    >
+      {stats ? (
+        <Article>
+          <p>
+            <span>Completed responses:</span>
+            {stats.completedResponses}
+          </p>
+          <p>
+            <span>Partial responses:</span>
+            {stats.partialResponses}
+          </p>
+          <p>
+            <span>Average time:</span> {`${stats.averageTime}`}
+          </p>
+          <p>
+            <span>Completion rate:</span>
+            {stats.completionRate}
+          </p>
+        </Article>
+      ) : (
+        <p>{`No statistics available.`}</p>
+      )}
+    </Article>
+  )
+}

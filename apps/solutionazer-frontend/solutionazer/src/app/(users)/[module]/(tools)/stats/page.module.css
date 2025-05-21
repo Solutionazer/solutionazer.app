@@ -1,0 +1,43 @@
+.stats_container {
+  --max-width: 768px;
+
+  max-width: var(--max-width);
+  width: var(--max-percentage);
+
+  padding: 0.5rem 0;
+  margin: 0 auto;
+
+  & article {
+    padding: 1rem 1rem 2.1rem 1rem;
+
+    background-color: var(--foreground-color);
+
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+
+    & p {
+      padding: 1rem 0;
+
+      color: var(--background-color);
+
+      text-align: left;
+
+      border-bottom: 1px solid var(--background-color);
+
+      & span {
+        padding: 0 0.75rem 0 0;
+
+        color: var(--title-color);
+
+        font-weight: 700;
+      }
+    }
+  }
+
+  & p {
+    text-align: center;
+  }
+}

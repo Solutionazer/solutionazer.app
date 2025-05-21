@@ -148,6 +148,13 @@ export class QuestionsController {
     return this.questionsService.submitAnswer(data);
   }
 
+  @Permissions('question:readAnswersGroupedBySessionUuid')
+  @Get('answers')
+  @HttpCode(HttpStatus.OK)
+  findAnswersGroupedBySessionUuid() {
+    return this.questionsService.findAnswersGroupedBySessionUuid();
+  }
+
   @Permissions('question:delete')
   @Delete(':uuid')
   @HttpCode(HttpStatus.OK)
