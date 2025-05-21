@@ -22,11 +22,14 @@ import {
   CreateDataCollectorDto,
   UpdateDataCollectorDto,
 } from 'src/data-collectors/dtos/data-collectors.dtos';
+import { CreateStatsDto } from 'src/data-collectors/dtos/stats.dtos';
 import { DataCollector } from 'src/data-collectors/entities/data-collector.entity';
+import { Stats } from 'src/data-collectors/entities/stats.entity';
 import DataCollectorType from 'src/data-collectors/enums/data-collector-type.enum';
 import { User } from 'src/users-management/entities/user.entity';
 import { UsersService } from 'src/users-management/services/users/users.service';
 import { FindOneOptions, Repository } from 'typeorm';
+import { StatsService } from '../stats/stats.service';
 
 @Injectable()
 export class SurveysService {
@@ -34,6 +37,7 @@ export class SurveysService {
     @InjectRepository(DataCollector)
     private readonly dataCollectorRepository: Repository<DataCollector>,
     private readonly usersService: UsersService,
+    private readonly statsService: StatsService,
   ) {}
 
   async findPublicSurvey(uuid: string) {
@@ -86,11 +90,14 @@ export class SurveysService {
     const { title, description, userUuid } = data;
     const user: User = await this.usersService.findOne(userUuid);
 
+    const stats: Stats = await this.statsService.create({} as CreateStatsDto);
+
     const newSurvey: DataCollector = this.dataCollectorRepository.create({
       title,
       description,
       type: DataCollectorType.Survey,
       user,
+      stats,
     });
 
     return this.dataCollectorRepository.save(newSurvey);
@@ -104,7 +111,12 @@ export class SurveysService {
   }
 
   async remove(uuid: string) {
-    await this.findOne(uuid);
+    const survey: DataCollector = await this.findOne(uuid, {
+      relations: ['stats'],
+    });
+
+    await this.statsService.remove(survey.stats.uuid);
+
     return this.dataCollectorRepository.delete(uuid);
   }
 }

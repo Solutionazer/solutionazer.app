@@ -21,9 +21,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { DataCollector } from './data-collector.entity';
 
 @Entity()
 export class Stats {
@@ -41,6 +43,9 @@ export class Stats {
 
   @Column({ type: 'double precision', nullable: false, default: 0.0 })
   completionRate: number;
+
+  @OneToOne(() => DataCollector, (dataCollector) => dataCollector.stats)
+  dataCollector: DataCollector;
 
   @Exclude()
   @CreateDateColumn({ type: 'timestamp with time zone' })
