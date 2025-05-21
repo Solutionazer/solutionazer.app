@@ -36,6 +36,8 @@ import Input from '@/components/shared/form/components/Input'
 import Label from '@/components/shared/form/components/Label'
 import Button from '@/components/shared/form/components/Button'
 
+import styles from './loginForm.module.css'
+
 interface LoginFormProps {
   params?: {
     isPasswordEmpty?: boolean
@@ -146,6 +148,13 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
     setFormData(updatedFormData)
   }
 
+  // show password state
+  const [showPassword, setShowPassword] = useState<boolean>(false)
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
   // an input type
   const typePassword: string = 'password'
 
@@ -160,17 +169,26 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
       <Form params={{ onSubmit: handleLogin, method: 'post' }}>
         <Fieldset>
           <Fieldset>
-            <Input
-              params={{
-                type: typePassword,
-                id: typePassword,
-                value: formData.getPassword() ?? '',
-                onChange: handleInputValuesChange,
-                placeholder: ' ',
-                required: true,
-                disabled: user !== null,
-              }}
-            />
+            <Fieldset params={{ className: styles.password_input }}>
+              <Input
+                params={{
+                  type: showPassword ? 'text' : typePassword,
+                  id: typePassword,
+                  value: formData.getPassword() ?? '',
+                  onChange: handleInputValuesChange,
+                  placeholder: ' ',
+                  required: true,
+                  disabled: user !== null,
+                }}
+              />
+              <Button
+                params={{
+                  type: ButtonType.Button,
+                  text: 'Show Password',
+                  onClick: togglePasswordVisibility,
+                }}
+              />
+            </Fieldset>
             <Label
               params={{ htmlFor: typePassword, text: capitalize(typePassword) }}
             />
