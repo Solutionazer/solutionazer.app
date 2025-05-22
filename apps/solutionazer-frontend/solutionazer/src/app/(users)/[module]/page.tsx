@@ -215,6 +215,13 @@ export default function Module(props: Readonly<ModuleProps>) {
     },
   )
 
+  // in development message
+  const underDevelopment = (
+    <p className={styles.under_development_message}>
+      This section is under development
+    </p>
+  )
+
   // pages depend on the context
   const ModulePages: Record<string, JSX.Element> = {
     forms: (
@@ -249,6 +256,9 @@ export default function Module(props: Readonly<ModuleProps>) {
         ))}
       </>
     ),
+    interviews: underDevelopment,
+    glossaries: underDevelopment,
+    'document-anal.': underDevelopment,
   }
 
   // handle forms and surveys creation
