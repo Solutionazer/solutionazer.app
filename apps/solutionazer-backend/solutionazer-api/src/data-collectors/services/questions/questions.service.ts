@@ -17,6 +17,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import {
   BadRequestException,
@@ -615,11 +616,25 @@ export class QuestionsService {
 
       await responseRepo.save(response);
 
+      const stats: any = question.dataCollector?.stats;
+
+      if (!stats) {
+        throw new NotFoundException(
+          `Stats not found for this question's form / survey`,
+        );
+      }
+
       const completedResponses = await responseRepo.count({
         where: { sessionUuid: data.sessionUuid },
       });
 
-      const totalQuestions = 10;
+      const totalQuestions = await manager
+        .getRepository(Question)
+        .createQueryBuilder('question')
+        .where('question.dataCollector = :dataCollectorUuid', {
+          dataCollectorUuid: question.dataCollector.uuid,
+        })
+        .getCount();
 
       const completionRate = Math.min(
         (completedResponses / totalQuestions) * 100,
@@ -628,19 +643,34 @@ export class QuestionsService {
 
       const partialResponses = totalQuestions - completedResponses;
 
+      const now = new Date();
+      const firstResponse = await responseRepo.findOne({
+        where: { sessionUuid: data.sessionUuid },
+        order: {
+          createdAt: 'ASC',
+        },
+        select: ['createdAt'],
+      });
+      const start = firstResponse?.createdAt ?? now;
+      const timeTaken = now.getTime() - start.getTime();
+      const prevAvg =
+        typeof stats.averageTime === 'number' ? stats.averageTime : 0;
+      const safeCompleted = completedResponses || 0;
+      let updatedAverageTime =
+        (prevAvg * safeCompleted + timeTaken) / (safeCompleted + 1);
+
+      if (!isFinite(updatedAverageTime) || isNaN(updatedAverageTime)) {
+        updatedAverageTime = 0;
+      }
+
+      const intervalString = this.msToHHMMSS(updatedAverageTime);
+
       const statsChanges = {
         completedResponses,
         partialResponses,
         completionRate: parseFloat(completionRate.toFixed(2)),
+        averageTime: intervalString,
       };
-
-      const stats = question.dataCollector?.stats;
-
-      if (!stats) {
-        throw new NotFoundException(
-          `Stats not found for this question's form / survey`,
-        );
-      }
 
       await this.statsService.update(stats.uuid, statsChanges);
 
@@ -648,8 +678,15 @@ export class QuestionsService {
     });
   }
 
-  findAllAnswers() {
-    return this.questionResponseRepository.find();
+  msToHHMMSS(ms: number) {
+    const totalSeconds = Math.floor(ms / 1000);
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   }
 
   async findAnswersGroupedBySessionUuid() {
