@@ -26,6 +26,7 @@ export default function Button(props: Readonly<ButtonProps>) {
   const isAddMembers: boolean = text === 'Add members'
   const isCopy: boolean = text === 'Copy'
   const isShowPassword: boolean = text === 'Show Password'
+  const isDownload: boolean = text === 'Download'
 
   const renderIcon = (text: string) => {
     switch (text) {
@@ -137,6 +138,15 @@ export default function Button(props: Readonly<ButtonProps>) {
             height={22}
           />
         )
+      case 'Download':
+        return (
+          <Image
+            src="/icons/black_download.svg"
+            alt="download stats button"
+            width={22}
+            height={22}
+          />
+        )
     }
   }
 
@@ -158,7 +168,8 @@ export default function Button(props: Readonly<ButtonProps>) {
       !isSave &&
       !isAddMembers &&
       !isCopy &&
-      !isShowPassword
+      !isShowPassword &&
+      !isDownload
         ? text
         : renderIcon(text)}
     </button>

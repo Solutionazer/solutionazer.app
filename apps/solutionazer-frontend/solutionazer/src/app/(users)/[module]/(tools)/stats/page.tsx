@@ -26,6 +26,9 @@ import { getStats } from '@/lib/utils/data-collectors/stats/statsHandler'
 import { useEffect, useState } from 'react'
 
 import styles from './page.module.css'
+import Button from '@/components/shared/form/components/Button'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
+import jsPDF from 'jspdf'
 //import { getAnswers } from '@/lib/utils/data-collectors/questions/questionsHandler'
 
 export default function Stats() {
@@ -46,7 +49,7 @@ export default function Stats() {
 
         try {
           const statsResponse = await getStats(uuid)
-          // const answersResponse = await getAnswers()
+          //  const answersResponse = await getAnswers()
 
           setStats(statsResponse)
         } catch (error) {
@@ -58,7 +61,84 @@ export default function Stats() {
     fetchData()
   }, [dataCollector])
 
-  console.log(stats?.averageTime)
+  // format interval
+  const formatInterval = (interval: any) => {
+    if (typeof interval === 'string') return interval
+
+    if (typeof interval === 'object' && interval !== null) {
+      const pad = (n: number) => String(n).padStart(2, '0')
+
+      const hours = pad(interval.hours || 0)
+      const minutes = pad(interval.minutes || 0)
+      const seconds = pad(interval.seconds || 0)
+
+      return `${hours}:${minutes}:${seconds}`
+    }
+
+    return '00:00:00'
+  }
+
+  // 'onClick' | download button
+  const handleDownloadPDF = () => {
+    if (!stats) return
+
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'pt',
+      format: 'a4',
+    })
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+    const center = (
+      text: string,
+      y: number,
+      fontSize = 16,
+      weight: 'normal' | 'bold' = 'normal',
+    ) => {
+      doc.setFont('helvetica', weight)
+      doc.setFontSize(fontSize)
+      const textWidth = doc.getTextWidth(text)
+      const x = (pageWidth - textWidth) / 2
+      doc.text(text, x, y)
+    }
+
+    doc.setTextColor(40, 40, 40)
+
+    center(
+      (dataCollector?.getType() ?? '') === 'form'
+        ? 'Form Statistics Report'
+        : 'Survey Statistics Report',
+      88,
+      26,
+      'bold',
+    )
+
+    center('Metrics', 130, 14, 'bold')
+
+    doc.setFontSize(18)
+
+    const lines = [
+      `Completed responses: ${stats.completedResponses}`,
+      `Partial responses: ${stats.partialResponses}`,
+      `Average time: ${formatInterval(stats.averageTime)}`,
+      `Completion rate: ${stats.completionRate}%`,
+    ]
+
+    let y = 180
+    for (const line of lines) {
+      center(line, y, 16)
+      y += 30
+    }
+
+    doc.setFontSize(10)
+    center(
+      `Generated on ${new Date().toLocaleDateString()} by solutionazer.app`,
+      540,
+      10,
+    )
+
+    doc.save('solutionazer-statistics.pdf')
+  }
 
   return (
     <Article
@@ -68,6 +148,15 @@ export default function Stats() {
     >
       {stats ? (
         <Article>
+          <div>
+            <Button
+              params={{
+                type: ButtonType.Button,
+                text: 'Download',
+                onClick: handleDownloadPDF,
+              }}
+            />
+          </div>
           <p>
             <span>Completed responses:</span>
             {stats.completedResponses}
@@ -77,7 +166,7 @@ export default function Stats() {
             {stats.partialResponses}
           </p>
           <p>
-            <span>Average time:</span> {`${stats.averageTime}`}
+            <span>Average time:</span> {formatInterval(stats.averageTime)}
           </p>
           <p>
             <span>Completion rate:</span>
