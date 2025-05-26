@@ -18,6 +18,8 @@
 
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import Form from '@/components/shared/form/Form'
 import Fieldset from '@/components/shared/form/components/containers/fieldset/Fieldset'
