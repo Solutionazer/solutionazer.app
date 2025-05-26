@@ -162,6 +162,9 @@ export default function Route() {
   // UI states
   const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
 
+  // message type state
+  const [messageType, setMessageType] = useState<string>('error')
+
   // messages
   const memberAdded: string = 'Member added successfully!'
   const memberAddingFailed: string = 'Failed to add member.'
@@ -245,10 +248,12 @@ export default function Route() {
           ),
         })
 */
+        setMessageType('successfully')
         setInfoMessage(memberAdded)
         setShowAddMemberModal(false)
         setSearchQuery('')
       } catch {
+        setMessageType('error')
         setInfoMessage(memberAddingFailed)
       }
     }
@@ -379,7 +384,7 @@ export default function Route() {
                 <p>{`You must first create a freelance team.`}</p>
               )}
               {infoMessage && (
-                <Message params={{ type: '', text: infoMessage }} />
+                <Message params={{ type: messageType, text: infoMessage }} />
               )}
               <div>
                 {freelanceTeam &&

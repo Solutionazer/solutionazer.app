@@ -17,12 +17,12 @@
  */
 
 const ModuleOptions: Record<string, string[]> = {
-  forms: ['Forms', 'Surveys', 'Interviews', 'Glossaries', 'Document Anl.'],
-  surveys: ['Surveys', 'Forms', 'Interviews', 'Glossaries', 'Document Anl.'],
-  interviews: ['Interviews', 'Forms', 'Surveys', 'Glossaries', 'Document Anl.'],
-  glossaries: ['Glossaries', 'Forms', 'Surveys', 'Interviews', 'Document Anl.'],
+  forms: ['Forms', 'Surveys', 'Interviews', 'Glossaries', 'Doc. Anl.'],
+  surveys: ['Surveys', 'Forms', 'Interviews', 'Glossaries', 'Doc. Anl.'],
+  interviews: ['Interviews', 'Forms', 'Surveys', 'Glossaries', 'Doc. Anl.'],
+  glossaries: ['Glossaries', 'Forms', 'Surveys', 'Interviews', 'Doc. Anl.'],
   'document-analysis': [
-    'Document Anl.',
+    'Doc. Anl.',
     'Forms',
     'Surveys',
     'Interviews',

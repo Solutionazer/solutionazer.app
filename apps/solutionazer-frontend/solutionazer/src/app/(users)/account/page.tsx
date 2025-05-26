@@ -52,6 +52,9 @@ export default function Account() {
   // configure router
   const router: AppRouterInstance = useRouter()
 
+  // message type state
+  const [messageType, setMessageType] = useState<string>('error')
+
   // set initial formData
   useEffect(() => {
     if (user) {
@@ -79,8 +82,10 @@ export default function Account() {
           formData.getEmail() ?? '',
         )
 
+        setMessageType('successfully')
         setInfoMessage(accountUpdated)
       } catch {
+        setMessageType('error')
         setInfoMessage(accountUpdateFailed)
       }
     }
@@ -166,7 +171,9 @@ export default function Account() {
         }}
       >
         <Fieldset>
-          {infoMessage && <Message params={{ type: '', text: infoMessage }} />}
+          {infoMessage && (
+            <Message params={{ type: messageType, text: infoMessage }} />
+          )}
           <Fieldset>
             <Input
               params={{

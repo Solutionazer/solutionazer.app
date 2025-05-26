@@ -16,6 +16,8 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
 export const getForms = async (userUuid: string) => {
@@ -110,6 +112,52 @@ export const publishForm = async (uuid: string) => {
 export const getPublicForm = async (uuid: string) => {
   const res = await fetch(`${baseUrl}/forms/public/${uuid}`, {
     method: 'GET',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const cloneFormToUser = async (
+  formUuid: string,
+  targetUserUuid: string,
+) => {
+  const res = await fetch(`${baseUrl}/forms/clone-to-user/${formUuid}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      targetUserUuid,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const undoCloneForm = async (clonedFormUuid: string) => {
+  const res = await fetch(`${baseUrl}/forms/undo-clone/${clonedFormUuid}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const getFormClonesByFormUuid = async (formUuid: string) => {
+  const res = await fetch(`${baseUrl}/forms/clones/${formUuid}`, {
+    method: 'GET',
+    credentials: 'include',
   })
 
   if (!res.ok) {

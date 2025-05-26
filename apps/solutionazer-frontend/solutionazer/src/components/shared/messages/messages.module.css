@@ -17,8 +17,43 @@
  */
 
 .error_message {
-  margin: 1rem;
-  padding: 1rem;
+  display: grid;
+  place-items: center;
+
+  margin: 0 1rem;
+  padding: 0.25rem 1rem;
+
   background-color: red;
   color: white;
+
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+
+  & p {
+    padding: 0;
+  }
+}
+
+.successfully_message {
+  display: grid;
+  place-items: center;
+
+  margin: 0 1rem;
+  padding: 0.25rem 1rem;
+
+  background-color: green;
+  color: white;
+
+  border-radius: 8px;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+
+  & p {
+    padding: 0;
+  }
 }

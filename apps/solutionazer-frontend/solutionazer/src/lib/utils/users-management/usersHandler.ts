@@ -107,3 +107,23 @@ export const searchUsersInCompany = async (
 
   return await res.json()
 }
+
+export const searchUsersInSameTeam = async (
+  userUuid: string,
+  query: string,
+  excludedUuids?: string[],
+) => {
+  const res = await fetch(
+    `${baseUrl}/users/search-in-same-teams?user=${userUuid}&query=${query}&exclude=${excludedUuids?.join(',')}`,
+    {
+      method: 'GET',
+      credentials: 'include',
+    },
+  )
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

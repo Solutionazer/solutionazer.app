@@ -49,3 +49,17 @@ export const logout = async () => {
     throw new LogoutFailed()
   }
 }
+
+export const sendPasswordRecoveryEmail = async (email: string) => {
+  const res = await fetch(`${baseUrl}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

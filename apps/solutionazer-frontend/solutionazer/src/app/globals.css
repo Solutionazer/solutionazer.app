@@ -119,6 +119,10 @@
   }
 }
 
+button {
+  cursor: pointer;
+}
+
 /* UTILS */
 .title {
   padding: 1rem;

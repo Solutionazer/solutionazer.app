@@ -67,6 +67,9 @@ export default function CompanyPage() {
     }
   }, [company, setFormData])
 
+  // message type
+  const [messageTypeString, setMessageTypeString] = useState<string>('error')
+
   // 'onSubmit'
   const handleCompanyEdition: React.FormEventHandler<HTMLFormElement> = async (
     event,
@@ -106,11 +109,13 @@ export default function CompanyPage() {
         })
 
         setCompany(updatedCompany)
+        setMessageTypeString('successfully')
         setInfoMessage(companyUpdated)
         setMessageType('company')
       } catch (error) {
         console.error(error)
 
+        setMessageTypeString('error')
         setInfoMessage(companyUpdateFailed)
         setMessageType('company')
       }
@@ -151,6 +156,7 @@ export default function CompanyPage() {
   // 'onDelete' | admins
   const handleAdminsDeletion = async (adminUuid: string) => {
     if (company && company.getAdmins()?.length === 1) {
+      setMessageTypeString('error')
       setInfoMessage(cannotDeleteAdmin)
       setMessageType('admin')
     } else if (company) {
@@ -188,9 +194,11 @@ export default function CompanyPage() {
         })
 
         setCompany(updatedCompany)
+        setMessageTypeString('successfully')
         setInfoMessage(adminDeleted)
         setMessageType('admin')
       } catch {
+        setMessageTypeString('error')
         setInfoMessage(adminDeletionFailed)
         setMessageType('admin')
       }
@@ -300,11 +308,13 @@ export default function CompanyPage() {
         })
 
         setCompany(updatedCompany)
+        setMessageTypeString('successfully')
         setInfoMessage(adminAdded)
         setMessageType('admin')
         setShowModal(false)
         setSearchQuery('')
       } catch {
+        setMessageTypeString('error')
         setInfoMessage(adminAddingFailed)
         setMessageType('admin')
       }
@@ -325,6 +335,9 @@ export default function CompanyPage() {
           </Link>
         </div>
         <MediumTitle params={{ text: 'Company Data', classNames: [] }} />
+        {messageType === 'company' && infoMessage && (
+          <Message params={{ type: messageTypeString, text: infoMessage }} />
+        )}
         <Form
           params={{
             onSubmit: handleCompanyEdition,
@@ -333,9 +346,6 @@ export default function CompanyPage() {
           }}
         >
           <Fieldset>
-            {messageType === 'company' && infoMessage && (
-              <Message params={{ type: '', text: infoMessage }} />
-            )}
             <Fieldset>
               <Input
                 params={{
@@ -361,7 +371,7 @@ export default function CompanyPage() {
         <Article params={{ className: styles.admins_container }}>
           <MediumTitle params={{ text: 'Admins', classNames: [] }} />
           {messageType === 'admin' && infoMessage && (
-            <Message params={{ type: '', text: infoMessage }} />
+            <Message params={{ type: messageTypeString, text: infoMessage }} />
           )}
           {company?.getAdmins()?.length ? (
             <ul>
