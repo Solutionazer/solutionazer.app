@@ -16,6 +16,8 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+export const dynamic = 'force-dynamic'
+
 import RegisterClient from '@/components/auth/register/pages/RegisterClient'
 import { Suspense } from 'react'
 
