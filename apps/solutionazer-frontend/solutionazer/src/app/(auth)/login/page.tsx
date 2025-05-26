@@ -16,6 +16,8 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+export const dynamic = 'force-dynamic'
+
 import LoginClient from '@/components/auth/login/pages/LoginClient'
 import { Suspense } from 'react'
 
