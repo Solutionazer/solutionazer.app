@@ -37,6 +37,7 @@ import Label from '@/components/shared/form/components/Label'
 import Button from '@/components/shared/form/components/Button'
 
 import styles from './loginForm.module.css'
+import Link from 'next/link'
 
 interface LoginFormProps {
   params?: {
@@ -63,6 +64,9 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
 
   // UI states
   const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
+
+  // message type state
+  const [messageType, setMessageType] = useState<string>('error')
 
   // messages
   const passwordError: string = 'Incorrect password.'
@@ -111,6 +115,7 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
             router.push(path)
           }
         } else {
+          setMessageType('successfully')
           setInfoMessage(loggedInClickHere)
         }
       } catch {
@@ -122,10 +127,12 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
           router.prefetch(path)
           router.push(path)
         } else {
+          setMessageType('successfully')
           setInfoMessage(loggedInClickHere)
         }
       }
     } catch {
+      setInfoMessage('error')
       setInfoMessage(passwordError)
     }
   }
@@ -162,14 +169,30 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
     <>
       {isPasswordEmpty && (
         <Message
-          params={{ type: '', text: infoMessageFromLoginClient ?? '' }}
+          params={{ type: messageType, text: infoMessageFromLoginClient ?? '' }}
         />
       )}
-      {infoMessage && <Message params={{ type: '', text: infoMessage }} />}
+      {infoMessage && (
+        <Message params={{ type: messageType, text: infoMessage }} />
+      )}
       <Form params={{ onSubmit: handleLogin, method: 'post' }}>
         <Fieldset>
           <Fieldset>
-            <Fieldset params={{ className: styles.password_input }}>
+            <Input
+              params={{
+                type: 'email',
+                id: 'email',
+                value: formData.getEmail() ?? '',
+                onChange: () => {},
+                placeholder: '',
+                required: false,
+                disabled: true,
+              }}
+            />
+            <Label params={{ htmlFor: 'email', text: 'Email' }} />
+          </Fieldset>
+          <Fieldset params={{ className: styles.password_input }}>
+            <div>
               <Input
                 params={{
                   type: showPassword ? 'text' : typePassword,
@@ -188,7 +211,7 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
                   onClick: togglePasswordVisibility,
                 }}
               />
-            </Fieldset>
+            </div>
             <Label
               params={{ htmlFor: typePassword, text: capitalize(typePassword) }}
             />
@@ -202,6 +225,9 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
           }}
         />
       </Form>
+      <p>
+        Forgot your password? <Link href="">Recover it</Link>
+      </p>
     </>
   )
 }

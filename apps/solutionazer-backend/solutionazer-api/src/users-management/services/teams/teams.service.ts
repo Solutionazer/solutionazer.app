@@ -28,6 +28,7 @@ import { UsersService } from '../users/users.service';
 import { CompaniesService } from '../companies/companies.service';
 import { User } from 'src/users-management/entities/user.entity';
 import { Company } from 'src/users-management/entities/company.entity';
+import { TeamMembersDto } from 'src/users-management/dtos/team-members.dtos';
 
 @Injectable()
 export class TeamsService {
@@ -66,6 +67,7 @@ export class TeamsService {
 
     const teams: Team[] = await this.teamRepository.find({
       where: { company: { uuid } },
+      relations: ['members'],
     });
 
     return teams.map((team) => {
@@ -94,25 +96,29 @@ export class TeamsService {
   async create(data: CreateTeamDto) {
     const { owner: ownerUuid, company, ...rest } = data;
 
+    let members: TeamMembersDto[] = [];
+
     let owner: User | undefined;
     if (ownerUuid) {
       owner = await this.usersService.findOne(ownerUuid);
+      members = [owner];
     }
 
     let type: 'freelance-own' | 'company-own' = 'freelance-own';
 
     let foundCompany: Company | undefined;
     if (company) {
-      foundCompany = await this.companiesService.findOne(company.uuid);
+      foundCompany = await this.companiesService.findOne(company);
       if (foundCompany) {
         type = 'company-own';
       }
+      members = Array.isArray(data.members) ? data.members : [];
     }
 
     const newTeam: Team = this.teamRepository.create({
       ...rest,
       owner,
-      members: owner ? [owner] : [],
+      members,
       company: foundCompany,
       type,
     });
@@ -128,9 +134,15 @@ export class TeamsService {
       updatedOwner = await this.usersService.findOne(changes.owner);
     }
 
+    let updatedCompany: Company | undefined;
+    if (changes.company) {
+      updatedCompany = await this.companiesService.findOne(changes.company);
+    }
+
     const updatedTeam = this.teamRepository.merge(team, {
       ...changes,
       owner: updatedOwner ?? team.owner,
+      company: updatedCompany ?? team.company,
     });
 
     return this.teamRepository.save(updatedTeam);

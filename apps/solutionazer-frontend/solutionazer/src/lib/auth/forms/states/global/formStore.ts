@@ -16,8 +16,11 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { create, StoreApi, UseBoundStore } from 'zustand'
 import FormData from '../../formData'
+import { persist } from 'zustand/middleware'
 
 interface FormState {
   formData: FormData
@@ -25,22 +28,43 @@ interface FormState {
   resetFormData: () => void
 }
 
-const useFormStore: UseBoundStore<StoreApi<FormState>> = create<FormState>(
-  (set) => ({
-    formData: new FormData({ email: '', userType: '' }),
-    setFormData: (data: FormData) => set({ formData: data }),
-    resetFormData: () =>
-      set({
-        formData: new FormData({
-          email: '',
-          userType: '',
-          password: undefined,
-          passwordToConfirm: undefined,
-          fullName: undefined,
-          companyName: undefined,
+const useFormStore: UseBoundStore<StoreApi<FormState>> = create<
+  FormState,
+  [['zustand/persist', FormState]]
+>(
+  persist<FormState>(
+    (set) => ({
+      formData: new FormData({ email: '', userType: '' }),
+      setFormData: (data: FormData) => set({ formData: data }),
+      resetFormData: () =>
+        set({
+          formData: new FormData({
+            email: '',
+            userType: '',
+            password: undefined,
+            passwordToConfirm: undefined,
+            fullName: undefined,
+            companyName: undefined,
+          }),
         }),
-      }),
-  }),
+    }),
+    {
+      name: 'formData',
+      onRehydrateStorage: () => (state) => {
+        if (state?.formData) {
+          const plainData = state.formData as any
+          state.formData = new FormData({
+            email: plainData.email,
+            userType: plainData.userType,
+            password: plainData.password,
+            passwordToConfirm: plainData.passwordToConfirm,
+            fullName: plainData.fullName,
+            companyName: plainData.companyName,
+          })
+        }
+      },
+    },
+  ),
 )
 
 export default useFormStore

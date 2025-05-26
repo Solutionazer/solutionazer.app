@@ -76,6 +76,9 @@ export default function RegisterForm() {
   const [showSkip, setShowSkip] = useState(false) // skip button
   const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
 
+  // message type state
+  const [messageType, setMessageType] = useState<string>('error')
+
   // messages
   const ifUserNotExists: string = `To create an 'Enterprise' account, you must first switch your account type to 'Individual'. Only after that can you create an 'Enterprise' account.`
   const ifUserExists: string = `You can now create your 'Enterprise' account. If you'd prefer to skip this step, simply press the 'Skip' button.`
@@ -102,9 +105,11 @@ export default function RegisterForm() {
           await userExists(formData.getEmail())
 
           if (!userTypeByParams) {
+            setMessageType('successfully')
             setInfoMessage(ifUserExists)
           }
         } catch {
+          setMessageType('error')
           setInfoMessage(ifUserNotExists)
         }
       } else {
@@ -133,6 +138,7 @@ export default function RegisterForm() {
     event.preventDefault()
 
     if (formData.getPassword() !== formData.getPasswordToConfirm()) {
+      setMessageType('error')
       setInfoMessage(passwordError)
       return
     } else {
@@ -174,6 +180,7 @@ export default function RegisterForm() {
           })
 
           setFormData(updatedData)
+          setMessageType('successfully')
           setInfoMessage(ifUserExists)
           setShowSkip(true)
         } else {
@@ -265,7 +272,9 @@ export default function RegisterForm() {
 
   return (
     <>
-      {infoMessage && <Message params={{ type: '', text: infoMessage }} />}
+      {infoMessage && (
+        <Message params={{ type: messageType, text: infoMessage }} />
+      )}
       <Form params={{ onSubmit: handleRegister, method: 'post' }}>
         <Fieldset>
           <Fieldset>

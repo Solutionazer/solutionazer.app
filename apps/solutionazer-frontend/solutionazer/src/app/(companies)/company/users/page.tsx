@@ -35,6 +35,7 @@ import Admin from '@/lib/auth/companies/admins/admin'
 import { searchUsers } from '@/lib/utils/users-management/usersHandler'
 import { updateMembers } from '@/lib/utils/users-management/companyHandler'
 import Message from '@/components/shared/messages/Message'
+import Article from '@/components/shared/containers/Article'
 
 export default function Users() {
   // auth global state
@@ -46,6 +47,11 @@ export default function Users() {
   // messages
   const memberAdded: string = 'Member added successfully.'
   const memberAddingFailed: string = 'Failed to add member.'
+  const memberRemoved: string = 'Member removed successfully.'
+  const memberDeletionFailed: string = 'Failed to remove member.'
+
+  // message type state
+  const [messageType, setMessageType] = useState<string>('error')
 
   // modal state
   const [showModal, setShowModal] = useState<boolean>(false)
@@ -136,11 +142,69 @@ export default function Users() {
         })
 
         setCompany(updatedCompany)
+        setMessageType('successfully')
         setInfoMessage(memberAdded)
         setSearchQuery('')
       } catch {
+        setMessageType('error')
         setInfoMessage(memberAddingFailed)
       }
+    }
+  }
+
+  // handle members deletion
+  const handleMembersDeletion = async (memberToRemove: Member) => {
+    if (!company) return
+
+    const updatedMembers = [
+      ...(company.getMembers() ?? []).filter(
+        (member) => member.getUuid() !== memberToRemove.getUuid(),
+      ),
+    ]
+
+    console.log(
+      'MEMBERS:',
+      company.getMembers()?.map((m) => m.getUuid()),
+    )
+    console.log('REMOVING:', memberToRemove.getUuid())
+
+    try {
+      const updatedCompanyData = await updateMembers(
+        company.getUuid(),
+        updatedMembers,
+      )
+
+      const updatedCompany: Company = new Company({
+        uuid: updatedCompanyData.uuid,
+        name: updatedCompanyData.name,
+        admins: updatedCompanyData.admins.map(
+          (admin: { uuid: string; fullName: string; email: string }) => {
+            return new Admin({
+              uuid: admin.uuid,
+              fullName: admin.fullName,
+              email: admin.email,
+            })
+          },
+        ),
+        members: updatedCompanyData.members.map(
+          (member: { uuid: string; fullName: string; email: string }) => {
+            return new Member({
+              uuid: member.uuid,
+              fullName: member.fullName,
+              email: member.email,
+            })
+          },
+        ),
+      })
+
+      setCompany(updatedCompany)
+      setMessageType('successfully')
+      setInfoMessage(memberRemoved)
+    } catch (error) {
+      console.error(error)
+
+      setMessageType('error')
+      setInfoMessage(memberDeletionFailed)
     }
   }
 
@@ -150,11 +214,30 @@ export default function Users() {
   return (
     <>
       <div className={styles.content}>
-        {infoMessage && <Message params={{ type: '', text: infoMessage }} />}
+        {infoMessage && (
+          <Message params={{ type: messageType, text: infoMessage }} />
+        )}
+        {!infoMessage && <div></div>}
         {members && members.length > 0 ? (
           <ul>
             {members.map((member) => (
-              <li key={member.getUuid()}></li>
+              <li key={member.getUuid()}>
+                <Article params={{ className: styles.member_card }}>
+                  <div>
+                    <Button
+                      params={{
+                        type: ButtonType.Button,
+                        text: 'X',
+                        onClick: () => handleMembersDeletion(member),
+                      }}
+                    />
+                  </div>
+                  <Article>
+                    <SmallTitle params={{ text: member.getFullName() }} />
+                    <p>{member.getEmail()}</p>
+                  </Article>
+                </Article>
+              </li>
             ))}
           </ul>
         ) : (

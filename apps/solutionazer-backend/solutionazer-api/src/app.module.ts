@@ -31,6 +31,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth/jwt-auth.guard';
 import { PermissionsGuard } from './auth/guards/permissions/permissions.guard';
 import { environments } from './environments';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { environments } from './environments';
     InterviewsModule,
     GlossariesModule,
     DocumentAnalysisModule,
+    MailerModule,
   ],
   providers: [
     {

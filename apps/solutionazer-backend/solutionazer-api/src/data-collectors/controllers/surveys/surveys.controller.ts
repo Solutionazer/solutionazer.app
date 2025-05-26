@@ -62,6 +62,50 @@ export class SurveysController {
     return this.surveysService.findAllByUserUuid(userUuid);
   }
 
+  @Permissions('survey:cloneToUser')
+  @Post('clone-to-user/:surveyUuid')
+  @HttpCode(HttpStatus.CREATED)
+  async cloneSurveyToUser(
+    @Param('surveyUuid', new ParseUUIDPipe()) surveyUuid: string,
+    @Body() body: { targetUserUuid: string },
+  ) {
+    const { targetUserUuid } = body;
+
+    if (!targetUserUuid) {
+      throw new Error('targetUserUuid is required');
+    }
+
+    const clonedSurvey = await this.surveysService.cloneAndAssignToUser(
+      surveyUuid,
+      targetUserUuid,
+    );
+
+    return {
+      message: 'Form cloned and assigned successfully',
+      clonedSurvey,
+    };
+  }
+
+  @Permissions('survey:deleteCloned')
+  @Delete('undo-clone/:clonedSurveyUuid')
+  @HttpCode(HttpStatus.OK)
+  async undoClone(
+    @Param('clonedSurveyUuid', new ParseUUIDPipe()) clonedSurveyUuid: string,
+  ) {
+    await this.surveysService.undoClone(clonedSurveyUuid);
+
+    return {
+      message: 'Cloned form deleted successfully',
+    };
+  }
+
+  @Permissions('survey:readAllClones')
+  @Get('clones/:surveyUuid')
+  @HttpCode(HttpStatus.OK)
+  getAllClones(@Param('surveyUuid') surveyUuid: string) {
+    return this.surveysService.findAllClonesRecursively(surveyUuid);
+  }
+
   @Permissions('survey:create')
   @Post()
   @HttpCode(HttpStatus.CREATED)

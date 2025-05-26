@@ -16,10 +16,54 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+'use client'
+
+import Footer from '@/components/shared/containers/Footer'
+// import Header from '@/components/shared/containers/Header'
+import Button from '@/components/shared/form/components/Button'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+
+import styles from './layout.module.css'
+
 export default function AuthLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  return <>{children}</>
+  // path
+  const path: string = usePathname()
+
+  // context
+  const context = useSearchParams().get('context')
+
+  // router
+  const router = useRouter()
+
+  // hide footer condition
+  const hideFooter =
+    path.endsWith('/profiles') || (path.endsWith('/login') && context !== null)
+
+  return (
+    <>
+      {/*<Header>logo</Header>*/}
+      {children}
+      {!hideFooter && (
+        <Footer params={{ className: styles.footer }}>
+          <Button
+            params={{
+              type: ButtonType.Button,
+              text: 'home',
+              onClick: () => {
+                const path: string = '/login'
+
+                router.prefetch(path)
+                router.push(path)
+              },
+            }}
+          />
+        </Footer>
+      )}
+    </>
+  )
 }

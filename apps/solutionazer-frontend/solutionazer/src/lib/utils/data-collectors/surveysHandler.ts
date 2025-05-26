@@ -133,3 +133,49 @@ export const getPublicSurvey = async (uuid: string) => {
 
   return await res.json()
 }
+
+export const cloneSurveyToUser = async (
+  surveyUuid: string,
+  targetUserUuid: string,
+) => {
+  const res = await fetch(`${baseUrl}/surveys/clone-to-user/${surveyUuid}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      targetUserUuid,
+    }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const undoCloneSurvey = async (clonedSurveyUuid: string) => {
+  const res = await fetch(`${baseUrl}/surveys/undo-clone/${clonedSurveyUuid}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const getSurveyClonesBySurveyUuid = async (surveyUuid: string) => {
+  const res = await fetch(`${baseUrl}/surveys/clones/${surveyUuid}`, {
+    method: 'GET',
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}

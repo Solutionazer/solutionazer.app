@@ -24,10 +24,12 @@ import useAuthStore from '@/lib/auth/states/global/authStore'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import Link from 'next/link'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 
 import styles from './loginClient.module.css'
+import Button from '@/components/shared/form/components/Button'
+import ButtonType from '@/lib/auth/forms/enums/buttonType'
 
 export default function LoginClient() {
   // query params
@@ -69,6 +71,12 @@ export default function LoginClient() {
     }
   }
 
+  // path
+  const path = usePathname()
+
+  // hide home button condition
+  const showHomeButton = path.endsWith('/login') && context === ''
+
   return (
     <>
       <Title
@@ -80,6 +88,23 @@ export default function LoginClient() {
       <AuthForm
         params={{ context, isPasswordEmpty, setIsPasswordEmpty, infoMessage }}
       />
+      {showHomeButton && (
+        <div className={styles.home_btn_container}>
+          <Button
+            params={{
+              type: ButtonType.Button,
+              text: 'home',
+              onClick: () => {
+                const path: string = '/login'
+
+                router.prefetch(path)
+                router.push(path)
+              },
+              className: styles.home_btn,
+            }}
+          />
+        </div>
+      )}
       {!context && (
         <p className={styles.text}>
           {`Do you want to create an 'Enterprise' account?`}

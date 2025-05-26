@@ -16,18 +16,18 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-const ModuleOptions: Record<string, string[]> = {
-  forms: ['Forms', 'Surveys', 'Interviews', 'Glossaries', 'Doc. Anl.'],
-  surveys: ['Surveys', 'Forms', 'Interviews', 'Glossaries', 'Doc. Anl.'],
-  interviews: ['Interviews', 'Forms', 'Surveys', 'Glossaries', 'Doc. Anl.'],
-  glossaries: ['Glossaries', 'Forms', 'Surveys', 'Interviews', 'Doc. Anl.'],
-  'document-analysis': [
-    'Doc. Anl.',
-    'Forms',
-    'Surveys',
-    'Interviews',
-    'Glossaries',
-  ],
-}
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
-export default ModuleOptions
+export class TeamMembersDto {
+  @IsNotEmpty()
+  @IsUUID()
+  readonly uuid: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly fullName: string;
+
+  @IsNotEmpty()
+  @IsString()
+  readonly email: string;
+}

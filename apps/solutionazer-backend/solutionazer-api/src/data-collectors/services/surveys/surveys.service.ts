@@ -16,6 +16,11 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -28,7 +33,7 @@ import { Stats } from 'src/data-collectors/entities/stats.entity';
 import DataCollectorType from 'src/data-collectors/enums/data-collector-type.enum';
 import { User } from 'src/users-management/entities/user.entity';
 import { UsersService } from 'src/users-management/services/users/users.service';
-import { FindOneOptions, Repository } from 'typeorm';
+import { DataSource, FindOneOptions, Repository } from 'typeorm';
 import { StatsService } from '../stats/stats.service';
 
 @Injectable()
@@ -38,6 +43,7 @@ export class SurveysService {
     private readonly dataCollectorRepository: Repository<DataCollector>,
     private readonly usersService: UsersService,
     private readonly statsService: StatsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async findPublicSurvey(uuid: string) {
@@ -84,6 +90,94 @@ export class SurveysService {
     }
 
     return survey;
+  }
+
+  async cloneAndAssignToUser(
+    originalSurveyUuid: string,
+    targetUserUuid: string,
+  ) {
+    const originalSurvey: DataCollector = await this.findOne(
+      originalSurveyUuid,
+      {
+        relations: ['questions', 'questions.type', 'stats'],
+      },
+    );
+
+    if (originalSurvey.type !== DataCollectorType.Survey) {
+      throw new Error('Only forms can be cloned.');
+    }
+
+    const user: User = await this.usersService.findOne(targetUserUuid);
+
+    const newStats: Stats = await this.statsService.create(
+      {} as CreateStatsDto,
+    );
+
+    const clonedSurvey = this.dataCollectorRepository.create({
+      title: originalSurvey.title,
+      description: originalSurvey.description,
+      type: DataCollectorType.Survey,
+      user,
+      stats: newStats,
+      isPublished: false,
+      clonedFrom: originalSurvey,
+      questions: originalSurvey.questions.map((question) => ({
+        ...question,
+      })),
+    });
+
+    return this.dataCollectorRepository.save(clonedSurvey);
+  }
+
+  async undoClone(clonedSurveyUuid: string) {
+    const clonedSurvey = await this.dataCollectorRepository.findOne({
+      where: { uuid: clonedSurveyUuid, type: DataCollectorType.Survey },
+      relations: ['stats'],
+    });
+
+    if (!clonedSurvey) {
+      throw new NotFoundException(
+        `Cloned survey with uuid ${clonedSurveyUuid} not found`,
+      );
+    }
+
+    if (clonedSurvey.stats) {
+      await this.statsService.remove(clonedSurvey.stats.uuid);
+    }
+
+    await this.dataCollectorRepository.delete(clonedSurveyUuid);
+  }
+
+  async findAllClonesRecursively(surveyUuid: string) {
+    const results = await this.dataSource.query(
+      `
+      WITH RECURSIVE clones AS (
+      SELECT * FROM data_collector
+      WHERE "clonedFromUuid" = $1 AND type = 'survey'
+      UNION ALL
+      SELECT dc.* FROM data_collector dc
+      INNER JOIN clones c ON dc."clonedFromUuid" = c.uuid
+      WHERE dc.type = 'survey'
+    )
+    SELECT
+      dc.uuid as "clonedSurveyUuid",
+      u.uuid as "userUuid",
+      u."fullName",
+      u.email
+    FROM clones dc
+    JOIN public."user" u ON u.uuid = dc."userUuid"
+      `,
+      [surveyUuid],
+    );
+
+    return results.map((row) => ({
+      clonedSurveyUuid: row.clonedSurveyUuid,
+      member: {
+        uuid: row.userUuid,
+        fullName: row.fullName,
+        email: row.email,
+      },
+    }));
   }
 
   async create(data: CreateDataCollectorDto) {

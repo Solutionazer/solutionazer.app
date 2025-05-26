@@ -17,8 +17,6 @@
  */
 
 import { PartialType } from '@nestjs/mapped-types';
-import { User } from '../entities/user.entity';
-import { Company } from '../entities/company.entity';
 import {
   IsArray,
   IsNotEmpty,
@@ -28,6 +26,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { TeamMembersDto } from './team-members.dtos';
 
 export class CreateTeamDto {
   @IsNotEmpty()
@@ -39,15 +38,14 @@ export class CreateTeamDto {
   readonly owner: string;
 
   @IsOptional()
-  @ValidateNested()
-  @Type(() => Company)
-  readonly company: Company;
+  @IsString()
+  readonly company: string;
 
   @IsOptional()
   @IsArray()
-  @ValidateNested()
-  @Type(() => User)
-  readonly members: User[];
+  @ValidateNested({ each: true })
+  @Type(() => TeamMembersDto)
+  readonly members: TeamMembersDto[];
 }
 
 export class UpdateTeamDto extends PartialType(CreateTeamDto) {}

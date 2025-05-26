@@ -62,6 +62,50 @@ export class FormsController {
     return this.formsService.findAllByUserUuid(userUuid);
   }
 
+  @Permissions('form:cloneToUser')
+  @Post('clone-to-user/:formUuid')
+  @HttpCode(HttpStatus.CREATED)
+  async cloneFormToUser(
+    @Param('formUuid', new ParseUUIDPipe()) formUuid: string,
+    @Body() body: { targetUserUuid: string },
+  ) {
+    const { targetUserUuid } = body;
+
+    if (!targetUserUuid) {
+      throw new Error('targetUserUuid is required');
+    }
+
+    const clonedForm = await this.formsService.cloneAndAssignToUser(
+      formUuid,
+      targetUserUuid,
+    );
+
+    return {
+      message: 'Form cloned and assigned successfully',
+      clonedForm,
+    };
+  }
+
+  @Permissions('form:deleteCloned')
+  @Delete('undo-clone/:clonedFormUuid')
+  @HttpCode(HttpStatus.OK)
+  async undoClone(
+    @Param('clonedFormUuid', new ParseUUIDPipe()) clonedFormUuid: string,
+  ) {
+    await this.formsService.undoClone(clonedFormUuid);
+
+    return {
+      message: 'Cloned form deleted successfully',
+    };
+  }
+
+  @Permissions('form:readAllClones')
+  @Get('clones/:formUuid')
+  @HttpCode(HttpStatus.OK)
+  getAllClones(@Param('formUuid') formUuid: string) {
+    return this.formsService.findAllClonesRecursively(formUuid);
+  }
+
   @Permissions('form:create')
   @Post()
   @HttpCode(HttpStatus.CREATED)

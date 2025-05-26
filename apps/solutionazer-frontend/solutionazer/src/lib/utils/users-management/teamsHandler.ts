@@ -16,8 +16,6 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import TeamMember from '@/lib/teams/members/team-member'
-
 const baseUrl: string = process.env.NEXT_PUBLIC_API_BASE_URL!
 
 export const getTeamsByUser = async (uuid: string) => {
@@ -64,13 +62,22 @@ export const createFreelanceTeam = async (name: string, owner: string) => {
   return await res.json()
 }
 
-export const createCompanyTeam = async (name: string, company: string) => {
+export const createCompanyTeam = async (
+  name: string,
+  company: string,
+  members: {
+    uuid: string
+    fullName: string
+    email: string
+  }[],
+) => {
   const res = await fetch(`${baseUrl}/teams`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       name,
       company,
+      members,
     }),
     credentials: 'include',
   })
@@ -101,7 +108,11 @@ export const updateTeamTitle = async (uuid: string, name: string) => {
 
 export const updateTeamMembers = async (
   uuid: string,
-  members: TeamMember[],
+  members: {
+    uuid: string
+    fullName: string
+    email: string
+  }[],
 ) => {
   const res = await fetch(`${baseUrl}/teams/${uuid}`, {
     method: 'PUT',
@@ -109,6 +120,19 @@ export const updateTeamMembers = async (
     body: JSON.stringify({
       members,
     }),
+    credentials: 'include',
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const deleteTeam = async (uuid: string) => {
+  const res = await fetch(`${baseUrl}/teams/${uuid}`, {
+    method: 'DELETE',
     credentials: 'include',
   })
 

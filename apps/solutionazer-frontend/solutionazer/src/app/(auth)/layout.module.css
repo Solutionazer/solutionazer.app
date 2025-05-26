@@ -1,25 +1,4 @@
-.text {
-  --max-width: 768px;
-
-  max-width: var(--max-width);
-  width: var(--max-percentage);
-
-  padding: 1rem;
-  margin: 0 auto;
-
-  color: var(--foreground-color);
-
-  text-align: center;
-
-  & a {
-    color: var(--title-color);
-
-    font-weight: 700;
-    font-style: italic;
-  }
-}
-
-.home_btn_container {
+.footer {
   --max-width: 768px;
 
   display: flex;
@@ -30,7 +9,7 @@
 
   margin: 0 auto;
 
-  .home_btn {
+  & button {
     display: grid;
     place-items: center;
 
@@ -39,6 +18,8 @@
 
     background-color: var(--foreground-color);
     color: var(--background-color);
+
+    font-weight: 700;
 
     border: none;
     border-radius: 8px;

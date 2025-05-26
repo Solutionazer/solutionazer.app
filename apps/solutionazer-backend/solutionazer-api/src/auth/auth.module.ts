@@ -26,6 +26,7 @@ import { JwtModule } from '@nestjs/jwt';
 import config from 'src/config';
 import { ConfigType } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { MailerModule } from 'src/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
         };
       },
     }),
+    MailerModule,
   ],
   providers: [
     {

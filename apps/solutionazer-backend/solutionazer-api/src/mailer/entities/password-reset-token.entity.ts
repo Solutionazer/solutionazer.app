@@ -16,18 +16,40 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-const ModuleOptions: Record<string, string[]> = {
-  forms: ['Forms', 'Surveys', 'Interviews', 'Glossaries', 'Doc. Anl.'],
-  surveys: ['Surveys', 'Forms', 'Interviews', 'Glossaries', 'Doc. Anl.'],
-  interviews: ['Interviews', 'Forms', 'Surveys', 'Glossaries', 'Doc. Anl.'],
-  glossaries: ['Glossaries', 'Forms', 'Surveys', 'Interviews', 'Doc. Anl.'],
-  'document-analysis': [
-    'Doc. Anl.',
-    'Forms',
-    'Surveys',
-    'Interviews',
-    'Glossaries',
-  ],
-}
+import { User } from '../../users-management/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export default ModuleOptions
+@Entity()
+export class ResetPasswordToken {
+  @PrimaryGeneratedColumn('uuid')
+  uuid: string;
+
+  @Column()
+  @Index({ unique: true })
+  token: string;
+
+  @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userUuid' })
+  user: User;
+
+  @Column()
+  userUuid: string;
+
+  @Column()
+  expiresAt: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+}
