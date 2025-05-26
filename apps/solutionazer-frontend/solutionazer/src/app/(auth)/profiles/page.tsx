@@ -16,8 +16,6 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-'use client'
-
 export const dynamic = 'force-dynamic'
 
 import ProfilesClient from '@/components/auth/profiles/pages/ProfilesClient'
