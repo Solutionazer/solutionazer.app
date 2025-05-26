@@ -19,6 +19,8 @@
 
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import Card from '@/components/auth/profiles/Card'
 import Article from '@/components/shared/containers/Article'
 import Section from '@/components/shared/containers/Section'
