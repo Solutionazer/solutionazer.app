@@ -16,36 +16,18 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { PartialType } from '@nestjs/mapped-types';
-import {
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { TeamMembersDto } from './team-members.dtos';
+import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 
-export class CreateTeamDto {
+export class TeamMembersDto {
+  @IsNotEmpty()
+  @IsUUID()
+  readonly uuid: string;
+
   @IsNotEmpty()
   @IsString()
-  readonly name: string;
+  readonly fullName: string;
 
-  @IsOptional()
-  @IsUUID()
-  readonly owner: string;
-
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  readonly company: string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TeamMembersDto)
-  readonly members: TeamMembersDto[];
+  readonly email: string;
 }
-
-export class UpdateTeamDto extends PartialType(CreateTeamDto) {}

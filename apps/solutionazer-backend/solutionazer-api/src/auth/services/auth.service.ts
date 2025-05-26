@@ -23,12 +23,18 @@ import { JwtService } from '@nestjs/jwt';
 
 import * as bcrypt from 'bcrypt';
 import { PayloadToken } from '../models/payload-token.model';
+import { randomBytes } from 'crypto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { ResetPasswordToken } from '../../mailer/entities/password-reset-token.entity';
+import { MoreThan, Repository } from 'typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    @InjectRepository(ResetPasswordToken)
+    private readonly resetPasswordTokenRepository: Repository<ResetPasswordToken>,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -63,4 +69,49 @@ export class AuthService {
 
     return this.jwtService.sign(payload);
   }
+
+  async generatePasswordResetToken(user: User) {
+    const token = randomBytes(32).toString('hex');
+
+    const expiresAt = new Date(Date.now() + (60 * 60) / 1000);
+
+    await this.resetPasswordTokenRepository.save({
+      userUuid: user.uuid,
+      token,
+      type: 'password_reset',
+      expiresAt,
+    });
+
+    return token;
+  }
+
+  async validatePasswordResetToken(token: string) {
+    const tokenEntry = await this.resetPasswordTokenRepository.findOne({
+      where: {
+        token,
+        expiresAt: MoreThan(new Date()),
+      },
+    });
+
+    return tokenEntry?.user || null;
+  }
+
+  async resetPassword(token: string, newPassword: string) {
+    const tokenEntry = await this.resetPasswordTokenRepository.findOne({
+      where: {
+        token,
+        expiresAt: MoreThan(new Date()),
+      },
+      relations: ['user'],
+    });
+
+    if (!tokenEntry) {
+      throw new Error('Invalid or expired token');
+    }
+
+    const hash = await bcrypt.hash(newPassword, 10);
+    tokenEntry.user.password = hash;
+  }
+
+  async sendPasswordRecoveryEmail(email: string, recoveryUrl: string) {}
 }

@@ -71,6 +71,10 @@ export class DataCollector {
   @Column({ type: 'boolean', nullable: false, default: false })
   isPublished: boolean;
 
+  @ManyToOne(() => DataCollector, { nullable: true })
+  @JoinColumn({ name: 'clonedFromUuid' })
+  clonedFrom: DataCollector;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
   createdAt: Date;
 

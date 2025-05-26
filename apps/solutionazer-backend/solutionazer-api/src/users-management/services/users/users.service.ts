@@ -87,6 +87,49 @@ export class UsersService {
     return queryBuilder.limit(10).getMany();
   }
 
+  async searchUsersInSameTeams(
+    userUuid: string,
+    query: string,
+    excludedUuids: string[],
+  ) {
+    const user = await this.findOne(userUuid, { relations: ['teamsAsMember'] });
+
+    const teamUuids = [...(user.teamsAsMember || []).map((team) => team.uuid)];
+
+    if (teamUuids.length === 0) return [];
+
+    const queryBuilder = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.teamsAsMember', 'team')
+      .where('team.uuid IN (:...teamUuids)', { teamUuids });
+
+    if (query) {
+      queryBuilder.andWhere(
+        new Brackets((qb) => {
+          qb.where('user.fullName ILIKE :query', {
+            query: `%${query}%`,
+          }).orWhere('user.email ILIKE :query', { query: `%${query}%` });
+        }),
+      );
+    }
+
+    if (excludedUuids.length) {
+      queryBuilder.andWhere('user.uuid NOT IN (:...excludedUuids)', {
+        excludedUuids,
+      });
+    }
+
+    const res = await queryBuilder
+      .select(['user.uuid', 'user.fullName', 'user.email'])
+      .distinct()
+      .limit(10)
+      .getMany();
+
+    console.log(res);
+
+    return res;
+  }
+
   findAll() {
     return this.userRepository.find();
   }

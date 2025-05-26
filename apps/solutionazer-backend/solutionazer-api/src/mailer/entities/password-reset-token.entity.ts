@@ -16,36 +16,40 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-import { PartialType } from '@nestjs/mapped-types';
+import { User } from '../../users-management/entities/user.entity';
 import {
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { TeamMembersDto } from './team-members.dtos';
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export class CreateTeamDto {
-  @IsNotEmpty()
-  @IsString()
-  readonly name: string;
+@Entity()
+export class ResetPasswordToken {
+  @PrimaryGeneratedColumn('uuid')
+  uuid: string;
 
-  @IsOptional()
-  @IsUUID()
-  readonly owner: string;
+  @Column()
+  @Index({ unique: true })
+  token: string;
 
-  @IsOptional()
-  @IsString()
-  readonly company: string;
+  @ManyToOne(() => User, { eager: true, onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userUuid' })
+  user: User;
 
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => TeamMembersDto)
-  readonly members: TeamMembersDto[];
+  @Column()
+  userUuid: string;
+
+  @Column()
+  expiresAt: Date;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }
-
-export class UpdateTeamDto extends PartialType(CreateTeamDto) {}

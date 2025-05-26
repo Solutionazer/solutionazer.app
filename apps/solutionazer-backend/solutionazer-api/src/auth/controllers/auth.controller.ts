@@ -16,16 +16,22 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+
 import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 import { AuthService } from '../services/auth.service';
 import { User } from 'src/users-management/entities/user.entity';
 import { Public } from '../decorators/public.decorator';
+import { UsersService } from 'src/users-management/services/users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Public()
   @UseGuards(AuthGuard('local'))
@@ -66,5 +72,30 @@ export class AuthController {
     });
 
     res.status(200).json({ message: 'Logged out' });
+  }
+
+  @Public()
+  @Post('forgot-password')
+  async forgotPassword(@Req() req: Request, @Res() res: Response) {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ message: 'Email is required' });
+    }
+
+    try {
+      const user = await this.usersService.findOneByEmail(email);
+
+      const token = await this.authService.generatePasswordResetToken(user);
+
+      const recoveryUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+      await this.authService.sendPasswordRecoveryEmail(user.email, recoveryUrl);
+
+      res.status(200).json({ message: 'Recovery email sent' });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Error sending recovery email' });
+    }
   }
 }

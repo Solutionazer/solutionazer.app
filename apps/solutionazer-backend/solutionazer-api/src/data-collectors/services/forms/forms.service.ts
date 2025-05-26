@@ -16,6 +16,11 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -26,7 +31,7 @@ import { DataCollector } from 'src/data-collectors/entities/data-collector.entit
 import DataCollectorType from 'src/data-collectors/enums/data-collector-type.enum';
 import { User } from 'src/users-management/entities/user.entity';
 import { UsersService } from 'src/users-management/services/users/users.service';
-import { FindOneOptions, Repository } from 'typeorm';
+import { DataSource, FindOneOptions, Repository } from 'typeorm';
 import { StatsService } from '../stats/stats.service';
 import { Stats } from 'src/data-collectors/entities/stats.entity';
 import { CreateStatsDto } from 'src/data-collectors/dtos/stats.dtos';
@@ -38,6 +43,7 @@ export class FormsService {
     private readonly dataCollectorRepository: Repository<DataCollector>,
     private readonly usersService: UsersService,
     private readonly statsService: StatsService,
+    private readonly dataSource: DataSource,
   ) {}
 
   async findPublicForm(uuid: string) {
@@ -84,6 +90,88 @@ export class FormsService {
     }
 
     return form;
+  }
+
+  async cloneAndAssignToUser(originalFormUuid: string, targetUserUuid: string) {
+    const originalForm: DataCollector = await this.findOne(originalFormUuid, {
+      relations: ['questions', 'questions.type', 'stats'],
+    });
+
+    if (originalForm.type !== DataCollectorType.Form) {
+      throw new Error('Only forms can be cloned.');
+    }
+
+    const user: User = await this.usersService.findOne(targetUserUuid);
+
+    const newStats: Stats = await this.statsService.create(
+      {} as CreateStatsDto,
+    );
+
+    const clonedForm = this.dataCollectorRepository.create({
+      title: originalForm.title,
+      description: originalForm.description,
+      type: DataCollectorType.Form,
+      user,
+      stats: newStats,
+      isPublished: false,
+      clonedFrom: originalForm,
+      questions: originalForm.questions.map((question) => ({
+        ...question,
+      })),
+    });
+
+    return this.dataCollectorRepository.save(clonedForm);
+  }
+
+  async undoClone(clonedFormUuid: string) {
+    const clonedForm = await this.dataCollectorRepository.findOne({
+      where: { uuid: clonedFormUuid, type: DataCollectorType.Form },
+      relations: ['stats'],
+    });
+
+    if (!clonedForm) {
+      throw new NotFoundException(
+        `Cloned form with uuid ${clonedFormUuid} not found`,
+      );
+    }
+
+    if (clonedForm.stats) {
+      await this.statsService.remove(clonedForm.stats.uuid);
+    }
+
+    await this.dataCollectorRepository.delete(clonedFormUuid);
+  }
+
+  async findAllClonesRecursively(formUuid: string) {
+    const results = await this.dataSource.query(
+      `
+      WITH RECURSIVE clones AS (
+      SELECT * FROM data_collector
+      WHERE "clonedFromUuid" = $1 AND type = 'form'
+      UNION ALL
+      SELECT dc.* FROM data_collector dc
+      INNER JOIN clones c ON dc."clonedFromUuid" = c.uuid
+      WHERE dc.type = 'form'
+    )
+    SELECT
+      dc.uuid as "clonedFormUuid",
+      u.uuid as "userUuid",
+      u."fullName",
+      u.email
+    FROM clones dc
+    JOIN public."user" u ON u.uuid = dc."userUuid"
+      `,
+      [formUuid],
+    );
+
+    return results.map((row) => ({
+      clonedFormUuid: row.clonedFormUuid,
+      member: {
+        uuid: row.userUuid,
+        fullName: row.fullName,
+        email: row.email,
+      },
+    }));
   }
 
   async create(data: CreateDataCollectorDto) {

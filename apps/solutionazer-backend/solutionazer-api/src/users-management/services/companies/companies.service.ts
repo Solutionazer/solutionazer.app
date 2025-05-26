@@ -138,14 +138,18 @@ export class CompaniesService {
       company.admins = users;
     }
 
-    if (changes.members?.length) {
-      const membersUsers = await Promise.all(
-        changes.members.map((member: any) =>
-          this.usersService.findOne(member.uuid),
-        ),
-      );
+    if ('members' in changes) {
+      if (changes.members?.length) {
+        const membersUsers = await Promise.all(
+          changes.members.map((member: any) =>
+            this.usersService.findOne(member.uuid),
+          ),
+        );
 
-      company.members = membersUsers;
+        company.members = membersUsers;
+      } else {
+        company.members = [];
+      }
     }
 
     const updatedCompany: Company = this.companyRepository.merge(

@@ -62,13 +62,30 @@ export class UsersController {
     @Query('query') query: string,
     @Query('exclude') exclude: string,
   ) {
-    const excludedUuids = exclude ? exclude.split(',') : [];
+    const excludedUuids = exclude
+      ? exclude.split(',').filter((uuid) => uuid && uuid !== 'undefined')
+      : [];
 
     return this.usersService.searchUsersInCompany(
       companyUuid,
       query,
       excludedUuids,
     );
+  }
+
+  @Permissions('user:searchInSameTeams')
+  @Get('search-in-same-teams')
+  @HttpCode(HttpStatus.OK)
+  searchUsersInSameTeam(
+    @Query('user', new ParseUUIDPipe()) user: string,
+    @Query('query') query: string,
+    @Query('exclude') exclude: string,
+  ) {
+    const excludedUuids = exclude
+      ? exclude.split(',').filter((uuid) => uuid && uuid !== 'undefined')
+      : [];
+
+    return this.usersService.searchUsersInSameTeams(user, query, excludedUuids);
   }
 
   @Permissions('user:readAll')
