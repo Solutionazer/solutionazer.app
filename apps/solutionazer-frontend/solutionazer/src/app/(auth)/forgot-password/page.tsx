@@ -20,54 +20,13 @@
 
 export const dynamic = 'force-dynamic'
 
-import { useState } from 'react'
-import Form from '@/components/shared/form/Form'
-import Fieldset from '@/components/shared/form/components/containers/fieldset/Fieldset'
-import Input from '@/components/shared/form/components/Input'
-import Button from '@/components/shared/form/components/Button'
-import Message from '@/components/shared/messages/Message'
-import ButtonType from '@/lib/auth/forms/enums/buttonType'
-import { sendPasswordRecoveryEmail } from '@/lib/utils/auth/authHandler'
+import ForgotPasswordClient from '@/components/auth/forgot-password/pages/ForgotPasswordClient'
+import { Suspense } from 'react'
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('')
-  const [message, setMessage] = useState<string | null>(null)
-
-  const [messageType, setMessageType] = useState<string>('error')
-
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
-    e.preventDefault()
-    try {
-      await sendPasswordRecoveryEmail(email)
-      setMessageType('successfully')
-      setMessage('Recovery email sent. Check your inbox.')
-    } catch {
-      setMessageType('error')
-      setMessage('There was a problem sending the recovery email.')
-    }
-  }
-
   return (
-    <>
-      {message && <Message params={{ type: messageType, text: message }} />}
-      <Form params={{ onSubmit: handleSubmit, method: 'post' }}>
-        <Fieldset>
-          <Input
-            params={{
-              type: 'email',
-              id: 'recoveryEmail',
-              value: email,
-              onChange: (e) => setEmail(e.target.value),
-              placeholder: 'Enter your email',
-              required: true,
-              disabled: false,
-            }}
-          />
-        </Fieldset>
-        <Button
-          params={{ type: ButtonType.Submit, text: 'Send Recovery Email' }}
-        />
-      </Form>
-    </>
+    <Suspense fallback={null}>
+      <ForgotPasswordClient />
+    </Suspense>
   )
 }
