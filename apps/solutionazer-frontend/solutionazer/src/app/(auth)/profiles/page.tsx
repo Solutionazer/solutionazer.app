@@ -18,10 +18,10 @@
 
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import ProfilesClient from '@/components/auth/profiles/pages/ProfilesClient'
 import { Suspense } from 'react'
-
-export const dynamic = 'force-dynamic'
 
 export default function Profiles() {
   return (
