@@ -16,44 +16,15 @@
  * Copyright (C) 2025 David Llamas Román
  */
 
-.error_message {
-  display: grid;
-  place-items: center;
+export const dynamic = 'force-dynamic'
 
-  margin: 0 1rem;
-  padding: 0.25rem 1rem;
+import ResetPasswordClient from '@/components/auth/reset-password/pages/ResetPasswordClient'
+import { Suspense } from 'react'
 
-  background-color: #ff3c38;
-  color: #f5f5f5;
-
-  border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  -o-border-radius: 8px;
-
-  & p {
-    padding: 0;
-  }
-}
-
-.successfully_message {
-  display: grid;
-  place-items: center;
-
-  margin: 0 1rem;
-  padding: 0.25rem 1rem;
-
-  background-color: #2ecc71;
-  color: #0c0c0c;
-
-  border-radius: 8px;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  -o-border-radius: 8px;
-
-  & p {
-    padding: 0;
-  }
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResetPasswordClient />
+    </Suspense>
+  )
 }

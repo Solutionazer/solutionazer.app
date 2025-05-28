@@ -58,6 +58,10 @@ export default function ToolsFooter() {
     setSelectedQuestionUuid,
   } = useDataCollector()
 
+  console.log('SELECTED QUESTION: ' + selectedQuestionUuid)
+
+  console.log('FOOTER' + dataCollector?.getQuestions?.())
+
   //  has questions loading been done?
   const [hasLoadedQuestions, setHasLoadedQuestions] = useState(false)
 

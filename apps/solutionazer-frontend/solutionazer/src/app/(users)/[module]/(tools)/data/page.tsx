@@ -242,7 +242,10 @@ export default function Data() {
       let clonedUuid: string | null = null
 
       if (type === 'form') {
+        console.log('Before clone:', dataCollector)
         const res = await cloneFormToUser(dataCollectorUUid, targetUserUuid)
+
+        console.log('After clone:', dataCollector)
 
         console.log(res)
 

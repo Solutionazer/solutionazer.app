@@ -36,15 +36,17 @@ import useAuthStore from '@/lib/auth/states/global/authStore'
 import React, { useEffect, useState } from 'react'
 import { updateUser } from '@/lib/utils/users-management/usersHandler'
 import Message from '@/components/shared/messages/Message'
-import { logout } from '@/lib/utils/auth/authHandler'
+import { logout, sendChangePasswordEmail } from '@/lib/utils/auth/authHandler'
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
+import AuthUser from '@/lib/auth/authUser'
+import { companyExists } from '@/lib/utils/users-management/companyHandler'
 
 export default function Account() {
   // auth global state
-  const { user, setUser, company } = useAuthStore()
+  const { user, setUser } = useAuthStore()
 
   // formData global state
   const { formData, setFormData, resetFormData } = useFormStore()
@@ -76,10 +78,18 @@ export default function Account() {
 
     if (user) {
       try {
-        await updateUser(
+        const updatedUser = await updateUser(
           user.getUuid(),
           formData.getFullName() ?? '',
           formData.getEmail() ?? '',
+        )
+
+        setUser(
+          new AuthUser({
+            uuid: updatedUser.uuid,
+            fullName: updatedUser.fullName,
+            email: updatedUser.email,
+          }),
         )
 
         setMessageType('successfully')
@@ -141,10 +151,46 @@ export default function Account() {
   const accountUpdated: string = `Account updated successfully!`
   const accountUpdateFailed: string = `Failed to update account.`
 
+  // 'onClick' | change password
+  const handleChangePasswordEmailSending = async () => {
+    try {
+      if (!user) return
+
+      await sendChangePasswordEmail(user.getEmail() ?? '')
+
+      setMessageType('successfully')
+      setInfoMessage('Recovery email sent. Please check your inbox.')
+    } catch (error) {
+      console.error(error)
+
+      setMessageType('error')
+      setInfoMessage('Failed to send recovery email.')
+    }
+  }
+
+  // has company states
+  const [hasCompany, setHasCompany] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!user) return
+
+    const checkCompany = async () => {
+      try {
+        const exists = await companyExists(user.getUuid())
+
+        setHasCompany(exists)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    checkCompany()
+  }, [user])
+
   return (
     <Article params={{ className: styles.article }}>
       <div className={styles.auth_btn_container}>
-        {company !== null && (
+        {hasCompany && (
           <Link href="/profiles" className={styles.profiles_btn}>
             <Image
               src="/icons/black_profiles.svg"
@@ -163,6 +209,9 @@ export default function Account() {
           }}
         />
       </div>
+      {infoMessage && (
+        <Message params={{ type: messageType, text: infoMessage }} />
+      )}
       <Form
         params={{
           onSubmit: handleAccountEdition,
@@ -171,9 +220,6 @@ export default function Account() {
         }}
       >
         <Fieldset>
-          {infoMessage && (
-            <Message params={{ type: messageType, text: infoMessage }} />
-          )}
           <Fieldset>
             <Input
               params={{
@@ -238,6 +284,7 @@ export default function Account() {
           params={{
             type: ButtonType.Button,
             text: 'Change Password',
+            onClick: handleChangePasswordEmailSending,
           }}
         />
       </Form>

@@ -27,8 +27,16 @@ import Message from '@/components/shared/messages/Message'
 import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import { sendPasswordRecoveryEmail } from '@/lib/utils/auth/authHandler'
 
+import styles from './forgotPasswordClient.module.css'
+import Label from '@/components/shared/form/components/Label'
+import MediumTitle from '@/components/shared/titles/MediumTitle'
+import Title from '@/components/shared/titles/Title'
+import useFormStore from '@/lib/auth/forms/states/global/formStore'
+
 export default function ForgotPasswordClient() {
-  const [email, setEmail] = useState('')
+  const { formData } = useFormStore()
+
+  const [email, setEmail] = useState(formData.getEmail())
   const [message, setMessage] = useState<string | null>(null)
 
   const [messageType, setMessageType] = useState<string>('error')
@@ -37,6 +45,7 @@ export default function ForgotPasswordClient() {
     e.preventDefault()
     try {
       await sendPasswordRecoveryEmail(email)
+
       setMessageType('successfully')
       setMessage('Recovery email sent. Check your inbox.')
     } catch {
@@ -46,26 +55,41 @@ export default function ForgotPasswordClient() {
   }
 
   return (
-    <>
-      {message && <Message params={{ type: messageType, text: message }} />}
-      <Form params={{ onSubmit: handleSubmit, method: 'post' }}>
-        <Fieldset>
-          <Input
-            params={{
-              type: 'email',
-              id: 'recoveryEmail',
-              value: email,
-              onChange: (e) => setEmail(e.target.value),
-              placeholder: 'Enter your email',
-              required: true,
-              disabled: false,
-            }}
+    <div className={styles.content}>
+      <Title
+        params={{
+          text: 'Password Recovery',
+          classNames: [''],
+        }}
+      />
+      <div>
+        <MediumTitle params={{ text: 'Enter your email', classNames: [''] }} />
+        {message && <Message params={{ type: messageType, text: message }} />}
+        <Form params={{ onSubmit: handleSubmit, method: 'post' }}>
+          <Fieldset>
+            <Input
+              params={{
+                type: 'email',
+                id: 'recovery_email',
+                value: email,
+                onChange: (e) => setEmail(e.target.value),
+                placeholder: ' ',
+                required: true,
+                disabled: false,
+              }}
+            />
+            <Label
+              params={{
+                htmlFor: 'recovery_email',
+                text: 'Email',
+              }}
+            />
+          </Fieldset>
+          <Button
+            params={{ type: ButtonType.Submit, text: 'Send Recovery Email' }}
           />
-        </Fieldset>
-        <Button
-          params={{ type: ButtonType.Submit, text: 'Send Recovery Email' }}
-        />
-      </Form>
-    </>
+        </Form>
+      </div>
+    </div>
   )
 }

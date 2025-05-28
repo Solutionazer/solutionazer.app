@@ -20,3 +20,19 @@
     }
   }
 }
+
+.forgot_password {
+  padding: 0.5rem;
+
+  color: var(--background-color);
+
+  text-align: center;
+
+  & a {
+    color: var(--title-color);
+
+    font-style: italic;
+
+    font-weight: 600;
+  }
+}
