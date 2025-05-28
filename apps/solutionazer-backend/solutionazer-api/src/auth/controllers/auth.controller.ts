@@ -17,6 +17,7 @@
  */
 
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -96,6 +97,57 @@ export class AuthController {
     } catch (error) {
       console.log(error);
       res.status(500).json({ message: 'Error sending recovery email' });
+    }
+  }
+
+  @Public()
+  @Post('change-password')
+  async changePassword(@Req() req: Request, @Res() res: Response) {
+    const { email } = req.body;
+
+    if (!email) {
+      res.status(400).json({ message: 'Email is required' });
+    }
+
+    try {
+      const user = await this.usersService.findOneByEmail(email);
+
+      const token = await this.authService.generatePasswordResetToken(user);
+
+      const recoveryUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+      await this.authService.sendChangePasswordEmail(user.email, recoveryUrl);
+
+      res.status(200).json({ message: 'Recovery email sent' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error sending change password email' });
+    }
+  }
+
+  @Public()
+  @Post('reset-password')
+  async resetPassword(@Req() req: Request, @Res() res: Response) {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+      res.status(400).json({
+        message: 'Token and new password are required',
+      });
+    }
+
+    try {
+      await this.authService.resetPassword(token, newPassword);
+
+      res.status(200).json({
+        message: 'Password reste successful',
+      });
+    } catch (error) {
+      console.error(error);
+
+      res.status(400).json({
+        message: error.message ?? 'Invalid or expired token',
+      });
     }
   }
 }
