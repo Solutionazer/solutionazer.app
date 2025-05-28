@@ -38,6 +38,8 @@
     justify-content: flex-end;
     vertical-align: center;
 
+    padding-bottom: 0.75rem;
+
     .logout_btn,
     .profiles_btn {
       display: grid;

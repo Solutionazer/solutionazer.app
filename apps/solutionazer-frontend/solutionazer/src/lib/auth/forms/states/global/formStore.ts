@@ -50,6 +50,18 @@ const useFormStore: UseBoundStore<StoreApi<FormState>> = create<
     }),
     {
       name: 'formData',
+      storage: {
+        getItem: (name) => {
+          const item = sessionStorage.getItem(name)
+          return item ? JSON.parse(item) : null
+        },
+        setItem: (name, value) => {
+          sessionStorage.setItem(name, JSON.stringify(value))
+        },
+        removeItem: (name) => {
+          sessionStorage.removeItem(name)
+        },
+      },
       onRehydrateStorage: () => (state) => {
         if (state?.formData) {
           const plainData = state.formData as any

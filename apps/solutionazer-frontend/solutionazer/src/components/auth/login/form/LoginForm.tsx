@@ -225,8 +225,8 @@ export default function LoginForm(props: Readonly<LoginFormProps>) {
           }}
         />
       </Form>
-      <p>
-        Forgot your password? <Link href="">Recover it</Link>
+      <p className={styles.forgot_password}>
+        Forgot your password? <Link href="/forgot-password">Recover it</Link>
       </p>
     </>
   )

@@ -27,6 +27,7 @@ import { randomBytes } from 'crypto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ResetPasswordToken } from '../../mailer/entities/password-reset-token.entity';
 import { MoreThan, Repository } from 'typeorm';
+import { MailerService } from 'src/mailer/services/mailer.service';
 
 @Injectable()
 export class AuthService {
@@ -35,6 +36,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(ResetPasswordToken)
     private readonly resetPasswordTokenRepository: Repository<ResetPasswordToken>,
+    private readonly mailerService: MailerService,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -71,29 +73,44 @@ export class AuthService {
   }
 
   async generatePasswordResetToken(user: User) {
+    await this.resetPasswordTokenRepository.delete({ userUuid: user.uuid });
+
     const token = randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
-    const expiresAt = new Date(Date.now() + (60 * 60) / 1000);
-
-    await this.resetPasswordTokenRepository.save({
+    const resetToken = this.resetPasswordTokenRepository.create({
       userUuid: user.uuid,
       token,
-      type: 'password_reset',
       expiresAt,
     });
+
+    await this.resetPasswordTokenRepository.save(resetToken);
 
     return token;
   }
 
-  async validatePasswordResetToken(token: string) {
-    const tokenEntry = await this.resetPasswordTokenRepository.findOne({
-      where: {
-        token,
-        expiresAt: MoreThan(new Date()),
-      },
-    });
+  async sendPasswordRecoveryEmail(email: string, url: string) {
+    const subject = 'Reset your password';
+    const body = `
+    <p>Hello,</p>
+    <p>You have requested to reset your password. Click on the following link to continue:</p>
+    <a href="${url}">${url}</a>
+    <p>If you did not request this change, please ignore this message.</p>
+  `;
 
-    return tokenEntry?.user || null;
+    await this.mailerService.sendMail(email, subject, body);
+  }
+
+  async sendChangePasswordEmail(email: string, url: string) {
+    const subject = 'Change your password';
+    const body = `
+    <p>Hello,</p>
+    <p>You have requested to change your password. Click on the following link to continue:</p>
+    <a href="${url}">${url}</a>
+    <p>If you did not request this change, please ignore this message.</p>
+  `;
+
+    await this.mailerService.sendMail(email, subject, body);
   }
 
   async resetPassword(token: string, newPassword: string) {
@@ -111,7 +128,8 @@ export class AuthService {
 
     const hash = await bcrypt.hash(newPassword, 10);
     tokenEntry.user.password = hash;
-  }
 
-  async sendPasswordRecoveryEmail(email: string, recoveryUrl: string) {}
+    await this.usersService.update(tokenEntry.user.uuid, { password: hash });
+    await this.resetPasswordTokenRepository.delete({ token });
+  }
 }

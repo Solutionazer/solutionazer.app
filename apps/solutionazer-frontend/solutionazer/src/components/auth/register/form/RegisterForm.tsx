@@ -256,9 +256,14 @@ export default function RegisterForm() {
 
   // show password state
   const [showPassword, setShowPassword] = useState<boolean>(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
+  }
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword)
   }
 
   // an input type
@@ -300,8 +305,8 @@ export default function RegisterForm() {
           </Fieldset>
           {isIndividual && (
             <>
-              <Fieldset>
-                <Fieldset params={{ className: styles.password_input }}>
+              <Fieldset params={{ className: styles.password_input }}>
+                <div>
                   <Input
                     params={{
                       type: showPassword ? 'text' : typePassword,
@@ -326,7 +331,7 @@ export default function RegisterForm() {
                       onClick: togglePasswordVisibility,
                     }}
                   />
-                </Fieldset>
+                </div>
                 <Label
                   params={{
                     htmlFor: typePassword,
@@ -334,8 +339,8 @@ export default function RegisterForm() {
                   }}
                 />
               </Fieldset>
-              <Fieldset>
-                <Fieldset params={{ className: styles.password_input }}>
+              <Fieldset params={{ className: styles.password_input }}>
+                <div>
                   <Input
                     params={{
                       type: showPassword ? 'text' : typePassword,
@@ -351,10 +356,10 @@ export default function RegisterForm() {
                     params={{
                       type: ButtonType.Button,
                       text: 'Show Password',
-                      onClick: togglePasswordVisibility,
+                      onClick: toggleConfirmPasswordVisibility,
                     }}
                   />
-                </Fieldset>
+                </div>
                 <Label
                   params={{
                     htmlFor: 'confirm_password',

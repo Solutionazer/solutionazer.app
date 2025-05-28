@@ -63,3 +63,31 @@ export const sendPasswordRecoveryEmail = async (email: string) => {
 
   return await res.json()
 }
+
+export const sendChangePasswordEmail = async (email: string) => {
+  const res = await fetch(`${baseUrl}/auth/change-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email }),
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  const res = await fetch(`${baseUrl}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, newPassword }),
+  })
+
+  if (!res.ok) {
+    throw new Error((await res.json()).message)
+  }
+
+  return await res.json()
+}
