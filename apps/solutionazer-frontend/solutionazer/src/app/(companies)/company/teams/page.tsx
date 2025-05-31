@@ -43,6 +43,7 @@ import {
 import TeamMember from '@/lib/teams/members/team-member'
 import { searchUsersInCompany } from '@/lib/utils/users-management/usersHandler'
 import Article from '@/components/shared/containers/Article'
+import useSearch from '@/lib/module/states/global/searchStore'
 
 type ModalStep = 'start' | 'naming' | 'adding-members'
 
@@ -330,6 +331,18 @@ export default function Teams() {
     }
   }
 
+  // search global state
+  const { searchInput } = useSearch()
+
+  // teams
+  const filteredTeams = teams.filter((team) => {
+    const name: string = team.getName()?.toLowerCase() ?? ''
+
+    const query: string = searchInput.toLowerCase()
+
+    return name.includes(query)
+  })
+
   return (
     <>
       <div className={styles.content}>
@@ -337,10 +350,11 @@ export default function Teams() {
           <Message params={{ type: messageType, text: infoMessage }} />
         )}
         {!infoMessage && <div></div>}
+        {filteredTeams.length === 0 && <p>No teams found.</p>}
         {teams.length > 0 ? (
           !editMode ? (
             <ul>
-              {teams.map((team) => (
+              {filteredTeams.map((team) => (
                 <li key={team.getUuid()} className={styles.team_item}>
                   <Article>
                     <div>

@@ -3,4 +3,8 @@
   grid-template-rows: 1fr auto;
 
   height: var(--max-percentage);
+
+  @media (width <= 430px) {
+    width: 400px;
+  }
 }

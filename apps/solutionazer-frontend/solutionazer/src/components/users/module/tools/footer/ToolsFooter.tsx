@@ -363,6 +363,9 @@ export default function ToolsFooter() {
   // UI states
   const [infoMessage, setInfoMessage] = useState<string | null>(null) // messages
 
+  // message type state
+  const [messageType, setMessageType] = useState<string>('error')
+
   // messages
   const formPublished: string = 'Form published successfully!'
   const formPublicationFailed: string =
@@ -424,13 +427,16 @@ export default function ToolsFooter() {
             }),
           )
 
+          setMessageType('successfully')
           setInfoMessage(formPublished)
           setShowShareModal(false)
         } catch {
+          setMessageType('error')
           setInfoMessage(formPublicationFailed)
           setShowShareModal(false)
         }
       } else {
+        setMessageType('error')
         setInfoMessage(formAlreadyPublished)
         setShowShareModal(false)
       }
@@ -477,13 +483,16 @@ export default function ToolsFooter() {
             }),
           )
 
+          setMessageType('successfully')
           setInfoMessage(surveyPublished)
           setShowShareModal(false)
         } catch {
+          setMessageType('error')
           setInfoMessage(surveyPublicationFailed)
           setShowShareModal(false)
         }
       } else {
+        setMessageType('error')
         setInfoMessage(surveyAlreadyPublished)
         setShowShareModal(false)
       }
@@ -496,9 +505,11 @@ export default function ToolsFooter() {
     try {
       await navigator.clipboard.writeText(link)
 
+      setMessageType('successfully')
       setInfoMessage(linkCopied)
       setShowShareModal(false)
     } catch {
+      setMessageType('error')
       setInfoMessage(linkCopyFailed)
       setShowShareModal(false)
     }
@@ -520,11 +531,11 @@ export default function ToolsFooter() {
     <>
       {showModal && (
         <Modal params={{ setShowModal }}>
-          <ul>
+          <ul className={styles.modal_list}>
             {questionTypes
               .filter((questionType) => {
                 const formType: string =
-                  dataCollector?.getType() ??
+                  dataCollector?.getType?.() ??
                   dataCollector?.['props'].type ??
                   ''
 
@@ -592,7 +603,9 @@ export default function ToolsFooter() {
         </Modal>
       )}
       <div className={styles.share_container}>
-        {infoMessage && <Message params={{ type: '', text: infoMessage }} />}
+        {infoMessage && (
+          <Message params={{ type: messageType, text: infoMessage }} />
+        )}
         <Button
           params={{
             type: ButtonType.Button,

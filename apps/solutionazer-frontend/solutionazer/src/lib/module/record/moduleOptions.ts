@@ -21,13 +21,7 @@ const ModuleOptions: Record<string, string[]> = {
   surveys: ['Surveys', 'Forms', 'Interviews', 'Glossaries', 'Doc. Anl.'],
   interviews: ['Interviews', 'Forms', 'Surveys', 'Glossaries', 'Doc. Anl.'],
   glossaries: ['Glossaries', 'Forms', 'Surveys', 'Interviews', 'Doc. Anl.'],
-  'document-analysis': [
-    'Doc. Anl.',
-    'Forms',
-    'Surveys',
-    'Interviews',
-    'Glossaries',
-  ],
+  'doc.-anl.': ['Doc. Anl.', 'Forms', 'Surveys', 'Interviews', 'Glossaries'],
 }
 
 export default ModuleOptions
