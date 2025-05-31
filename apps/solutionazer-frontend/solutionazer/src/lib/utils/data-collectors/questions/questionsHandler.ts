@@ -241,8 +241,8 @@ export const submitAnswer = async (
   return await res.json()
 }
 
-export const getAnswers = async () => {
-  const res = await fetch(`${baseUrl}/questions/answers`, {
+export const getAnswers = async (dataCollectorUuid: string) => {
+  const res = await fetch(`${baseUrl}/questions/answers/${dataCollectorUuid}`, {
     method: 'GET',
     credentials: 'include',
   })

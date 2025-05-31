@@ -42,6 +42,9 @@ import Link from 'next/link'
 import Input from '@/components/shared/form/components/Input'
 
 import { v4 as uuidv4 } from 'uuid'
+import Message from '@/components/shared/messages/Message'
+
+import jsPDF from 'jspdf'
 
 export default function PublicDataCollector() {
   // router
@@ -112,63 +115,98 @@ export default function PublicDataCollector() {
     setSessionUuid(uuid)
   }, [])
 
+  // message
+  const [infoMessage, setInfoMessage] = useState<string | null>(null)
+  const [messageType, setMessageType] = useState<string>('error')
+
+  // handle next states
+  const [answers, setAnswers] = useState<{ question: string; answer: any }[]>(
+    [],
+  )
+  const [isFinished, setIsFinished] = useState(false)
+
   // 'onClick' | next btn
   const handleNextClick = async () => {
-    if (dataCollector) {
-      const questions: Question[] = dataCollector.getQuestions() ?? []
-      const currentQuestion: Question = questions[currentQuestionIndex]
-      const questionType: string = currentQuestion?.getType()?.getName() ?? ''
-      const questionUuid: string = currentQuestion?.getUuid() ?? ''
+    if (!dataCollector) return
 
-      let value: any = null
+    const questions: Question[] = dataCollector.getQuestions() ?? []
+    const currentQuestion: Question = questions[currentQuestionIndex]
+    const questionType = currentQuestion.getType()?.getName() ?? ''
+    const questionUuid = currentQuestion.getUuid() ?? ''
+    const required = currentQuestion.getRequired()
+    const config = questionConfig
 
-      switch (questionType) {
-        case 'shortText':
-          value = shortText
-          break
-        case 'longText':
-          value = longText
-          break
-        case 'rating':
-          value = rating
-          break
-        case 'email':
-          value = email
-          break
-        case 'phone':
-          value = phone
-          break
-        case 'date':
-          value = date?.toISOString().split('T')[0]
-          break
-        case 'legal':
-          value = true
-          break
-        default:
-          value = null
-      }
+    let value: any = null
+    let isValid = true
 
-      try {
-        if (value !== null && questionUuid && sessionUuid) {
-          await submitAnswer(questionUuid, value, sessionUuid)
-        }
-      } catch (error) {
-        console.error(error)
-      }
+    switch (questionType) {
+      case 'shortText':
+        value = shortText
+        if (required && !value) isValid = false
+        if (config?.characterLimit && value.length > config.characterLimit)
+          isValid = false
+        break
+      case 'longText':
+        value = longText
+        if (required && !value) isValid = false
+        if (config?.characterLimit && value.length > config.characterLimit)
+          isValid = false
+        break
+      case 'rating':
+        value = rating
+        if (required && !value) isValid = false
+        break
+      case 'email':
+        value = email
+        if (required && !value) isValid = false
+        break
+      case 'phone':
+        value = phone
+        if (required && !value) isValid = false
+        if (value && !/^\d{9,15}$/.test(value)) isValid = false
+        break
 
-      if (
-        currentQuestionIndex <
-        (dataCollector.getQuestions() ?? []).length - 1
-      ) {
-        setCurrentQuestionIndex(currentQuestionIndex + 1)
-      }
+      case 'date':
+        value = date?.toISOString().split('T')[0]
+        if (required && !value) isValid = false
+        break
+      case 'legal':
+        value = legalAccepted
+        if (required && !value) isValid = false
+        break
+
+      default:
+        value = null
     }
-  }
 
-  // 'onClick' | back btn
-  const handleBackClick = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1)
+    if (!isValid) {
+      setMessageType('error')
+      setInfoMessage('You must complete the required field properly.')
+      return
+    }
+
+    try {
+      if (value !== null && questionUuid && sessionUuid) {
+        await submitAnswer(questionUuid, value, sessionUuid)
+
+        setAnswers((prev) => [
+          ...prev,
+          { question: currentQuestion.getText(), answer: value },
+        ])
+
+        setMessageType('successfully')
+        setInfoMessage('Answer submitted successfully!')
+      }
+
+      if (currentQuestionIndex < questions.length - 1) {
+        setCurrentQuestionIndex(currentQuestionIndex + 1)
+      } else {
+        setIsFinished(true)
+      }
+    } catch (error) {
+      console.error(error)
+      setMessageType('error')
+      setInfoMessage('There was an error submitting your answer.')
     }
   }
 
@@ -198,6 +236,9 @@ export default function PublicDataCollector() {
     fetchQuestionsConfig()
   }, [dataCollector, currentQuestionIndex])
 
+  // legal state
+  const [legalAccepted, setLegalAccepted] = useState<boolean>(false)
+
   // date state
   const [date, setDate] = useState<Date>()
 
@@ -220,17 +261,30 @@ export default function PublicDataCollector() {
   const renderInput = (questionType: string) => {
     switch (questionType) {
       case 'welcome':
-        return <p>{questionConfig?.description}</p>
+        return (
+          <p style={{ padding: '0 1rem 1rem 1rem', textAlign: 'center' }}>
+            {questionConfig?.description}
+          </p>
+        )
       case 'legal':
         return (
-          <div>
-            <p>{questionConfig?.legalText}</p>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '0 1rem 1rem 1rem',
+            }}
+          >
+            <p style={{ flexGrow: '1', paddingRight: '0.5rem' }}>
+              {questionConfig?.legalText}
+            </p>
             <Input
               params={{
                 type: 'checkbox',
                 id: 'legal_checkbox',
                 value: '',
-                onChange: () => {},
+                onChange: (e) => setLegalAccepted(e.target.checked),
                 placeholder: '',
                 required: questionConfig?.required ?? false,
                 disabled: false,
@@ -239,11 +293,34 @@ export default function PublicDataCollector() {
           </div>
         )
       case 'statement':
-        return <p>{questionConfig?.content}</p>
+        return (
+          <p style={{ padding: '1rem', textAlign: 'center' }}>
+            {questionConfig?.content}
+          </p>
+        )
       case 'website':
-        return <Link href={`/${questionConfig?.url ?? ''}`}>Redirect</Link>
+        return (
+          <Link
+            href={`/${questionConfig?.url ?? ''}`}
+            style={{
+              padding: '0.5rem 2rem',
+              textDecoration: 'none',
+              backgroundColor: 'var(--foreground-color)',
+              color: 'var(--background-color)',
+              fontWeight: '700',
+              margin: '1rem',
+              borderRadius: '8px',
+            }}
+          >
+            Go to...
+          </Link>
+        )
       case 'greetings':
-        return <p>{questionConfig?.message}</p>
+        return (
+          <p style={{ padding: '1rem', textAlign: 'center' }}>
+            {questionConfig?.message}
+          </p>
+        )
       case 'date': {
         const today: string = new Date().toISOString().split('T')[0]
         const allowPastDates: boolean = questionConfig?.allowPastDates ?? true
@@ -258,46 +335,61 @@ export default function PublicDataCollector() {
         const maxDate: string = questionConfig?.maxDate ?? ''
 
         return (
-          <Input
-            params={{
-              type: 'date',
-              id: 'date',
-              value: date ? date.toISOString().split('T')[0] : '',
-              min: minDate,
-              max: maxDate,
-              onChange: (event) => {
-                const selectedDate = event.target.value
-                setDate(new Date(selectedDate))
-              },
-              placeholder: '',
-              required: false,
-              disabled: false,
-            }}
-          />
+          <div style={{ padding: '1rem' }}>
+            <Input
+              params={{
+                type: 'date',
+                id: 'date',
+                value: date ? date.toISOString().split('T')[0] : '',
+                min: minDate,
+                max: maxDate,
+                onChange: (event) => {
+                  const selectedDate = event.target.value
+                  setDate(new Date(selectedDate))
+                },
+                placeholder: '',
+                required: false,
+                disabled: false,
+              }}
+            />
+          </div>
         )
       }
       case 'email':
         return (
-          <Input
-            params={{
-              type: 'email',
-              id: 'email',
-              value: email,
-              onChange: (event) => {
-                setEmail(event.target.value)
-              },
-              placeholder: '',
-              required: false,
-              disabled: false,
-            }}
-          />
+          <div style={{ padding: '1rem' }}>
+            <Input
+              params={{
+                type: 'email',
+                id: 'email',
+                value: email,
+                onChange: (event) => {
+                  setEmail(event.target.value)
+                },
+                placeholder: '',
+                required: false,
+                disabled: false,
+              }}
+            />
+          </div>
         )
       case 'phone': {
         const countryCode: string = questionConfig?.countryCode ?? '+34'
 
         return (
-          <div>
-            <span>{countryCode}</span>
+          <div style={{ padding: '1rem' }}>
+            <span
+              style={{
+                backgroundColor: 'var(--foreground-color)',
+                color: 'var(--background-color)',
+                marginRight: '0.5rem',
+                borderRadius: '4px',
+                fontWeight: '700',
+                padding: '0.25rem',
+              }}
+            >
+              {countryCode}
+            </span>
 
             <Input
               params={{
@@ -319,7 +411,7 @@ export default function PublicDataCollector() {
         const characterLimit: number = questionConfig?.characterLimit ?? 500
 
         return (
-          <div>
+          <div style={{ padding: '1rem' }}>
             <textarea
               id="long_text"
               value={longText}
@@ -328,6 +420,8 @@ export default function PublicDataCollector() {
                   setLongText(event.target.value)
                 }
               }}
+              cols={50}
+              rows={9}
             ></textarea>
             <p>{`${longText.length} / ${characterLimit}`}</p>
           </div>
@@ -337,7 +431,7 @@ export default function PublicDataCollector() {
         const characterLimit: number = questionConfig?.characterLimit ?? 100
 
         return (
-          <div>
+          <div style={{ padding: '1rem' }}>
             <Input
               params={{
                 type: 'text',
@@ -384,6 +478,68 @@ export default function PublicDataCollector() {
     }
   }
 
+  // 'onCLick' | generate PDF
+  const handleDownloadPDF = () => {
+    const doc = new jsPDF({
+      orientation: 'landscape',
+      unit: 'pt',
+      format: 'a4',
+    })
+
+    const pageWidth = doc.internal.pageSize.getWidth()
+
+    const center = (
+      text: string,
+      y: number,
+      fontSize = 16,
+      weight: 'normal' | 'bold' = 'normal',
+    ) => {
+      doc.setFont('helvetica', weight)
+      doc.setFontSize(fontSize)
+      const textWidth = doc.getTextWidth(text)
+      const x = (pageWidth - textWidth) / 2
+      doc.text(text, x, y)
+    }
+
+    doc.setTextColor(40, 40, 40)
+
+    center('Form completed', 88, 26, 'bold')
+    center('Summary of answers', 130, 14, 'bold')
+
+    let y = 180
+
+    answers.forEach((ans, idx) => {
+      doc.setFont('helvetica', 'bold')
+      doc.setFontSize(12)
+      doc.text(`${idx + 1}. ${ans.question}`, 60, y)
+      y += 20
+
+      doc.setFont('helvetica', 'normal')
+      doc.setFontSize(11)
+
+      const answerText =
+        typeof ans.answer === 'string' || typeof ans.answer === 'number'
+          ? String(ans.answer)
+          : Array.isArray(ans.answer)
+            ? ans.answer.join(', ')
+            : JSON.stringify(ans.answer)
+
+      const splitText = doc.splitTextToSize(answerText, pageWidth - 120)
+      doc.text(splitText, 80, y)
+      y += splitText.length * 16 + 10
+    })
+
+    // Pie de página
+    doc.setFontSize(10)
+    center(
+      `Generated on ${new Date().toLocaleDateString()} by solutionazer.app`,
+      540,
+      10,
+    )
+
+    doc.save('solutionazer-answers.pdf')
+  }
+
   return (
     <Section params={{ className: styles.container }}>
       {!showQuestions ? (
@@ -405,6 +561,37 @@ export default function PublicDataCollector() {
             }}
           />
         </div>
+      ) : isFinished ? (
+        <div className={styles.finished_container}>
+          <Title
+            params={{ text: 'Thanks for your answers!', classNames: [] }}
+          />
+          <ul>
+            {answers.map((ans, idx) => (
+              <li key={idx}>
+                <strong>{ans.question}</strong>: {String(ans.answer)}
+              </li>
+            ))}
+          </ul>
+          <div>
+            <Button
+              params={{
+                type: ButtonType.Button,
+                text: 'Download',
+                onClick: handleDownloadPDF,
+              }}
+            />
+            <Button
+              params={{
+                type: ButtonType.Button,
+                text: 'Answer again',
+                onClick: () => {
+                  window.location.reload()
+                },
+              }}
+            />
+          </div>
+        </div>
       ) : (
         <>
           {dataCollector && (dataCollector.getQuestions() ?? []).length > 0 && (
@@ -417,6 +604,9 @@ export default function PublicDataCollector() {
                   classNames: [],
                 }}
               />
+              {infoMessage && (
+                <Message params={{ type: messageType, text: infoMessage }} />
+              )}
               {questionConfig &&
                 renderInput(
                   (dataCollector.getQuestions() ?? [])[currentQuestionIndex]
@@ -427,14 +617,11 @@ export default function PublicDataCollector() {
                 <Button
                   params={{
                     type: ButtonType.Button,
-                    text: 'Back',
-                    onClick: handleBackClick,
-                  }}
-                />
-                <Button
-                  params={{
-                    type: ButtonType.Button,
-                    text: 'Next',
+                    text:
+                      currentQuestionIndex ===
+                      (dataCollector.getQuestions()?.length ?? 1) - 1
+                        ? 'Finish'
+                        : 'Next',
                     onClick: handleNextClick,
                   }}
                 />

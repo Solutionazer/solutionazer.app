@@ -689,13 +689,20 @@ export class QuestionsService {
     return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
   }
 
-  async findAnswersGroupedBySessionUuid() {
+  async findAnswersGroupedBySessionUuid(dataCollectorUuid: string) {
     const responses = await this.questionResponseRepository.find({
-      relations: ['question', 'question.type'],
+      relations: ['question', 'question.type', 'question.dataCollector'],
+      where: {
+        question: {
+          dataCollector: {
+            uuid: dataCollectorUuid,
+          },
+        },
+      },
     });
 
     if (responses.length === 0) {
-      throw new NotFoundException(`No answers found`);
+      return { message: 'No answers found' };
     }
 
     const grouped = responses.reduce(

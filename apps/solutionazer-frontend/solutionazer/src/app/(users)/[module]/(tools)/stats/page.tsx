@@ -29,56 +29,136 @@ import styles from './page.module.css'
 import Button from '@/components/shared/form/components/Button'
 import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import jsPDF from 'jspdf'
-//import { getAnswers } from '@/lib/utils/data-collectors/questions/questionsHandler'
+import { getAnswers } from '@/lib/utils/data-collectors/questions/questionsHandler'
+import SmallTitle from '@/components/shared/titles/SmallTitle'
+import MediumTitle from '@/components/shared/titles/MediumTitle'
+import DataCollector from '@/lib/module/data-collectors/dataCollector'
 
 export default function Stats() {
-  // dataCollector global state
   const { dataCollector } = useDataCollector()
 
-  // stats state
+  const dataCollectorAny: any = dataCollector
+
   const [stats, setStats] = useState<any>(null)
+  const [answers, setAnswers] = useState<Record<string, any[]>>({})
+  const [expandedAnswers, setExpandedAnswers] = useState<
+    Record<string, boolean>
+  >({})
+  const [expandedQuestions, setExpandedQuestions] = useState<
+    Record<string, boolean>
+  >({})
 
-  // answers state
-  // const [answers, setAnswers] = useState<any[]>([])
+  const toggleExpanded = (key: string) => {
+    setExpandedAnswers((prev) => ({ ...prev, [key]: !prev[key] }))
+  }
 
-  // fetch data
+  const toggleQuestion = (id: string) => {
+    setExpandedQuestions((prev) => ({ ...prev, [id]: !prev[id] }))
+  }
+
+  const ExpandableText = ({
+    text,
+    id,
+    maxLength = 50,
+  }: {
+    text: string
+    id: string
+    maxLength?: number
+  }) => {
+    const isLong = text.length > maxLength
+    const expanded = expandedAnswers[id]
+    const displayText =
+      expanded || !isLong ? text : text.slice(0, maxLength) + '...'
+
+    return (
+      <span
+        style={{
+          whiteSpace: 'pre-wrap',
+          wordBreak: 'break-word',
+          margin: 0,
+          padding: 0,
+        }}
+      >
+        {displayText}{' '}
+        {isLong && (
+          <button
+            onClick={() => toggleExpanded(id)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              marginLeft: '0.25rem',
+              color: 'var(--title-color)',
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            {expanded ? 'ver menos' : 'ver más'}
+          </button>
+        )}
+      </span>
+    )
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       if (dataCollector) {
-        const uuid: string = dataCollector.getUuid() ?? ''
+        setStats(null)
+        setAnswers({})
+        setExpandedAnswers({})
+        setExpandedQuestions({})
 
+        const instance: DataCollector = new DataCollector({
+          uuid: dataCollectorAny.uuid,
+          title: dataCollectorAny.title,
+          description: dataCollectorAny.description,
+          type: dataCollectorAny.type,
+          isPublished: dataCollectorAny.isPublished,
+          createdAt: dataCollectorAny.createdAt,
+          updatedAt: dataCollectorAny.updatedAt,
+        })
+
+        const uuid: string = instance.getUuid() ?? ''
         try {
           const statsResponse = await getStats(uuid)
-          //  const answersResponse = await getAnswers()
+          const answersResponse = await getAnswers(uuid)
 
           setStats(statsResponse)
+
+          if (Array.isArray(answersResponse)) {
+            const transformed = {
+              ['default']: answersResponse,
+            }
+            setAnswers(transformed)
+          } else {
+            setAnswers(answersResponse)
+          }
         } catch (error) {
           console.error(error)
         }
+      } else {
+        setStats(null)
+        setAnswers({})
+        setExpandedAnswers({})
+        setExpandedQuestions({})
       }
     }
 
     fetchData()
   }, [dataCollector])
 
-  // format interval
   const formatInterval = (interval: any) => {
     if (typeof interval === 'string') return interval
-
     if (typeof interval === 'object' && interval !== null) {
       const pad = (n: number) => String(n).padStart(2, '0')
-
       const hours = pad(interval.hours || 0)
       const minutes = pad(interval.minutes || 0)
       const seconds = pad(interval.seconds || 0)
-
       return `${hours}:${minutes}:${seconds}`
     }
-
     return '00:00:00'
   }
 
-  // 'onClick' | download button
   const handleDownloadPDF = () => {
     if (!stats) return
 
@@ -87,8 +167,8 @@ export default function Stats() {
       unit: 'pt',
       format: 'a4',
     })
-
     const pageWidth = doc.internal.pageSize.getWidth()
+
     const center = (
       text: string,
       y: number,
@@ -103,7 +183,6 @@ export default function Stats() {
     }
 
     doc.setTextColor(40, 40, 40)
-
     center(
       (dataCollector?.getType() ?? '') === 'form'
         ? 'Form Statistics Report'
@@ -112,10 +191,7 @@ export default function Stats() {
       26,
       'bold',
     )
-
     center('Metrics', 130, 14, 'bold')
-
-    doc.setFontSize(18)
 
     const lines = [
       `Completed responses: ${stats.completedResponses}`,
@@ -136,45 +212,121 @@ export default function Stats() {
       540,
       10,
     )
-
     doc.save('solutionazer-statistics.pdf')
   }
 
+  const hasResponses = Object.values(answers).some(
+    (resps) => Array.isArray(resps) && resps.length > 0,
+  )
+
   return (
-    <Article
-      params={{
-        className: styles.stats_container,
-      }}
-    >
+    <Article params={{ className: styles.stats_container }}>
       {stats ? (
-        <Article>
-          <div>
-            <Button
-              params={{
-                type: ButtonType.Button,
-                text: 'Download',
-                onClick: handleDownloadPDF,
-              }}
-            />
-          </div>
-          <p>
-            <span>Completed responses:</span>
-            {stats.completedResponses}
-          </p>
-          <p>
-            <span>Partial responses:</span>
-            {stats.partialResponses}
-          </p>
-          <p>
-            <span>Average time:</span> {formatInterval(stats.averageTime)}
-          </p>
-          <p>
-            <span>Completion rate:</span>
-            {stats.completionRate}
-          </p>
-        </Article>
+        <>
+          <Article>
+            <div>
+              <Button
+                params={{
+                  type: ButtonType.Button,
+                  text: 'Download',
+                  onClick: handleDownloadPDF,
+                }}
+              />
+            </div>
+            <p>
+              <span>Completed responses:</span>
+              {stats.completedResponses}
+            </p>
+            <p>
+              <span>Partial responses:</span>
+              {stats.partialResponses}
+            </p>
+            <p>
+              <span>Average time:</span> {formatInterval(stats.averageTime)}
+            </p>
+            <p>
+              <span>Completion rate:</span>
+              {stats.completionRate}
+            </p>
+          </Article>
+          <Article params={{ className: styles.responses }}>
+            <MediumTitle params={{ text: 'Responses', classNames: [] }} />
+            <ul className={styles.responses_list}>
+              {hasResponses ? (
+                Object.entries(answers).map(
+                  ([uuid, responses]: [string, any[]], index: number) => (
+                    <div key={uuid}>
+                      <SmallTitle params={{ text: `Response ${index + 1}` }} />
+                      <ul>
+                        {Array.isArray(responses) &&
+                          responses.map((resp, i) => {
+                            const questionId = `${uuid}-${i}`
+                            const isExpanded = expandedQuestions[questionId]
+                            return (
+                              <li
+                                key={questionId}
+                                style={{ marginBottom: '1rem' }}
+                              >
+                                <button
+                                  onClick={() => toggleQuestion(questionId)}
+                                  style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: 0,
+                                    color: 'var(--title-color)',
+                                    fontWeight: 600,
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  {`Question ${i + 1} ${isExpanded ? '▲' : '▼'}`}
+                                </button>
+                                {isExpanded && (
+                                  <>
+                                    <p>
+                                      <strong>Question:</strong>{' '}
+                                      {resp.questionText}
+                                    </p>
+                                    <p>
+                                      <strong>Answer:</strong>{' '}
+                                      {typeof resp.answer === 'boolean' ? (
+                                        resp.answer ? (
+                                          'Accepted'
+                                        ) : (
+                                          'Declined'
+                                        )
+                                      ) : Array.isArray(resp.answer) ? (
+                                        resp.answer.join(', ')
+                                      ) : (
+                                        <ExpandableText
+                                          text={resp.answer}
+                                          id={questionId}
+                                        />
+                                      )}
+                                    </p>
+                                  </>
+                                )}
+                              </li>
+                            )
+                          })}
+                      </ul>
+                    </div>
+                  ),
+                )
+              ) : (
+                <p
+                  style={{
+                    color: 'var(--foreground-color)',
+                    textAlign: 'center',
+                  }}
+                >
+                  No one has responded yet.
+                </p>
+              )}
+            </ul>
+          </Article>
+        </>
       ) : (
-        <p>{`No statistics available.`}</p>
+        <p>No statistics available.</p>
       )}
     </Article>
   )

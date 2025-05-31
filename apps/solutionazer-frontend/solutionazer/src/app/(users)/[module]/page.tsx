@@ -226,6 +226,9 @@ export default function Module(props: Readonly<ModuleProps>) {
   const ModulePages: Record<string, JSX.Element> = {
     forms: (
       <>
+        {sortedForms.length === 0 && (
+          <p style={{ textAlign: 'center' }}>No forms found.</p>
+        )}
         {sortedForms.map((form) => (
           <li key={form.getUuid()}>
             <Card
@@ -242,6 +245,9 @@ export default function Module(props: Readonly<ModuleProps>) {
     ),
     surveys: (
       <>
+        {sortedSurveys.length === 0 && (
+          <p style={{ textAlign: 'center' }}>No surveys found.</p>
+        )}
         {sortedSurveys.map((survey) => (
           <li key={survey.getUuid()}>
             <Card
@@ -258,7 +264,7 @@ export default function Module(props: Readonly<ModuleProps>) {
     ),
     interviews: underDevelopment,
     glossaries: underDevelopment,
-    'document-anal.': underDevelopment,
+    'doc.-anl.': underDevelopment,
   }
 
   // handle forms and surveys creation

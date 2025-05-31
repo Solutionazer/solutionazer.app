@@ -240,3 +240,29 @@
     border: none;
   }
 }
+
+.modal_list {
+  & li {
+    & article {
+      aspect-ratio: 42/9 !important;
+      cursor: pointer;
+
+      & p {
+        padding: 0 !important;
+
+        font-weight: normal !important;
+        text-align: center;
+      }
+    }
+  }
+}
+
+@media (width <= 430px) {
+  .secondary_footer {
+    width: 400px;
+
+    & nav {
+      width: 300px;
+    }
+  }
+}

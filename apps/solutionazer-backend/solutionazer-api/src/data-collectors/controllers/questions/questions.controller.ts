@@ -149,10 +149,12 @@ export class QuestionsController {
   }
 
   @Permissions('question:readAnswersGroupedBySessionUuid')
-  @Get('answers')
+  @Get('answers/:uuid')
   @HttpCode(HttpStatus.OK)
-  findAnswersGroupedBySessionUuid() {
-    return this.questionsService.findAnswersGroupedBySessionUuid();
+  findAnswersGroupedBySessionUuid(
+    @Param('uuid', new ParseUUIDPipe()) uuid: string,
+  ) {
+    return this.questionsService.findAnswersGroupedBySessionUuid(uuid);
   }
 
   @Permissions('question:delete')

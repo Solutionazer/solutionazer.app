@@ -36,6 +36,7 @@ import { searchUsers } from '@/lib/utils/users-management/usersHandler'
 import { updateMembers } from '@/lib/utils/users-management/companyHandler'
 import Message from '@/components/shared/messages/Message'
 import Article from '@/components/shared/containers/Article'
+import useSearch from '@/lib/module/states/global/searchStore'
 
 export default function Users() {
   // auth global state
@@ -208,8 +209,18 @@ export default function Users() {
     }
   }
 
+  // search global state
+  const { searchInput } = useSearch()
+
   // members
-  const members: Member[] = company?.getMembers() ?? []
+  const members: Member[] = (company?.getMembers() ?? []).filter((member) => {
+    const fullName: string = member.getFullName()?.toLowerCase() ?? ''
+    const email: string = member.getEmail()?.toLowerCase() ?? ''
+
+    const query: string = searchInput.toLowerCase()
+
+    return fullName.includes(query) || email.includes(query)
+  })
 
   return (
     <>

@@ -21,7 +21,7 @@ export const allowedModules: string[] = [
   'surveys',
   'interviews',
   'glossaries',
-  'document-analysis',
+  'doc.-anl.',
 ]
 
 export function generateStaticParams() {
