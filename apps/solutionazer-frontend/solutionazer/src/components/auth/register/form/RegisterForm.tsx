@@ -343,7 +343,7 @@ export default function RegisterForm() {
                 <div>
                   <Input
                     params={{
-                      type: showPassword ? 'text' : typePassword,
+                      type: showConfirmPassword ? 'text' : typePassword,
                       id: 'confirm_password',
                       value: formData.getPasswordToConfirm() ?? '',
                       onChange: handleInputValuesChange,

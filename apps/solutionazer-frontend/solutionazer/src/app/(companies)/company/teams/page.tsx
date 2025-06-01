@@ -350,7 +350,9 @@ export default function Teams() {
           <Message params={{ type: messageType, text: infoMessage }} />
         )}
         {!infoMessage && <div></div>}
-        {filteredTeams.length === 0 && <p>No teams found.</p>}
+        {filteredTeams.length === 0 && teams.length > 0 && (
+          <p>No teams found.</p>
+        )}
         {teams.length > 0 ? (
           !editMode ? (
             <ul>

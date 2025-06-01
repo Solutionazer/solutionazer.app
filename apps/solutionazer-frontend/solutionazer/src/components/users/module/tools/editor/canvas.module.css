@@ -61,9 +61,3 @@
     }
   }
 }
-
-@media (width <= 430px) {
-  .canvas {
-    width: 390px;
-  }
-}

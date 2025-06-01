@@ -25,7 +25,7 @@ import styles from './page.module.css'
 import {
   createFreelanceTeam,
   getTeamsByUser,
-  /*updateTeamMembers,*/
+  updateTeamMembers,
   updateTeamTitle,
 } from '@/lib/utils/users-management/teamsHandler'
 import { useEffect, useState } from 'react'
@@ -62,12 +62,15 @@ export default function Route() {
       if (user) {
         const userUuid: string = user.getUuid() ?? ''
 
+        console.log(await getTeamsByUser(userUuid))
+
         const fetchedTeams: Team[] = (await getTeamsByUser(userUuid)).map(
           (team: {
             uuid: string
             name: string
             type: string
             members: TeamMember[]
+            owner: any
           }) => {
             return new Team({
               uuid: team.uuid,
@@ -81,6 +84,11 @@ export default function Route() {
                     email: member.email,
                   })
                 }) ?? [],
+              owner: {
+                uuid: team.owner?.uuid,
+                fullName: team.owner?.fullName,
+                email: team.owner?.email,
+              },
             })
           },
         )
@@ -93,9 +101,18 @@ export default function Route() {
   }, [user])
 
   // team types
-  const freelanceTeam = teams.find((team) => team.getType() === 'freelance-own')
+  const freelanceTeam = teams.find(
+    (team) =>
+      team.getType() === 'freelance-own' &&
+      team.getOwner()?.uuid === user?.getUuid(),
+  )
   const companyTeams = teams.filter((team) => team.getType() === 'company-own')
-  const externalTeams = teams.filter((team) => team.getType() === 'external')
+  const externalTeams = teams.filter(
+    (team) =>
+      team.getType() === 'freelance-own' &&
+      team.getOwner()?.uuid !== user?.getUuid() &&
+      team.getMembers().some((member) => member.getUuid() === user?.getUuid()),
+  )
 
   // 'onClick' | freelance team creation
   const handleFreelanceTeamCreation = async () => {
@@ -222,32 +239,21 @@ export default function Route() {
   }
 
   // 'onClick' | button '+' modal search results
-  const handleAddingMembers = async (/*memberToAdd: TeamMember*/) => {
+  const handleAddingMembers = async (memberToAdd: TeamMember) => {
     if (freelanceTeam) {
-      //const updatedMembers = [...freelanceTeam.getMembers(), memberToAdd]
+      const updatedMembers = [...freelanceTeam.getMembers(), memberToAdd]
 
       try {
-        /*
-        const updatedTeamData = await updateTeamMembers(
+        await updateTeamMembers(
           freelanceTeam?.getUuid(),
-          updatedMembers,
+          updatedMembers.map((member) => ({
+            uuid: member.getUuid(),
+            fullName: member.getFullName(),
+            email: member.getEmail(),
+          })),
         )
+        await reloadTeams()
 
-        const updatedTeam: Team = new Team({
-          uuid: updatedTeamData.uuid,
-          name: updatedTeamData.name,
-          type: updatedTeamData.type,
-          members: updatedTeamData.members.map(
-            (member: { uuid: string; fullName: string; email: string }) => {
-              return new TeamMember({
-                uuid: member.uuid,
-                fullName: member.fullName,
-                email: member.email,
-              })
-            },
-          ),
-        })
-*/
         setMessageType('successfully')
         setInfoMessage(memberAdded)
         setShowAddMemberModal(false)
@@ -256,6 +262,73 @@ export default function Route() {
         setMessageType('error')
         setInfoMessage(memberAddingFailed)
       }
+    }
+  }
+
+  // reload teams
+  const reloadTeams = async () => {
+    if (user) {
+      const userUuid: string = user.getUuid() ?? ''
+      const updatedTeams = await getTeamsByUser(userUuid)
+
+      console.log(updatedTeams)
+
+      const mappedTeams: Team[] = updatedTeams.map((team: any) => {
+        return new Team({
+          uuid: team.uuid,
+          name: team.name,
+          type: team.type,
+          members:
+            team.members.map((member: any) => {
+              return new TeamMember({
+                uuid: member.uuid,
+                fullName: member.fullName,
+                email: member.email,
+              })
+            }) ?? [],
+          owner: {
+            uuid: team.owner?.uuid,
+            fullName: team.owner?.fullName,
+            email: team.owner?.email,
+          },
+        })
+      })
+
+      setTeams(mappedTeams)
+    }
+  }
+
+  // remove member freelance team
+  const handleRemoveMember = async (memberToRemove: TeamMember) => {
+    if (!freelanceTeam) return
+
+    const ownerUuid = freelanceTeam.getOwner()?.uuid
+    if (memberToRemove.getUuid() === ownerUuid) {
+      setMessageType('error')
+      setInfoMessage('Cannot delete the creator of the team.')
+      return
+    }
+
+    const updatedMembers = freelanceTeam
+      .getMembers()
+      .filter((member) => member.getUuid() !== memberToRemove.getUuid())
+
+    try {
+      await updateTeamMembers(
+        freelanceTeam.getUuid(),
+        updatedMembers.map((member) => ({
+          uuid: member.getUuid(),
+          fullName: member.getFullName(),
+          email: member.getEmail(),
+        })),
+      )
+      await reloadTeams()
+
+      setMessageType('successfully')
+      setInfoMessage('Member removed successfully!')
+    } catch {
+      setMessageType('error')
+      setInfoMessage('Failed to remove member.')
     }
   }
 
@@ -308,7 +381,7 @@ export default function Route() {
               <MediumTitle params={{ text: 'Company Teams', classNames: [] }} />
               <div className={styles.article_content}>
                 {companyTeams.length > 0 ? (
-                  <ul>
+                  <ul className={styles.company_team}>
                     {companyTeams.map((team) => (
                       <li key={team.getUuid()}>{team.getName()}</li>
                     ))}
@@ -325,7 +398,7 @@ export default function Route() {
               />
               <div className={styles.article_content}>
                 {externalTeams.length > 0 ? (
-                  <ul>
+                  <ul className={styles.external_teams}>
                     {externalTeams.map((team) => (
                       <li key={team.getUuid()}>{team.getName()}</li>
                     ))}
@@ -386,23 +459,39 @@ export default function Route() {
               {infoMessage && (
                 <Message params={{ type: messageType, text: infoMessage }} />
               )}
-              <div>
-                {freelanceTeam &&
-                (freelanceTeam.getMembers() ?? []).length > 0 ? (
-                  <ul>
-                    {freelanceTeam.getMembers().map((member) => (
-                      <li key={member.getUuid()}>
-                        <Article>
+              {!infoMessage && <div></div>}
+              {freelanceTeam &&
+              (freelanceTeam.getMembers() ?? []).length > 0 ? (
+                <ul className={styles.freelance_team_members}>
+                  {freelanceTeam.getMembers().map((member) => (
+                    <li key={member.getUuid()}>
+                      <Article>
+                        <div>
+                          <Button
+                            params={{
+                              type: ButtonType.Button,
+                              text: 'X',
+                              onClick: () => handleRemoveMember(member),
+                            }}
+                          />
+                        </div>
+                        <Article
+                          params={{
+                            className: styles.freelance_team_members_info,
+                          }}
+                        >
                           <SmallTitle params={{ text: member.getFullName() }} />
                           <p>{member.getEmail()}</p>
                         </Article>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
+                      </Article>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                freelanceTeam && (
                   <p>{`There aren't any member into your freelance team.`}</p>
-                )}
-              </div>
+                )
+              )}
             </div>
           </Article>
         )}
@@ -468,7 +557,7 @@ export default function Route() {
                       params={{
                         type: ButtonType.Button,
                         text: '+',
-                        onClick: () => handleAddingMembers(/*member*/),
+                        onClick: () => handleAddingMembers(member),
                       }}
                     />
                   </li>
