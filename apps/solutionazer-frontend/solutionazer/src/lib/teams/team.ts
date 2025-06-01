@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import TeamMember from './members/team-member'
 
 interface TeamProps {
@@ -5,6 +7,7 @@ interface TeamProps {
   name: string
   type?: string
   members: TeamMember[]
+  owner?: any
 }
 
 export default class Team {
@@ -12,12 +15,14 @@ export default class Team {
   private readonly name: string
   private readonly type: string | undefined
   private readonly members: TeamMember[]
+  private readonly owner: any | undefined
 
   constructor(private readonly props: TeamProps) {
     this.uuid = props.uuid
     this.name = props.name
     this.type = props.type
     this.members = props.members
+    this.owner = props.owner
   }
 
   public getUuid(): string {
@@ -34,5 +39,9 @@ export default class Team {
 
   public getMembers(): TeamMember[] {
     return this.members
+  }
+
+  public getOwner(): any | undefined {
+    return this.owner
   }
 }

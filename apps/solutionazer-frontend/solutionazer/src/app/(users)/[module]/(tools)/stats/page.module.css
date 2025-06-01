@@ -87,9 +87,32 @@
       max-height: 265px;
       overflow-y: scroll;
 
+      &::-webkit-scrollbar {
+        width: 0.5rem;
+
+        background-color: var(--background-color);
+
+        border-radius: 8px;
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        -ms-border-radius: 8px;
+        -o-border-radius: 8px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--foreground-color);
+
+        border-radius: 8px;
+        -webkit-border-radius: 8px;
+        -moz-border-radius: 8px;
+        -ms-border-radius: 8px;
+        -o-border-radius: 8px;
+      }
+
       & div {
         display: flex;
 
+        margin-right: 0.25rem;
         margin-bottom: 1rem;
 
         background-color: var(--title-color);

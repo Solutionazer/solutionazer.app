@@ -92,8 +92,30 @@
 
     overflow-x: scroll;
 
+    &::-webkit-scrollbar {
+      height: 0.5rem;
+
+      background-color: var(--foreground-color);
+
+      border-radius: 8px;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      -ms-border-radius: 8px;
+      -o-border-radius: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--title-color);
+
+      border-radius: 8px;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      -ms-border-radius: 8px;
+      -o-border-radius: 8px;
+    }
+
     .question_card {
-      margin: 0 1rem 0 0;
+      margin: 0 1rem 0.5rem 0;
 
       .card_inner {
         display: flex;
@@ -242,6 +264,28 @@
 }
 
 .modal_list {
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+
+    background-color: var(--background-color);
+
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--foreground-color);
+
+    border-radius: 8px;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+  }
+
   & li {
     & article {
       aspect-ratio: 42/9 !important;
@@ -257,12 +301,32 @@
   }
 }
 
-@media (width <= 430px) {
+@media (min-width: 480px) and (max-width: 768px) {
   .secondary_footer {
-    width: 400px;
+    max-width: 730px;
 
     & nav {
-      width: 300px;
+      max-width: 630px;
+    }
+  }
+}
+
+@media (min-width: 393px) and (max-width: 480px) {
+  .secondary_footer {
+    max-width: 400px;
+
+    & nav {
+      max-width: 300px;
+    }
+  }
+}
+
+@media (width <= 393px) {
+  .secondary_footer {
+    max-width: 350px;
+
+    & nav {
+      max-width: 250px;
     }
   }
 }
