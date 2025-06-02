@@ -168,8 +168,34 @@
   & ul {
     padding: 1rem 0;
 
+    &::-webkit-scrollbar {
+      width: 0.5rem;
+
+      background-color: var(--background-color);
+
+      border-radius: 8px;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      -ms-border-radius: 8px;
+      -o-border-radius: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--foreground-color);
+
+      border-radius: 8px;
+      -webkit-border-radius: 8px;
+      -moz-border-radius: 8px;
+      -ms-border-radius: 8px;
+      -o-border-radius: 8px;
+    }
+
+    & h3 {
+      color: var(--title-color);
+    }
+
     & p {
-      padding: 0.5rem;
+      padding: 0.5rem 0;
 
       text-align: center;
     }
@@ -193,8 +219,6 @@
       & button {
         display: grid;
         place-items: center;
-
-        padding: 0.5rem;
 
         width: 2rem;
         aspect-ratio: 1/1;

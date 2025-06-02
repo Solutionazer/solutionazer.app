@@ -201,7 +201,8 @@ export default function Canvas() {
   useEffect(() => {
     if (
       !selectedQuestion ||
-      selectedQuestion.getType()?.getName() !== 'welcome'
+      selectedQuestion.getType()?.getName() !== 'welcome' ||
+      !questionConfig
     )
       return
 
@@ -223,14 +224,7 @@ export default function Canvas() {
     }, 500)
 
     return () => clearTimeout(timeout)
-  }, [
-    questionText,
-    welcomeDescription,
-    selectedQuestion,
-    questionConfig?.uuid,
-    questionConfig?.headline,
-    questionConfig?.description,
-  ])
+  }, [questionText, welcomeDescription, selectedQuestion, questionConfig])
 
   // update legalText
   useEffect(() => {
