@@ -19,12 +19,12 @@
 'use client'
 
 import Footer from '@/components/shared/containers/Footer'
-// import Header from '@/components/shared/containers/Header'
 import Button from '@/components/shared/form/components/Button'
 import ButtonType from '@/lib/auth/forms/enums/buttonType'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 import styles from './layout.module.css'
+import Image from 'next/image'
 
 export default function AuthLayout({
   children,
@@ -44,9 +44,23 @@ export default function AuthLayout({
   const hideFooter =
     path.endsWith('/profiles') || (path.endsWith('/login') && context !== null)
 
+  // is...?
+  const isProfiles: boolean = path.endsWith('/profiles')
+
   return (
     <>
-      {/*<Header>logo</Header>*/}
+      {!isProfiles && (
+        <header
+          style={{ display: 'grid', placeItems: 'center', paddingTop: '1rem' }}
+        >
+          <Image
+            src="solutionazer-logo.svg"
+            alt="solutionazer logo"
+            width={136.6}
+            height={53.3}
+          />
+        </header>
+      )}
       {children}
       {!hideFooter && (
         <Footer params={{ className: styles.footer }}>
@@ -55,7 +69,7 @@ export default function AuthLayout({
               type: ButtonType.Button,
               text: 'home',
               onClick: () => {
-                const path: string = '/login'
+                const path: string = '/'
 
                 router.prefetch(path)
                 router.push(path)
