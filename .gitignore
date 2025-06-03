@@ -1,4 +1,0 @@
-node_modules
-*.env
-apps/backend/docker/postgres
-.turbo
