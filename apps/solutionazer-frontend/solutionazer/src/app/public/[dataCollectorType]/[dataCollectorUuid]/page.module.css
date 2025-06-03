@@ -74,6 +74,8 @@
 
       color: var(--foreground-color);
 
+      text-align: center;
+
       font-size: 2.5rem;
     }
 

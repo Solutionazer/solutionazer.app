@@ -462,7 +462,7 @@ export default function PublicDataCollector() {
         }
 
         return (
-          <div>
+          <div style={{ padding: '1rem' }}>
             {[...Array(max)].map((_, i) => {
               const index = i + 1
 
