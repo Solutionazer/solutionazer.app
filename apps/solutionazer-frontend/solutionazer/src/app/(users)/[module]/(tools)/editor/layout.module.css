@@ -1,6 +1,0 @@
-.editor_layout {
-  display: grid;
-  grid-template-rows: 1fr auto;
-
-  height: var(--max-percentage);
-}
